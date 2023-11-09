@@ -4,15 +4,18 @@
  */
 package com.ascentdev.wims.serviceImp;
 
+import com.ascentdev.wims.entity.CargoManifestEntity;
 import com.ascentdev.wims.entity.ImagesEntity;
 import com.ascentdev.wims.entity.FlightsEntity;
 import com.ascentdev.wims.entity.MawbEntity;
+import com.ascentdev.wims.entity.StorageLogsEntity;
 import com.ascentdev.wims.entity.UldsEntity;
 import com.ascentdev.wims.error.ErrorException;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.model.MawbModel;
 import com.ascentdev.wims.model.SearchFlightsModel;
 import com.ascentdev.wims.model.UldsModel;
+import com.ascentdev.wims.repository.CargoManifestRepository;
 import com.ascentdev.wims.repository.FlightsRepository;
 import com.ascentdev.wims.repository.MawbRepository;
 import com.ascentdev.wims.repository.UldsRepository;
@@ -56,6 +59,9 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   
   @Autowired
   ImagesRepository iRepo;
+  
+  @Autowired
+  CargoManifestRepository cmRepo;
 
   @Override
   public ApiResponseModel searchFlights() {
@@ -211,6 +217,32 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     } catch (IOException ex) {
       Logger.getLogger(ReceiveCargoServiceImp.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
+
+  @Override
+  public ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest) {
+    ApiResponseModel resp = new ApiResponseModel();
+    String cargoStatus = "For Storage";
+    
+    try {
+      FlightsEntity flights = new FlightsEntity();
+      flights.setCargoStatus(cargoStatus);
+      flights = fRepo.save(flights);
+      
+      if(flights.getMawbNumber() != null) {
+        cargoManifest = cmRepo.save(cargoManifest);
+        resp.setData(1);
+      } else {
+        resp.setData(0);
+      }
+      resp.setMessage(message);
+      resp.setStatus(status);
+      resp.setStatusCode(statusCode);
+    } catch (ErrorException e) {
+      e.printStackTrace();
+    }
+    
+    return resp;
   }
 
 }
