@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface ReceiveCargoService {
   ApiResponseModel searchFlights();
+  ApiResponseModel getCargoCondition();
   ApiResponseModel getUlds(String flightNumber);
   ApiResponseModel getMawbs(String registryNumber);
   ApiResponseModel getHawbs(String registryNumber, String mawbNumber);
