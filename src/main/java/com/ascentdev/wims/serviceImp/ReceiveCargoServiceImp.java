@@ -4,15 +4,18 @@
  */
 package com.ascentdev.wims.serviceImp;
 
+import com.ascentdev.wims.entity.CargoConditionEntity;
 import com.ascentdev.wims.entity.ImagesEntity;
 import com.ascentdev.wims.entity.FlightsEntity;
 import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.entity.UldsEntity;
 import com.ascentdev.wims.error.ErrorException;
 import com.ascentdev.wims.model.ApiResponseModel;
+import com.ascentdev.wims.model.CargoConditionModel;
 import com.ascentdev.wims.model.MawbModel;
 import com.ascentdev.wims.model.SearchFlightsModel;
 import com.ascentdev.wims.model.UldsModel;
+import com.ascentdev.wims.repository.CargoConditionRepository;
 import com.ascentdev.wims.repository.FlightsRepository;
 import com.ascentdev.wims.repository.MawbRepository;
 import com.ascentdev.wims.repository.UldsRepository;
@@ -34,28 +37,32 @@ import java.sql.Timestamp;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Service
 public class ReceiveCargoServiceImp implements ReceiveCargoService {
-  
+
   boolean status = true;
   String message = "Success!";
   int statusCode = 200;
-  
+
   String fileUploadPath = "C:\\WIMS\\DOCUMENTS";
-  
+
   @Autowired
   UldsRepository uRepo;
-  
+
   @Autowired
   MawbRepository mRepo;
-  
+
   @Autowired
   FlightsRepository fRepo;
-  
+
   @Autowired
   ImagesRepository iRepo;
+
+  @Autowired
+  CargoConditionRepository cargoRepo;
 
   @Override
   public ApiResponseModel searchFlights() {
@@ -88,12 +95,12 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   public ApiResponseModel getUlds(String flightNumber) {
     ApiResponseModel resp = new ApiResponseModel();
     UldsModel data = new UldsModel();
-    
+
     List<UldsEntity> ulds = new ArrayList<>();
-    
-    try{
+
+    try {
       ulds = uRepo.getUlds(flightNumber);
-      if (ulds.size() == 0){
+      if (ulds.size() == 0) {
         message = "No Data to Show";
         status = false;
         statusCode = 404;
@@ -104,10 +111,10 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       resp.setMessage(message);
       resp.setStatus(status);
       resp.setStatusCode(statusCode);
-    } catch (ErrorException e){
+    } catch (ErrorException e) {
       e.printStackTrace();
     }
-    
+
     return resp;
   }
 
@@ -115,9 +122,9 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   public ApiResponseModel getMawbs(String registryNumber) {
     ApiResponseModel resp = new ApiResponseModel();
     MawbModel data = new MawbModel();
-    
+
     List<MawbEntity> mawbs = new ArrayList<>();
-    
+
     try {
       mawbs = mRepo.getMawbs(registryNumber);
       if (mawbs.size() == 0) {
@@ -131,10 +138,10 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       resp.setMessage(message);
       resp.setStatus(status);
       resp.setStatusCode(statusCode);
-    }catch(ErrorException e){
+    } catch (ErrorException e) {
       e.printStackTrace();
     }
-    
+
     return resp;
   }
 
@@ -142,9 +149,9 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   public ApiResponseModel getHawbs(String registryNumber, String mawbNumber) {
     ApiResponseModel resp = new ApiResponseModel();
     MawbModel data = new MawbModel();
-    
+
     List<MawbEntity> mawbs = new ArrayList<>();
-    
+
     try {
       mawbs = mRepo.getHawbs(registryNumber, mawbNumber);
       if (mawbs.size() == 0) {
@@ -174,9 +181,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
           long uldTypeId) {
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
-    
-    
-    
+
     try {
       for (MultipartFile f : file) {
         ImagesEntity images = new ImagesEntity();
@@ -201,7 +206,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     }
     return resp;
   }
-  
+
   private void saveImage(MultipartFile file) {
 
     try {
@@ -211,6 +216,33 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     } catch (IOException ex) {
       Logger.getLogger(ReceiveCargoServiceImp.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
+
+  @Override
+  public ApiResponseModel getCargoCondition() {
+    ApiResponseModel resp = new ApiResponseModel();
+    CargoConditionModel condition = new CargoConditionModel();
+
+    List<CargoConditionEntity> condition1 = new ArrayList<>();
+
+    try {
+      condition1 = cargoRepo.findAll();
+      if (condition1.size() == 0) {
+        message = "No Data to Show";
+        status = false;
+        statusCode = 404;
+      } else {
+        condition.setCondition(condition1);
+      }
+      resp.setCondition(condition1);
+      resp.setMessage(message);
+      resp.setStatus(status);
+      resp.setStatusCode(statusCode);
+    } catch (ErrorException e) {
+      e.printStackTrace();
+    }
+
+    return resp;
   }
 
 }
