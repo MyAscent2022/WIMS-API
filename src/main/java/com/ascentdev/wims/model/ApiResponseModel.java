@@ -4,6 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -16,4 +17,5 @@ public class ApiResponseModel {
   boolean status;
   int statusCode;
   Object data;
+  List<?> condition; 
 }
