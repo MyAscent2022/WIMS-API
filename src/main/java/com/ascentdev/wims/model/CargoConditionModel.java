@@ -7,12 +7,14 @@ package com.ascentdev.wims.model;
 
 import com.ascentdev.wims.entity.CargoConditionEntity;
 import java.util.List;
+import lombok.Data;
 
 /**
  *
  * @author
  * ASCENT
  */
+@Data
 public class CargoConditionModel {
     List<CargoConditionEntity> condition;
 

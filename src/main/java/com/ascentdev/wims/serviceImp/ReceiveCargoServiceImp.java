@@ -36,7 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.ascentdev.wims.repository.ImagesRepository;
+import com.ascentdev.wims.repository.StorageLogsRepository;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 /**
  *
@@ -69,6 +71,9 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Autowired
   CargoConditionRepository cargoRepo;
+  
+  @Autowired
+  StorageLogsRepository slRepo;
 
   @Override
   public ApiResponseModel searchFlights() {
@@ -225,21 +230,37 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   }
 
   @Override
-  public ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest) {
+  public ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest, StorageLogsEntity storageLogs) {
     ApiResponseModel resp = new ApiResponseModel();
     String cargoStatus = "For Storage";
     
     try {
-      FlightsEntity flights = new FlightsEntity();
-      flights.setCargoStatus(cargoStatus);
-      flights = fRepo.save(flights);
+      MawbEntity mawbs = new MawbEntity();
       
-      if(flights.getMawbNumber() != null) {
+      Optional<MawbEntity> mawb = mRepo.findById(cargoManifest.getTxnMawbId());
+      if(mawb.isPresent()) {
+        mawbs = mawb.get();
+      }
+      mawbs.setCargoStatus(cargoStatus);
+      mawbs = mRepo.save(mawbs);
+      
+      if(mawbs.getMawbNumber() != null) {
         cargoManifest = cmRepo.save(cargoManifest);
+        storageLogs = slRepo.save(storageLogs);
         resp.setData(1);
       } else {
         resp.setData(0);
       }
+      resp.setMessage(message);
+      resp.setStatus(status);
+      resp.setStatusCode(statusCode);
+    } catch (ErrorException e) {
+      e.printStackTrace();
+    }
+    return resp;
+  }
+
+  @Override
   public ApiResponseModel getCargoCondition() {
     ApiResponseModel resp = new ApiResponseModel();
     CargoConditionModel condition = new CargoConditionModel();
@@ -264,5 +285,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     }
     return resp;
   }
+  
+  
 
 }
