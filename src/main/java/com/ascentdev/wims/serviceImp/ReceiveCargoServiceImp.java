@@ -240,6 +240,17 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       } else {
         resp.setData(0);
       }
+      
+      resp.setMessage(message);
+      resp.setStatus(status);
+      resp.setStatusCode(statusCode);
+    } catch (ErrorException e) {
+      e.printStackTrace();
+    }
+    return resp;
+  }
+  
+  @Override
   public ApiResponseModel getCargoCondition() {
     ApiResponseModel resp = new ApiResponseModel();
     CargoConditionModel condition = new CargoConditionModel();
