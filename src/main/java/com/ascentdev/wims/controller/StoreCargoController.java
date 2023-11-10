@@ -43,4 +43,9 @@ public class StoreCargoController {
   public ApiResponseModel getRacks() {
     return storeCargoServiceImp.getRacks();
   }
+  
+  @GetMapping("get_images")
+  public ApiResponseModel getImages(@RequestParam("mawb_id") Long mawb_id) {
+    return storeCargoServiceImp.getImages(mawb_id);
+  }
 }

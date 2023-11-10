@@ -19,4 +19,5 @@ public interface StoreCargoService {
           long stored_by_id,
           long released_by_id);
   ApiResponseModel getRacks();
+  ApiResponseModel getImages(Long mawbId);
 }
