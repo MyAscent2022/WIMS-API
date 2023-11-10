@@ -5,6 +5,7 @@
 package com.ascentdev.wims.service;
 
 import com.ascentdev.wims.entity.CargoManifestEntity;
+import com.ascentdev.wims.entity.StorageLogsEntity;
 import com.ascentdev.wims.entity.UldsEntity;
 import com.ascentdev.wims.model.ApiResponseModel;
 import java.sql.Timestamp;
@@ -28,5 +29,5 @@ public interface ReceiveCargoService {
           long fileType,
           long cargoConditionId,
           long uldTypeId);
-    ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest);
+    ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest, StorageLogsEntity storageLogs);
 }
