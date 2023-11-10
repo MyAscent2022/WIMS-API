@@ -33,7 +33,7 @@ public interface MawbRepository extends JpaRepository<MawbEntity, Long> {
   List<MawbEntity> getHawbs(@Param("registry_number") String registryNumber, @Param("mawb_number") String mawbNumber);
 
   @Query(
-          value = "SELECT m.* FROM refs.txn_receiving_logs rl\n"
+          value = "SELECT m.* FROM public.txn_receiving_logs rl\n"
           + "INNER JOIN manifest.txn_mawb m ON rl.cargo_status = m.cargo_status\n"
           + "WHERE rl.cargo_status = 'For Storage'",
           nativeQuery = true)
