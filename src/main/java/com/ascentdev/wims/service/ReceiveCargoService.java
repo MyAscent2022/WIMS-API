@@ -30,5 +30,5 @@ public interface ReceiveCargoService {
           long cargoConditionId,
           long txnCargoManifestDetailsId,
           String remarks);
-  ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest, StorageLogsEntity storageLogs);
+  ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest);
 }

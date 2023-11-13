@@ -47,8 +47,7 @@ import java.util.Optional;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @Service
 public class ReceiveCargoServiceImp implements ReceiveCargoService {
@@ -70,19 +69,19 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Autowired
   ImagesRepository iRepo;
-  
+
   @Autowired
   CargoManifestRepository cmRepo;
 
   @Autowired
   CargoConditionRepository cargoRepo;
-  
+
   @Autowired
   StorageLogsRepository slRepo;
-  
+
   @Autowired
   CargoManifestDetailsRepository cmdRepo;
-  
+
   @Autowired
   HawbRepository hRepo;
 
@@ -93,7 +92,6 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
     List<CargoManifestEntity> cargo = new ArrayList<>();
     List<UldsEntity> ulds = new ArrayList<>();
-    
 
     try {
 //      flights = fRepo.getFlights();
@@ -195,8 +193,6 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     return resp;
   }
 
-  
-
   private void saveImage(MultipartFile file) {
 
     try {
@@ -209,33 +205,21 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   }
 
   @Override
-  public ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest, StorageLogsEntity storageLogs) {
+  public ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest) {
     ApiResponseModel resp = new ApiResponseModel();
-    String cargoStatus = "For Storage";
+    String inboundStatus = "For Storage";
+
+    try {
+      cargoManifest.setInboundStatus(inboundStatus);
+      cargoManifest = cmRepo.save(cargoManifest);
+      resp.setData(1);
+    } catch (ErrorException e) {
+      resp.setData(0);
+    }
+    resp.setMessage(message);
+    resp.setStatus(status);
+    resp.setStatusCode(statusCode);
     
-//    try {
-//      MawbEntity mawbs = new MawbEntity();
-//      
-//      Optional<MawbEntity> mawb = mRepo.findById(cargoManifest.getMawbNumber());
-//      if(mawb.isPresent()) {
-//        mawbs = mawb.get();
-//      }
-//      mawbs.setCargoStatus(cargoStatus);
-//      mawbs = mRepo.save(mawbs);
-//      
-//      if(mawbs.getMawbNumber() != null) {
-//        cargoManifest = cmRepo.save(cargoManifest);
-//        storageLogs = slRepo.save(storageLogs);
-//        resp.setData(1);
-//      } else {
-//        resp.setData(0);
-//      }
-//      resp.setMessage(message);
-//      resp.setStatus(status);
-//      resp.setStatusCode(statusCode);
-//    } catch (ErrorException e) {
-//      e.printStackTrace();
-//    }
     return resp;
   }
 
@@ -267,11 +251,11 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Override
   public ApiResponseModel saveUldImage(MultipartFile[] file,
-          long cargoConditionId, 
-          long uldTypeId, 
+          long cargoConditionId,
+          long uldTypeId,
           String remarks) {
     ApiResponseModel resp = new ApiResponseModel();
-    
+
     int fileType = 1;
 
     try {
@@ -281,7 +265,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         images.setFilePath(fileUploadPath + "/" + filename);
         images.setFileName(filename);
         images.setFileType(fileType);
-        
+
         images.setCargoConditionId(cargoConditionId);
         images.setUldTypeId(uldTypeId);
         images.setRemarks(remarks);
@@ -297,20 +281,20 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       resp.setStatus(false);
       resp.setStatusCode(404);
       resp.setData(0);
-      
+
       e.printStackTrace();
     }
     return resp;
   }
 
   @Override
-  public ApiResponseModel saveHawbImage(MultipartFile[] file, 
+  public ApiResponseModel saveHawbImage(MultipartFile[] file,
           long cargoConditionId,
-          long txnCargoManifestDetailsId, 
+          long txnCargoManifestDetailsId,
           String remarks) {
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
-    
+
     int fileType = 2;
 
     try {
@@ -320,7 +304,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         images.setFilePath(fileUploadPath + "/" + filename);
         images.setFileName(filename);
         images.setFileType(fileType);
-        
+
         images.setCargoConditionId(cargoConditionId);
         images.setTxnCargoManifestingDetailsId(txnCargoManifestDetailsId);
         images.setRemarks(remarks);
@@ -339,7 +323,5 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     }
     return resp;
   }
-  
-  
 
 }

@@ -27,7 +27,7 @@ public class MawbEntity {
   long id;
   
   @Column(name="bol_nature")
-  Long bolNature;
+  long bolNature;
   
   @Column(name="bol_type")
   String bolType;
@@ -93,7 +93,7 @@ public class MawbEntity {
   String informationPartA;
   
   @Column(name="line_number")
-  Long lineNumber;
+  long lineNumber;
   
   @Column(name="marks_of_seals")
   String marksOfSeals;
@@ -117,13 +117,13 @@ public class MawbEntity {
   String notifyPartyName;
   
   @Column(name="number_of_containers")
-  Long numberOfContainers;
+  long numberOfContainers;
   
   @Column(name="number_of_packages")
   String numberOfPackages;
   
   @Column(name="number_of_seals")
-  Long numberOfSeals;
+  long numberOfSeals;
   
   @Column(name="operation_location")
   String operationLocation;

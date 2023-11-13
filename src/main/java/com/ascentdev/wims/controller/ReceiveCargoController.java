@@ -73,6 +73,6 @@ public class ReceiveCargoController {
   
   @PostMapping("confirm_cargo")
   public ApiResponseModel confirmCargo(@RequestBody CargoManifestModel cargoManifest){
-    return receiveCargoServiceImp.confirmCargo(cargoManifest.getCargoManifest(), cargoManifest.getStorageLogs());
+    return receiveCargoServiceImp.confirmCargo(cargoManifest.getCargoManifest());
   }
 }
