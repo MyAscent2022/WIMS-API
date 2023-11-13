@@ -213,13 +213,16 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       cargoManifest.setInboundStatus(inboundStatus);
       cargoManifest = cmRepo.save(cargoManifest);
       resp.setData(1);
+      resp.setMessage(message);
+      resp.setStatus(status);
+      resp.setStatusCode(statusCode);
     } catch (ErrorException e) {
       resp.setData(0);
+      message = "Error!";
+      status = false;
+      statusCode = 404;
     }
-    resp.setMessage(message);
-    resp.setStatus(status);
-    resp.setStatusCode(statusCode);
-    
+
     return resp;
   }
 
