@@ -18,12 +18,11 @@ import org.springframework.stereotype.Repository;
 public interface MawbRepository extends JpaRepository<MawbEntity, Long> {
 
   @Query(
-          value = "SELECT m.* FROM public.txn_receiving_logs rl\n"
-          + "INNER JOIN manifest.txn_mawb m ON rl.registry_number = m.registry_number\n"
-          + "INNER JOIN public.txn_flight_status fs ON rl.flight_number = fs.flight_number\n"
-          + "WHERE rl.registry_number = :registry_number",
+          value = "SELECT * FROM manifest.txn_cargo_manifest cm\n"
+          + "INNER JOIN manifest.txn_mawb m ON cm.mawb_number = m.mawb_number\n"
+          + "WHERE cm.uld_no = :uld_no",
           nativeQuery = true)
-  List<MawbEntity> getMawbs(@Param("registry_number") String registry_number);
+  List<MawbEntity> getMawbs(@Param("uld_no") String uld_no);
 
   @Query(
           value = "SELECT m.* FROM public.txn_receiving_logs rl\n"
@@ -34,8 +33,8 @@ public interface MawbRepository extends JpaRepository<MawbEntity, Long> {
 
   @Query(
           value = "SELECT m.* FROM public.txn_receiving_logs rl\n"
-          + "INNER JOIN manifest.txn_mawb m ON rl.cargo_status = m.cargo_status\n"
-          + "WHERE rl.cargo_status = 'For Storage'",
+          + "INNER JOIN manifest.txn_cargo_manifest m ON rl.inbound_status = m.inbound_status\n"
+          + "WHERE rl.inbound_status = 'For Storage'",
           nativeQuery = true)
   List<MawbEntity> getStoreCargo();
 }

@@ -17,17 +17,18 @@ import org.springframework.web.multipart.MultipartFile;
  * @author ASCENT
  */
 public interface ReceiveCargoService {
-  ApiResponseModel searchFlights();
+  ApiResponseModel searchFlights(String userId);
   ApiResponseModel getCargoCondition();
   ApiResponseModel getUlds(String flightNumber);
-  ApiResponseModel getMawbs(String registryNumber);
-  ApiResponseModel getHawbs(String registryNumber, String mawbNumber);
-  ApiResponseModel saveImage(long userId,
-          long mawbId,
-          String registryNumber,
-          MultipartFile[] file,
-          long fileType,
+  ApiResponseModel getMawbs(String uldNo);
+  ApiResponseModel getHawbs(String mawbNumber);
+  ApiResponseModel saveUldImage(MultipartFile[] file,
           long cargoConditionId,
-          long uldTypeId);
-    ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest, StorageLogsEntity storageLogs);
+          long uldTypeId,
+          String remarks);
+  ApiResponseModel saveHawbImage(MultipartFile[] file,
+          long cargoConditionId,
+          long txnCargoManifestDetailsId,
+          String remarks);
+  ApiResponseModel confirmCargo(CargoManifestEntity cargoManifest);
 }

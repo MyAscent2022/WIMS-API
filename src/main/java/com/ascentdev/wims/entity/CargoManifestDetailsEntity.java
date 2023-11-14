@@ -7,8 +7,6 @@ package com.ascentdev.wims.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
@@ -19,31 +17,19 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="txn_images", schema="manifest")
+@Table(name="txn_cargo_manifest_details", schema="manifest")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class ImagesEntity {
-  
+public class CargoManifestDetailsEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
   
-  @Column(name="file_path")
-  String filePath;
+  @Column(name="txn_cargo_manifest_id")
+  long txnCargoManifestId;
   
-  @Column(name="file_name")
-  String fileName;
+  @Column(name="hawb_number")
+  String hawbNumber;
   
-  @Column(name="file_type")
-  int fileType;
+  Long pieces;
   
-  @Column(name="cargo_condition_id")
-  long cargoConditionId;
-  
-  @Column(name="uld_type_id")
-  Long uldTypeId;
-  
-  String remarks;
-  
-  @Column(name="txn_cargo_manifesting_details_id")
-  Long txnCargoManifestingDetailsId;
+  Long weight;
 }
