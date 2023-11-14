@@ -4,8 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
-import com.ascentdev.wims.entity.CargoManifestEntity;
-import com.ascentdev.wims.entity.FlightsEntity;
+import com.ascentdev.wims.entity.HawbEntity;
 import java.util.List;
 import lombok.Data;
 
@@ -14,6 +13,6 @@ import lombok.Data;
  * @author ASCENT
  */
 @Data
-public class SearchFlightsModel {
-  List<CargoManifestEntity> cargo;
+public class HawbModel {
+  List<HawbEntity> hawbs;
 }
