@@ -11,16 +11,17 @@ import org.springframework.data.jpa.repository.Query;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 public interface FlightsRepository extends JpaRepository<FlightsEntity, Long> {
 
   List<FlightsEntity> findByIdIn(long[] ids);
 
   @Query(
-          value = "SELECT rl.* FROM public.txn_flight_status fs\n"
-          + "INNER JOIN public.txn_receiving_logs rl ON fs.flight_number = rl.flight_number\n"
-          + "WHERE fs.flight_status = 'Landed'",
+          value = "SELECT rl.* FROM public.flights f\n"
+          + "INNER JOIN public.txn_receiving_logs rl ON rl.flight_id = f.id\n"
+          + "WHERE f.flight_status = 'Arrived / Gate Arrival'",
           nativeQuery = true)
   List<FlightsEntity> getFlights();
 }

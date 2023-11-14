@@ -39,8 +39,8 @@ public class ImagesEntity {
   @Column(name="user_id")
   Long userId;
   
-  @Column(name="mawb_id")
-  long mawbId;
+  @Column(name="txn_cargo_manifest_id")
+  long txnCargoManifestId;
   
   @Column(name="registry_number")
   String registryNumber;

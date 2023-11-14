@@ -184,7 +184,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Override
   public ApiResponseModel saveImage(long userId,
-          long mawbId,
+          long txn_cargo_manifest_details_id,
           String registryNumber,
           MultipartFile[] file,
           long fileType,
@@ -197,7 +197,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       for (MultipartFile f : file) {
         ImagesEntity images = new ImagesEntity();
         String filename = f.getOriginalFilename();
-        images.setMawbId(mawbId);
+        images.setTxnCargoManifestId(txn_cargo_manifest_details_id);
         images.setRegistryNumber(registryNumber);
         images.setFilePath(fileUploadPath + "/" + filename);
         images.setFileName(filename);
