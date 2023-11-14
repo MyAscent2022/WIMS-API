@@ -20,14 +20,14 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="txn_mawb", schema="manifest")
+@Table(name="txn_hawb", schema="manifest")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class MawbEntity {
+public class HawbEntity {
   @Id
   long id;
   
   @Column(name="bol_nature")
-  long bolNature;
+  Long bolNature;
   
   @Column(name="bol_type")
   String bolType;
@@ -51,7 +51,7 @@ public class MawbEntity {
   String customCurrency;
   
   @Column(name="custom_value")
-  float customValue;
+  Float customValue;
   
   @Column(name="customs_office")
   String customsOffice;
@@ -61,6 +61,9 @@ public class MawbEntity {
   
   @Column(name="destination_code")
   String destinationCode;
+  
+  @Column(name="exporter_address")
+  String exporterAddress;
   
   @Column(name="exporter_code")
   String exporterCode;
@@ -78,13 +81,13 @@ public class MawbEntity {
   String freightIndicator;
   
   @Column(name="freight_value")
-  float freightValue;
+  Float freightValue;
   
   @Column(name="goods_description")
   String goodsDescription;
   
   @Column(name="gross_mass")
-  float grossMass;
+  Float grossMass;
   
   @Column(name="hawb_number")
   String hawbNumber;
@@ -93,7 +96,7 @@ public class MawbEntity {
   String informationPartA;
   
   @Column(name="line_number")
-  long lineNumber;
+  Long lineNumber;
   
   @Column(name="marks_of_seals")
   String marksOfSeals;
@@ -117,13 +120,13 @@ public class MawbEntity {
   String notifyPartyName;
   
   @Column(name="number_of_containers")
-  long numberOfContainers;
+  Long numberOfContainers;
   
   @Column(name="number_of_packages")
   String numberOfPackages;
   
   @Column(name="number_of_seals")
-  long numberOfSeals;
+  Long numberOfSeals;
   
   @Column(name="operation_location")
   String operationLocation;
@@ -159,9 +162,9 @@ public class MawbEntity {
   String transportCurrency;
   
   @Column(name="transport_value")
-  float transportValue;
+  Float transportValue;
   
-  float volume;
+  Float volume;
   
   @Column(name="carrier_code")
   String carrierCode;

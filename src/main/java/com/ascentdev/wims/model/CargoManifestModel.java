@@ -15,5 +15,4 @@ import lombok.Data;
 @Data
 public class CargoManifestModel {
   CargoManifestEntity cargoManifest;
-  StorageLogsEntity storageLogs;
 }

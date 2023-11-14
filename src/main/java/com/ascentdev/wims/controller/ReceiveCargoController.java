@@ -31,8 +31,8 @@ public class ReceiveCargoController {
   ReceiveCargoServiceImp receiveCargoServiceImp;
 
   @GetMapping("flights")
-  public ApiResponseModel searchFlights() {
-    return receiveCargoServiceImp.searchFlights();
+  public ApiResponseModel searchFlights(@RequestParam("user_id") int user_id) {
+    return receiveCargoServiceImp.searchFlights(String.valueOf(user_id));
   }
 
   @GetMapping("ulds_per_flight")
@@ -41,13 +41,13 @@ public class ReceiveCargoController {
   }
 
   @GetMapping("mawbs_per_uld")
-  public ApiResponseModel getMawbs(@RequestParam("registry_number") String registry_number) {
-    return receiveCargoServiceImp.getMawbs(registry_number);
+  public ApiResponseModel getMawbs(@RequestParam("uld_no") String uld_no) {
+    return receiveCargoServiceImp.getMawbs(uld_no);
   }
 
   @GetMapping("hawbs_per_mawb")
-  public ApiResponseModel getHawbs(@RequestParam("registry_number") String registry_number, @RequestParam("mawb_number") String mawb_number) {
-    return receiveCargoServiceImp.getHawbs(registry_number, mawb_number);
+  public ApiResponseModel getHawbs(@RequestParam("mawb_number") String mawb_number) {
+    return receiveCargoServiceImp.getHawbs(mawb_number);
   }
 
   @GetMapping("get_cargo_condition")
@@ -55,19 +55,35 @@ public class ReceiveCargoController {
     return receiveCargoServiceImp.getCargoCondition();
   }
 
-  @PostMapping("save_image")
-  public ApiResponseModel saveImage(@RequestParam("user_id") long user_id,
-          @RequestParam("txn_cargo_manifest_details_id") long txn_cargo_manifest_details_id,
-          @RequestParam("registry_number") String registry_number,
-          @RequestParam("file_name") MultipartFile[] file,
-          @RequestParam("file_type") long file_type,
-          @RequestParam("cargo_conditon_id") long cargo_condition_id,
-          @RequestParam("uld_type_id") long uld_type_id) {
-    return receiveCargoServiceImp.saveImage(user_id, txn_cargo_manifest_details_id, registry_number, file, file_type, cargo_condition_id, uld_type_id);
+  @PostMapping("save_uld_image")
+  public ApiResponseModel saveUldImage(@RequestParam("file_name") MultipartFile[] file,
+          @RequestParam("cargo_condition_id") long cargo_condition_id,
+          @RequestParam("uld_type_id") long uld_type_id,
+          @RequestParam("remarks") String remarks) {
+    return receiveCargoServiceImp.saveUldImage(file, cargo_condition_id, uld_type_id, remarks);
   }
+  
+  @PostMapping("save_hawb_image")
+  public ApiResponseModel saveHawbImage(@RequestParam("file_name") MultipartFile[] file,
+          @RequestParam("cargo_condition_id") long cargo_condition_id,
+          @RequestParam("txn_cargo_manifest_details_id") long txn_cargo_manifest_details_id,
+          @RequestParam("remarks") String remarks) {
+    return receiveCargoServiceImp.saveHawbImage(file, cargo_condition_id, txn_cargo_manifest_details_id, remarks);
+    
+  }
+//  @PostMapping("save_image")
+//  public ApiResponseModel saveImage(@RequestParam("user_id") long user_id,
+//          @RequestParam("txn_cargo_manifest_details_id") long txn_cargo_manifest_details_id,
+//          @RequestParam("registry_number") String registry_number,
+//          @RequestParam("file_name") MultipartFile[] file,
+//          @RequestParam("file_type") long file_type,
+//          @RequestParam("cargo_conditon_id") long cargo_condition_id,
+//          @RequestParam("uld_type_id") long uld_type_id) {
+//    return receiveCargoServiceImp.saveImage(user_id, txn_cargo_manifest_details_id, registry_number, file, file_type, cargo_condition_id, uld_type_id);
+//  }
   
   @PostMapping("confirm_cargo")
   public ApiResponseModel confirmCargo(@RequestBody CargoManifestModel cargoManifest){
-    return receiveCargoServiceImp.confirmCargo(cargoManifest.getCargoManifest(), cargoManifest.getStorageLogs());
+    return receiveCargoServiceImp.confirmCargo(cargoManifest.getCargoManifest());
   }
 }

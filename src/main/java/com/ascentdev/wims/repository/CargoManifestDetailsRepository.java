@@ -4,26 +4,22 @@
  */
 package com.ascentdev.wims.repository;
 
-import com.ascentdev.wims.entity.UldsEntity;
+import com.ascentdev.wims.entity.CargoManifestDetailsEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author ASCENT
  */
-@Repository
-public interface UldsRepository extends JpaRepository<UldsEntity, Long> {
-
-  List<UldsEntity> findByUldNo(String uldNo);
+public interface CargoManifestDetailsRepository extends JpaRepository<CargoManifestDetailsEntity, Long> {
 
   @Query(
-          value = "SELECT u.* FROM manifest.txn_cargo_manifest cm\n"
-          + "INNER JOIN public.txn_ulds u ON cm.uld_no = u.uld_no\n"
-          + "WHERE cm.flight_number = :flight_number",
+          value = "SELECT cmd.* FROM manifest.txn_cargo_manifest cm\n"
+          + "INNER JOIN manifest.txn_cargo_manifest_details cmd ON cm.id = cmd.txn_cargo_manifest_id\n"
+          + "WHERE cm.mawb_number = :mawb_number",
           nativeQuery = true)
-  List<UldsEntity> getUlds(@Param("flight_number") String flightNumber);
+  List<CargoManifestDetailsEntity> getMawbs(@Param("mawb_number") String mawbNumber);
 }

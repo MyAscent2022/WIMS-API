@@ -34,7 +34,8 @@ public class ImagesEntity {
   String fileName;
   
   @Column(name="file_type")
-  Long fileType;
+  int fileType;
+//  Long fileType;
   
   @Column(name="user_id")
   Long userId;
@@ -49,5 +50,10 @@ public class ImagesEntity {
   long cargoConditionId;
   
   @Column(name="uld_type_id")
-  long uldTypeId;
+  Long uldTypeId;
+  
+  String remarks;
+  
+  @Column(name="txn_cargo_manifesting_details_id")
+  Long txnCargoManifestingDetailsId;
 }
