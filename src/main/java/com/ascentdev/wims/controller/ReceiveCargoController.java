@@ -83,6 +83,16 @@ public class ReceiveCargoController {
           @RequestParam("remarks") String remarks) {
     return receiveCargoServiceImp.saveHawbImage(file, cargo_condition_id, mawb_number, hawb_number, flight_number, remarks);
   }
+//  @PostMapping("save_image")
+//  public ApiResponseModel saveImage(@RequestParam("user_id") long user_id,
+//          @RequestParam("txn_cargo_manifest_details_id") long txn_cargo_manifest_details_id,
+//          @RequestParam("registry_number") String registry_number,
+//          @RequestParam("file_name") MultipartFile[] file,
+//          @RequestParam("file_type") long file_type,
+//          @RequestParam("cargo_conditon_id") long cargo_condition_id,
+//          @RequestParam("uld_type_id") long uld_type_id) {
+//    return receiveCargoServiceImp.saveImage(user_id, txn_cargo_manifest_details_id, registry_number, file, file_type, cargo_condition_id, uld_type_id);
+//  }
   
   @PostMapping("confirm_cargo")
   public ApiResponseModel confirmCargo(@RequestBody Acceptance acceptance){

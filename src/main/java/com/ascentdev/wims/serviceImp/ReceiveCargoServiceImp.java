@@ -242,6 +242,42 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     return resp;
   }
 
+//  @Override
+//  public ApiResponseModel saveImage(long userId,
+//          long txn_cargo_manifest_details_id,
+//          String registryNumber,
+//          MultipartFile[] file,
+//          long fileType,
+//          long cargoConditionId,
+//          long uldTypeId) {
+//    ApiResponseModel resp = new ApiResponseModel();
+//    LocalDateTime date = LocalDateTime.now();
+//
+//    try {
+//      for (MultipartFile f : file) {
+//        ImagesEntity images = new ImagesEntity();
+//        String filename = f.getOriginalFilename();
+//        images.setTxnCargoManifestId(txn_cargo_manifest_details_id);
+//        images.setRegistryNumber(registryNumber);
+//        images.setFilePath(fileUploadPath + "/" + filename);
+//        images.setFileName(filename);
+//        images.setUserId(userId);
+//        iRepo.save(images);
+//        saveImage(f);
+//      }
+//      resp.setMessage(message);
+//      resp.setStatus(status);
+//      resp.setStatusCode(statusCode);
+//      resp.setData(1);
+//    } catch (ErrorException e) {
+//      resp.setMessage("Image Did Not Upload");
+//      resp.setStatus(false);
+//      resp.setStatusCode(404);
+//      resp.setData(0);
+//    }
+//    return resp;
+//  }
+
   private void saveImage(MultipartFile file) {
 
     try {
