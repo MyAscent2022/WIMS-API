@@ -4,13 +4,10 @@
  */
 package com.ascentdev.wims.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.sql.Timestamp;
-import java.sql.Time;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.Subselect;
 
