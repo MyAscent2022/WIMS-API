@@ -13,11 +13,10 @@ import java.sql.Timestamp;
  */
 public interface StoreCargoService {
   ApiResponseModel getStorageCargo();
-  ApiResponseModel saveRack(long refRackId,
-          String mawbNumber,
-          String hawbNumber,
-          long stored_by_id,
-          long released_by_id);
-  ApiResponseModel getRacks();
-  ApiResponseModel getImages(Long mawbId);
+  ApiResponseModel saveRack(long oldRefRackId, long newRefRackId, long rack_utilization_id);
+  ApiResponseModel getImages(String mawbNumber, String hawbNumber, boolean isHawb);
+  ApiResponseModel getRefRacks();
+  ApiResponseModel getRackDetails(boolean isHawb, String hawbNumber, String mawbNumber);
+  ApiResponseModel getReleaseCargo();
+  ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber);
 }

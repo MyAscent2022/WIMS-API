@@ -53,4 +53,10 @@ public class StorageLogsEntity {
   
   @Column(name="storager_status")
   String storagerStatus;
+  
+  @Column(name="mawb_number")
+  String mawbNumber;
+  
+  @Column(name="hawb_number")
+  String hawbNumber;
 }

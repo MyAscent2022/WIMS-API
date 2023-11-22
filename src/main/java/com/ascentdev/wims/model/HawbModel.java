@@ -15,4 +15,5 @@ import lombok.Data;
 @Data
 public class HawbModel {
   List<HawbEntity> hawbs;
+  HawbEntity hawb;
 }

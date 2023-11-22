@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Subselect;
 
 /**
  *
@@ -19,48 +20,54 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="txn_receiving_logs")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Subselect("WITH rellogs as (SELECT unnest (string_to_array(user_id, ',')) as rel_handler, * FROM public.txn_receiving_logs)\n"
+        + "SELECT DISTINCT (rel.*), f.travel_status, f.flight_status, ra.description FROM rellogs rel\n"
+        + "INNER JOIN public.flights f ON f.flight_number = rel.flight_number\n"
+        + "INNER JOIN refs.ref_airline ra ON ra.code = f.ref_airline_code\n"
+        + "LEFT JOIN manifest.txn_mawb m ON m.flight_number = rel.flight_number")
 public class FlightsEntity {
+
   @Id
   long id;
-  
-  @Column(name="user_id")
+
+  @Column(name = "user_id")
   String userId;
-  
-  @Column(name="flight_id")
+
+  @Column(name = "flight_id")
   Long flightId;
-  
+
   String status;
-  
-  @Column(name="cargo_status")
+
+  @Column(name = "cargo_status")
   String cargoStatus;
-  
-  Time tbs;
-  
-  Time tff;
-  
-  @Column(name="created_at")
+
+  @Column(name = "created_at")
   Timestamp createdAt;
-  
-  @Column(name="created_by_id")
+
+  @Column(name = "created_by_id")
   Long createdById;
-  
-  @Column(name="modified_at")
+
+  @Column(name = "modified_at")
   Timestamp modifiedAt;
-  
-  @Column(name="modified_by_id")
+
+  @Column(name = "modified_by_id")
   Long modifiedById;
-  
-  @Column(name="uld_id")
+
+  @Column(name = "uld_id")
   Long uld_id;
-  
-  @Column(name="mawb_number")
+
+  @Column(name = "mawb_number")
   String mawbNumber;
-  
-  @Column(name="flight_number")
+
+  @Column(name = "flight_number")
   String flightNumber;
-  
-  @Column(name="registry_number")
+
+  @Column(name = "registry_number")
   String registryNumber;
+
+  @Column(name = "travel_status")
+  String travelStatus;
+
+  @Column(name = "flight_status")
+  String flightStatus;
 }

@@ -4,10 +4,10 @@
  */
 package com.ascentdev.wims.controller;
 
-import com.ascentdev.wims.entity.CargoManifestEntity;
+import com.ascentdev.wims.entity.Acceptance;
 import com.ascentdev.wims.model.ApiResponseModel;
-import com.ascentdev.wims.model.CargoManifestModel;
-import com.ascentdev.wims.repository.CargoConditionRepository;
+import com.ascentdev.wims.model.SaveUldModel;
+import com.ascentdev.wims.model.UldsModel;
 import com.ascentdev.wims.serviceImp.ReceiveCargoServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,8 +41,8 @@ public class ReceiveCargoController {
   }
 
   @GetMapping("mawbs_per_uld")
-  public ApiResponseModel getMawbs(@RequestParam("uld_no") String uld_no) {
-    return receiveCargoServiceImp.getMawbs(uld_no);
+  public ApiResponseModel getMawbs(@RequestParam("is_uld") boolean is_uld, @RequestParam("uld_number") String uld_number, @RequestParam("flight_number") String flight_number) {
+    return receiveCargoServiceImp.getMawbs(is_uld, uld_number, flight_number);
   }
 
   @GetMapping("hawbs_per_mawb")
@@ -54,25 +54,64 @@ public class ReceiveCargoController {
   public ApiResponseModel getCargoConditionList() {
     return receiveCargoServiceImp.getCargoCondition();
   }
+  
+  @GetMapping("get_cargo_category")
+  public ApiResponseModel getCargoCategory() {
+    return receiveCargoServiceImp.getCargoCategory();
+  }
+  
+  @GetMapping("get_cargo_class")
+  public ApiResponseModel getCargoClass() {
+    return receiveCargoServiceImp.getCargoClass();
+  }
 
   @PostMapping("save_uld_image")
   public ApiResponseModel saveUldImage(@RequestParam("file_name") MultipartFile[] file,
-          @RequestParam("cargo_condition_id") long cargo_condition_id,
-          @RequestParam("uld_type_id") long uld_type_id,
+          @RequestParam("uld_condition_id") long uld_condition_id,
+          @RequestParam("flight_number") String flight_number,
+          @RequestParam("uld_number") String uld_number,
           @RequestParam("remarks") String remarks) {
-    return receiveCargoServiceImp.saveUldImage(file, cargo_condition_id, uld_type_id, remarks);
+    return receiveCargoServiceImp.saveUldImage(file, uld_condition_id, flight_number, uld_number, remarks);
   }
   
   @PostMapping("save_hawb_image")
   public ApiResponseModel saveHawbImage(@RequestParam("file_name") MultipartFile[] file,
           @RequestParam("cargo_condition_id") long cargo_condition_id,
-          @RequestParam("txn_cargo_manifest_details_id") long txn_cargo_manifest_details_id,
+          @RequestParam("mawb_number") String mawb_number,
+          @RequestParam("hawb_number") String hawb_number,
+          @RequestParam("flight_number") String flight_number,
           @RequestParam("remarks") String remarks) {
-    return receiveCargoServiceImp.saveHawbImage(file, cargo_condition_id, txn_cargo_manifest_details_id, remarks);
+    return receiveCargoServiceImp.saveHawbImage(file, cargo_condition_id, mawb_number, hawb_number, flight_number, remarks);
   }
   
   @PostMapping("confirm_cargo")
-  public ApiResponseModel confirmCargo(@RequestBody CargoManifestModel cargoManifest){
-    return receiveCargoServiceImp.confirmCargo(cargoManifest.getCargoManifest());
+  public ApiResponseModel confirmCargo(@RequestBody Acceptance acceptance){
+    return receiveCargoServiceImp.confirmCargo(acceptance);
   }
+  
+  @GetMapping("get_cargo_status")
+  public ApiResponseModel getCargoStatus() {
+    return receiveCargoServiceImp.getCargoStatus();
+  }
+  
+  @GetMapping("get_uld_type")
+  public ApiResponseModel getUldType() {
+    return receiveCargoServiceImp.getUldType();
+  }
+  
+  @PostMapping("save_uld_number")
+  public ApiResponseModel saveUldNumber(@RequestBody SaveUldModel saveUld){
+    return receiveCargoServiceImp.saveUldNumber(saveUld.getUlds(), saveUld.getMawbs());
+  }
+  
+  @PostMapping("update_receiver_status")
+  public ApiResponseModel updateReceivingStatus(@RequestParam("registry_number") String registry_number, @RequestParam("is_confirmed") boolean is_confirmed) {
+    return receiveCargoServiceImp.updateReceivingStatus(registry_number, is_confirmed);
+  }
+  
+  @PostMapping("update_uld_number")
+  public ApiResponseModel updateUldNumber(@RequestBody UldsModel uldsModel) {
+    return receiveCargoServiceImp.updateUldNumber(uldsModel.getUlds(), uldsModel.getUld_number());
+  }
+  
 }
