@@ -12,7 +12,8 @@ import org.springframework.data.repository.query.Param;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 public interface FlightsRepository extends JpaRepository<FlightsEntity, Long> {
 

@@ -35,6 +35,16 @@ public class ImagesEntity {
   
   @Column(name="file_type")
   int fileType;
+//  Long fileType;
+  
+  @Column(name="user_id")
+  Long userId;
+  
+  @Column(name="txn_cargo_manifest_id")
+  long txnCargoManifestId;
+  
+  @Column(name="registry_number")
+  String registryNumber;
   
   @Column(name="cargo_condition_id")
   long cargoConditionId;
