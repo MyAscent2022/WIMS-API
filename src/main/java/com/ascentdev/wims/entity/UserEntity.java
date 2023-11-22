@@ -5,6 +5,7 @@
 package com.ascentdev.wims.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -27,4 +28,10 @@ public class UserEntity {
   String passkey;
   
   String username;
+  
+  @Column(name="role_id")
+  Long roleId;
+  
+  @Column(name="user_type_id")
+  Long userTypeId;
 }

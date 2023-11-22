@@ -18,4 +18,5 @@ public class ApiResponseModel {
   int statusCode;
   Object data;
   List<?> condition; 
+  String[] mawbs;
 }

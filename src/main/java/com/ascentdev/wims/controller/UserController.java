@@ -27,4 +27,9 @@ public class UserController {
   public ApiResponseModel getUser(@RequestParam("username") String username, @RequestParam("passkey") String passkey) {
     return userServiceImp.userLogin(username, passkey);
   }
+  
+  @GetMapping("user_logout")
+  public ApiResponseModel userLogout(@RequestParam("username") String username) {
+    return userServiceImp.userLogout(username);
+  }
 }

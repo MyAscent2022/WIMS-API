@@ -4,8 +4,8 @@
  */
 package com.ascentdev.wims.model;
 
-import com.ascentdev.wims.entity.CargoManifestEntity;
-import com.ascentdev.wims.entity.StorageLogsEntity;
+import com.ascentdev.wims.entity.CargoCategoryEntity;
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -13,6 +13,6 @@ import lombok.Data;
  * @author ASCENT
  */
 @Data
-public class CargoManifestModel {
-  CargoManifestEntity cargoManifest;
+public class CargoCategoryModel {
+  List<CargoCategoryEntity> category;
 }

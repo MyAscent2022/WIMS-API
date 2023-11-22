@@ -17,19 +17,13 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="txn_cargo_manifest_details", schema="manifest")
+@Table(name="ref_cargo_category", schema="refs")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class CargoManifestDetailsEntity {
+public class CargoCategoryEntity {
   @Id
   long id;
   
-  @Column(name="txn_cargo_manifest_id")
-  long txnCargoManifestId;
+  @Column(name="description")
+  String description;
   
-  @Column(name="hawb_number")
-  String hawbNumber;
-  
-  Long pieces;
-  
-  Long weight;
 }

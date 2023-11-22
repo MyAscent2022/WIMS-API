@@ -14,5 +14,8 @@ import lombok.Data;
  */
 @Data
 public class UldsModel {
-  List<UldsEntity> ulds;
+  UldsEntity ulds;
+  String uld_number;
+  
+  List<UldsEntity> uldList;
 }
