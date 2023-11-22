@@ -4,22 +4,32 @@
  */
 package com.ascentdev.wims.serviceImp;
 
-import com.ascentdev.wims.entity.ImagesEntity;
-import com.ascentdev.wims.entity.MawbEntity;
+import com.ascentdev.wims.entity.CargoImagesEntity;
+import com.ascentdev.wims.entity.RackDetailsEntity;
 import com.ascentdev.wims.entity.RackEntity;
+import com.ascentdev.wims.entity.RefRackEntity;
+import com.ascentdev.wims.entity.ReleasingCargoEntity;
+import com.ascentdev.wims.entity.StorageCargoEntity;
+import com.ascentdev.wims.entity.StorageLogsEntity;
 import com.ascentdev.wims.error.ErrorException;
 import com.ascentdev.wims.model.ApiResponseModel;
-import com.ascentdev.wims.model.ImagesModel;
-import com.ascentdev.wims.model.MawbModel;
-import com.ascentdev.wims.model.RackModel;
-import com.ascentdev.wims.repository.ImagesRepository;
-import com.ascentdev.wims.repository.MawbRepository;
+import com.ascentdev.wims.model.CargoImagesModel;
+import com.ascentdev.wims.model.RackDetailsModel;
+import com.ascentdev.wims.model.RefRackModel;
+import com.ascentdev.wims.model.ReleaseCargoModel;
+import com.ascentdev.wims.model.StorageCargoModel;
+import com.ascentdev.wims.repository.CargoImagesRepository;
+import com.ascentdev.wims.repository.RackDetailsRepository;
 import com.ascentdev.wims.repository.RackRepository;
+import com.ascentdev.wims.repository.RefRackRepository;
+import com.ascentdev.wims.repository.ReleasingCargoRepository;
+import com.ascentdev.wims.repository.StorageCargoRepository;
+import com.ascentdev.wims.repository.StorageLogsRepository;
 import com.ascentdev.wims.service.StoreCargoService;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,29 +45,41 @@ public class StoreCargoServiceImp implements StoreCargoService {
   int statusCode = 200;
 
   @Autowired
-  MawbRepository mRepo;
-
-  @Autowired
   RackRepository rRepo;
 
   @Autowired
-  ImagesRepository iRepo;
+  CargoImagesRepository ciRepo;
+
+  @Autowired
+  RefRackRepository rrRepo;
+
+  @Autowired
+  StorageCargoRepository scRepo;
+
+  @Autowired
+  RackDetailsRepository rdRepo;
+
+  @Autowired
+  ReleasingCargoRepository rcRepo;
+
+  @Autowired
+  StorageLogsRepository storageRepo;
 
   @Override
   public ApiResponseModel getStorageCargo() {
     ApiResponseModel resp = new ApiResponseModel();
-    MawbModel data = new MawbModel();
+    StorageCargoModel data = new StorageCargoModel();
 
-    List<MawbEntity> mawbs = new ArrayList<>();
+    List<StorageCargoEntity> storages = new ArrayList<>();
 
     try {
-      mawbs = mRepo.getStoreCargo();
-      if (mawbs.size() == 0) {
+      storages = scRepo.findByCargoStatus(3);
+      if (storages.size() == 0) {
         message = "No Data to Show";
         status = false;
         statusCode = 404;
       } else {
-        data.setMawbs(mawbs);
+        data.setStorages(storages);
       }
       resp.setData(data);
       resp.setMessage(message);
@@ -71,59 +93,194 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel saveRack(long refRackId,
-          String mawbNumber,
-          String hawbNumber,
-          long stored_by_id,
-          long released_by_id) {
+  public ApiResponseModel saveRack(long oldRefRackId, long newRefRackId, long rack_utilization_id) {
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
 
+    RackEntity racks = new RackEntity();
+    RefRackEntity refRack = new RefRackEntity();
+
+    float tempV = 0;
+    float volume = 0;
+
     try {
-      RackEntity racks = new RackEntity();
-      racks.setRefRackId(refRackId);
-      racks.setMawbNumber(mawbNumber);
-      racks.setHawbNumber(hawbNumber);
-      racks.setStoredById(stored_by_id);
-      racks.setStoredDt(Timestamp.valueOf(date));
-      racks.setReleasedById(released_by_id);
-      racks.setReleasedDt(Timestamp.valueOf(date));
+      Optional Optracks = rRepo.findById(rack_utilization_id);
+      if (Optracks.isPresent()) {
+        racks = (RackEntity) Optracks.get();
+      }
+
+      if (racks == null) {
+        resp.setData(0);
+        resp.setMessage("Failed");
+        resp.setStatus(false);
+        resp.setStatusCode(404);
+        return resp;
+      }
+
+      Optional OptrefRack = rrRepo.findById(oldRefRackId);
+
+      if (OptrefRack.isPresent()) {
+        refRack = (RefRackEntity) OptrefRack.get();
+      }
+
+      tempV = refRack.getVolume() - racks.getVolume();
+      refRack.setVolume(tempV);
+      refRack = rrRepo.save(refRack);
+
+      if (refRack == null) {
+        resp.setData(0);
+        resp.setMessage("Failed");
+        resp.setStatus(false);
+        resp.setStatusCode(404);
+        return resp;
+      }
+
+      Optional newRefRack = rrRepo.findById(newRefRackId);
+      if (newRefRack.isPresent()) {
+        refRack = (RefRackEntity) newRefRack.get();
+      }
+      volume = refRack.getVolume() + racks.getVolume();
+      refRack.setVolume(volume);
+      refRack = rrRepo.save(refRack);
+      if (refRack == null) {
+        resp.setData(0);
+        resp.setMessage("Failed");
+        resp.setStatus(false);
+        resp.setStatusCode(404);
+        return resp;
+      }
+      racks.setRefRackId(newRefRackId);
       racks = rRepo.save(racks);
 
+      if (racks == null) {
+        resp.setData(0);
+        resp.setMessage("Failed");
+        resp.setStatus(false);
+        resp.setStatusCode(404);
+        return resp;
+      }
+
+      resp.setData(1);
       resp.setMessage(message);
       resp.setStatus(status);
       resp.setStatusCode(statusCode);
-      resp.setData(1);
     } catch (ErrorException e) {
-      resp.setMessage("Fail");
+      resp.setData(0);
+      resp.setMessage("Something went wrong");
+      resp.setStatus(status);
+      resp.setStatusCode(statusCode);
+    }
+
+    return resp;
+  }
+
+  @Override
+  public ApiResponseModel getImages(String mawbNumber, String hawbNumber, boolean isHawb) {
+    ApiResponseModel resp = new ApiResponseModel();
+    CargoImagesModel data = new CargoImagesModel();
+
+    List<CargoImagesEntity> images = new ArrayList<>();
+
+    try {
+      if (isHawb) {
+        images = ciRepo.findByHawbNumber(hawbNumber);
+        if (images.size() != 0) {
+          data.setImages(images);
+
+          resp.setData(data);
+          resp.setMessage(message);
+          resp.setStatus(status);
+          resp.setStatusCode(statusCode);
+        } else {
+          message = "No Data to Show";
+          status = false;
+          statusCode = 404;
+        }
+      } else {
+        images = ciRepo.findByMawbNumber(mawbNumber);
+        if (images.size() == 0) {
+          message = "No Data to Show";
+          status = false;
+          statusCode = 404;
+        } else {
+          data.setImages(images);
+        }
+        resp.setData(data);
+        resp.setMessage(message);
+        resp.setStatus(status);
+        resp.setStatusCode(statusCode);
+      }
+    } catch (ErrorException e) {
+      e.printStackTrace();
+    }
+    return resp;
+  }
+
+  @Override
+  public ApiResponseModel getRefRacks() {
+    ApiResponseModel resp = new ApiResponseModel();
+    RefRackModel data = new RefRackModel();
+
+    List<RefRackEntity> refRacks = new ArrayList<>();
+
+    try {
+      refRacks = rrRepo.findAll();
+      if (refRacks.size() > 0) {
+        data.setRefRacks(refRacks);
+        resp.setData(data);
+        resp.setMessage(message);
+        resp.setStatus(status);
+        resp.setStatusCode(statusCode);
+      } else {
+        resp.setMessage("NO DATA FOUND");
+        resp.setStatus(false);
+        resp.setStatusCode(404);
+      }
+    } catch (ErrorException e) {
+      e.printStackTrace();
+      resp.setMessage("NO DATA FOUND");
       resp.setStatus(false);
       resp.setStatusCode(404);
-      resp.setData(0);
     }
-
     return resp;
   }
 
   @Override
-  public ApiResponseModel getRacks() {
+  public ApiResponseModel getRackDetails(boolean isHawb, String hawbNumber, String mawbNumber) {
     ApiResponseModel resp = new ApiResponseModel();
-    RackModel data = new RackModel();
+    RackDetailsModel data = new RackDetailsModel();
 
-    List<RackEntity> racks = new ArrayList<>();
+    RackDetailsEntity rackDetails = new RackDetailsEntity();
 
     try {
-      racks = rRepo.getRacks();
-      if (racks.size() == 0) {
-        message = "No Data to Show";
-        status = false;
-        statusCode = 404;
+      if (isHawb) {
+        rackDetails = rdRepo.findByHawbNumber(hawbNumber);
+        if (rackDetails != null) {
+          data.setRackDetails(rackDetails);
+          resp.setData(data);
+          resp.setMessage(message);
+          resp.setStatus(status);
+          resp.setStatusCode(statusCode);
+        } else {
+          message = "NO DATA FOUND";
+          status = false;
+          statusCode = 404;
+        }
       } else {
-        data.setRacks(racks);
+        rackDetails = rdRepo.findByMawbNumber(mawbNumber);
+        if (rackDetails != null) {
+          data.setRackDetails(rackDetails);
+          resp.setData(data);
+          resp.setMessage(message);
+          resp.setStatus(status);
+          resp.setStatusCode(statusCode);
+        } else {
+          message = "NO DATA FOUND";
+          status = false;
+          statusCode = 404;
+        }
       }
-      resp.setData(data);
-      resp.setMessage(message);
-      resp.setStatus(status);
-      resp.setStatusCode(statusCode);
+
     } catch (ErrorException e) {
       e.printStackTrace();
     }
@@ -132,28 +289,72 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel getImages(Long mawbId) {
+  public ApiResponseModel getReleaseCargo() {
     ApiResponseModel resp = new ApiResponseModel();
-    ImagesModel data = new ImagesModel();
+    ReleaseCargoModel data = new ReleaseCargoModel();
 
-    List<ImagesEntity> images = new ArrayList<>();
+    List<ReleasingCargoEntity> releaseCargo = new ArrayList<>();
 
     try {
-      images = iRepo.getImages(mawbId);
-      if (images.size() == 0) {
-        message = "No Data to Show";
+      releaseCargo = rcRepo.findByStatus("PAID");
+      if (releaseCargo.size() > 0) {
+        data.setReleaseCargo(releaseCargo);
+        resp.setData(data);
+        resp.setMessage(message);
+        resp.setStatus(status);
+        resp.setStatusCode(statusCode);
+      } else {
+        message = "NO DATA TO SHOW";
         status = false;
         statusCode = 404;
-      } else {
-        data.setImages(images);
       }
-      resp.setData(data);
-      resp.setMessage(message);
-      resp.setStatus(status);
-      resp.setStatusCode(statusCode);
     } catch (ErrorException e) {
       e.printStackTrace();
     }
+    return resp;
+  }
+
+  @Override
+  public ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber) {
+    ApiResponseModel resp = new ApiResponseModel();
+    StorageLogsEntity storageLogs = new StorageLogsEntity();
+    try {
+      storageLogs = storageRepo.findByMawbNumber(mawbNumber);
+      if (storageLogs.getHawbNumber() == null) {
+        storageLogs.setStoragerStatus("Done");
+        storageRepo.save(storageLogs);
+        resp.setMessage("STORAGER STATUS UPDATED");
+        resp.setStatus(true);
+        resp.setStatusCode(200);
+      } else {
+        storageLogs = storageRepo.findByHawbNumber(hawbNumber);
+        if (storageLogs != null) {
+          storageLogs.setStoragerStatus("Done");
+          storageRepo.save(storageLogs);
+          resp.setMessage("STORAGER STATUS UPDATED");
+          resp.setStatus(true);
+          resp.setStatusCode(200);
+        } else {
+          status = false;
+          statusCode = 404;
+          resp.setMessage("StorageLogsEntity with mawbNumber not found");
+          resp.setStatus(status);
+          resp.setStatusCode(statusCode);
+        }
+
+      }
+
+    } catch (ErrorException e) {
+      e.printStackTrace();
+      message = "STORAGER STATUS FAILED TO UPDATE";
+      status = false;
+      statusCode = 404;
+
+      resp.setMessage(message);
+      resp.setStatus(status);
+      resp.setStatusCode(statusCode);
+    }
+
     return resp;
   }
 

@@ -17,24 +17,9 @@ import org.springframework.stereotype.Repository;
  */
 public interface MawbRepository extends JpaRepository<MawbEntity, Long> {
 
-  @Query(
-          value = "SELECT * FROM manifest.txn_cargo_manifest cm\n"
-          + "INNER JOIN manifest.txn_mawb m ON cm.mawb_number = m.mawb_number\n"
-          + "WHERE cm.uld_no = :uld_no",
-          nativeQuery = true)
-  List<MawbEntity> getMawbs(@Param("uld_no") String uld_no);
+  List<MawbEntity> findByFlightNumber(@Param("flight_number") String flightNumber);
 
-  @Query(
-          value = "SELECT m.* FROM public.txn_receiving_logs rl\n"
-          + "INNER JOIN manifest.txn_mawb m ON rl.mawb_number = m.mawb_number\n"
-          + "WHERE rl.registry_number = :registry_number AND rl.mawb_number = :mawb_number",
-          nativeQuery = true)
-  List<MawbEntity> getHawbs(@Param("registry_number") String registryNumber, @Param("mawb_number") String mawbNumber);
+  List<MawbEntity> findByUldNumber(@Param("uld_number") String uldNumber);
 
-  @Query(
-          value = "SELECT m.* FROM public.txn_receiving_logs rl\n"
-          + "INNER JOIN manifest.txn_cargo_manifest m ON rl.inbound_status = m.inbound_status\n"
-          + "WHERE rl.inbound_status = 'For Storage'",
-          nativeQuery = true)
-  List<MawbEntity> getStoreCargo();
+  MawbEntity findByMawbNumber(@Param("mawb_number") String mawbNumber);
 }

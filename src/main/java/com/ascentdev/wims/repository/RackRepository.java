@@ -15,9 +15,4 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface RackRepository extends JpaRepository<RackEntity, Long> {
 
-  @Query(
-          value = "SELECT * FROM public.txn_rack_utilization ru\n"
-          + "WHERE is_paid = true",
-          nativeQuery = true)
-  List<RackEntity> getRacks();
 }

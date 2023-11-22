@@ -4,7 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
-import com.ascentdev.wims.entity.ImagesEntity;
+import com.ascentdev.wims.entity.ReleasingCargoEntity;
 import java.util.List;
 import lombok.Data;
 
@@ -13,6 +13,6 @@ import lombok.Data;
  * @author ASCENT
  */
 @Data
-public class ImagesModel {
-  List<ImagesEntity> images;
+public class ReleaseCargoModel {
+  List<ReleasingCargoEntity> releaseCargo;
 }

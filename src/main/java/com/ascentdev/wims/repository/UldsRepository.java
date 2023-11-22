@@ -18,12 +18,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UldsRepository extends JpaRepository<UldsEntity, Long> {
 
-  List<UldsEntity> findByUldNo(String uldNo);
-
-  @Query(
-          value = "SELECT u.* FROM manifest.txn_cargo_manifest cm\n"
-          + "INNER JOIN public.txn_ulds u ON cm.uld_no = u.uld_no\n"
-          + "WHERE cm.flight_number = :flight_number",
-          nativeQuery = true)
-  List<UldsEntity> getUlds(@Param("flight_number") String flightNumber);
+  UldsEntity findByUldNo(String uldNo);
+  List<UldsEntity> findByFlightNumber(String flightNumber);
 }
