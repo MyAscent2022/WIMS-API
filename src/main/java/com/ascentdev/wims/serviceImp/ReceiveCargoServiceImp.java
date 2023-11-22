@@ -47,7 +47,8 @@ import java.util.Optional;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Service
 public class ReceiveCargoServiceImp implements ReceiveCargoService {
@@ -96,17 +97,22 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     try {
 //      flights = fRepo.getFlights();
       cargo = cmRepo.getFlightsByUserId(userId);
-      if (cargo.size() == 0) {
+      if (cargo.size() > 0) {
+        data.setCargo(cargo);
+        resp.setData(data);
+        resp.setMessage(message);
+        resp.setStatus(status);
+        resp.setStatusCode(statusCode);
+      } else {
         message = "No Data to Show";
         status = false;
         statusCode = 404;
-      } else {
-        data.setCargo(cargo);
+        resp.setData(data);
+        resp.setMessage(message);
+        resp.setStatus(status);
+        resp.setStatusCode(statusCode);
       }
-      resp.setData(data);
-      resp.setMessage(message);
-      resp.setStatus(status);
-      resp.setStatusCode(statusCode);
+
     } catch (ErrorException e) {
       e.printStackTrace();
     }
@@ -228,7 +234,6 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 //    }
 //    return resp;
 //  }
-
   private void saveImage(MultipartFile file) {
 
     try {

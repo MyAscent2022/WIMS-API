@@ -98,9 +98,6 @@ public class MawbEntity {
   @Column(name="marks_of_seals")
   String marksOfSeals;
   
-  @Column(name="mawb_no")
-  String mawbNo;
-  
   @Column(name="mawb_number")
   String mawbNumber;
   
