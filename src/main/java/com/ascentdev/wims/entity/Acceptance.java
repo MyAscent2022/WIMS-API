@@ -1,12 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.ascentdev.wims.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,10 +15,10 @@ import lombok.Data;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @Data
+@Entity
 @Table(name = "txn_acceptance")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Acceptance {
@@ -26,27 +26,24 @@ public class Acceptance {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
+  
+  @Column(name="user_id")
+  int userId;
 
   @Column(name = "actual_pcs")
-  private int actualPcs;
+  Long actualPcs;
 
   @Column(name = "weight")
   private int weight;
 
-  @Column(name = "length")
-  private int length;
-
-  @Column(name = "width")
-  private int width;
-
-  @Column(name = "height")
-  private int height;
+  @Column(name = "volume")
+  float volume;
 
   @Column(name = "txn_mawb_id")
-  private int txnMawbId;
+  Long txnMawbId;
 
   @Column(name = "txn_hawb_id")
-  private int txnHawbId;
+  Long txnHawbId;
 
   @Column(name = "cargo_category")
   private int cargoCategory;
@@ -62,5 +59,8 @@ public class Acceptance {
 
   @Column(name = "cargo_status")
   private int cargoStatus;
+  
+  @Column(name = "booked_pcs")
+  int bookedPcs;
 
 }

@@ -7,6 +7,8 @@ package com.ascentdev.wims.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
@@ -21,6 +23,7 @@ import lombok.Data;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UldsEntity {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
   
   @Column(name="uld_no")
@@ -40,4 +43,10 @@ public class UldsEntity {
   
   @Column(name="total_expected")
   Long totalExpected;
+  
+  @Column(name="total_mawb")
+  int totalMawb;
+  
+  @Column(name="uld_status")
+  Long uldStatus;
 }

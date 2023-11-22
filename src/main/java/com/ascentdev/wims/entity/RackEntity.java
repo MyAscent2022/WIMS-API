@@ -30,43 +30,36 @@ public class RackEntity {
   @Column(name="ref_rack_id")
   Long refRackId;
   
-  @Column(name="mawb_number")
-  String mawbNumber;
-  
-  @Column(name="hawb_number")
-  String hawbNumber;
-  
-  @Column(name="volume_mawb")
-  float volumeMawb;
-  
   @Column(name="stored_by_id")
-  Long storedById;
+  int storedById;
   
   @Column(name="stored_dt")
   Timestamp storedDt;
   
-  @Column(name="released_by_id")
-  Long releasedById;
-  
-  @Column(name="released_dt")
-  Timestamp releasedDt;
-  
-  
-  @Column(name="ref_layer_id")
-  Long reflayerid;
+  @Column(name="volume")
+  Float volume;
   
   @Column(name="location_number")
-  String locationNumber;
+  Long locationNumber;
   
   @Column(name="no_of_pieces")
   Long noOfPieces;
   
-  @Column(name="releasing_status_id")
-  Long releasingStatusId;
+  @Column(name="created_by_id")
+  int createdById;
   
-  @Column(name="is_paid")
-  Boolean isPaid;
+  @Column(name="created_at")
+  Timestamp createdAt;
+  
+  @Column(name="modified_at")
+  Timestamp modifiedAt;
+  
+  @Column(name="modified_by_id")
+  Long modifiedById;
   
   @Column(name="txn_mawb_id")
   Long txnMawbId;
+  
+  @Column(name="txn_hawb_id")
+  Long txnHawbId;
 }

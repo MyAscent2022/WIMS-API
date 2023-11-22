@@ -6,11 +6,13 @@ package com.ascentdev.wims.repository;
 
 import com.ascentdev.wims.entity.StorageLogsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
  * @author ASCENT
  */
 public interface StorageLogsRepository extends JpaRepository<StorageLogsEntity, Long>{
-  
+  StorageLogsEntity findByMawbNumber(@Param("mawb_number") String mawbNumber);
+  StorageLogsEntity findByHawbNumber(@Param("hawb_number") String hawbNumber);
 }

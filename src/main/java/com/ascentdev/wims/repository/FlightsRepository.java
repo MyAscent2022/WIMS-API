@@ -19,12 +19,5 @@ public interface FlightsRepository extends JpaRepository<FlightsEntity, Long> {
 
   List<FlightsEntity> findByIdIn(long[] ids);
 
-  @Query(
-          value = "SELECT rl.* FROM public.flights f\n"
-          + "INNER JOIN public.txn_receiving_logs rl ON rl.flight_id = f.id\n"
-          + "WHERE f.flight_status = 'Arrived / Gate Arrival'",
-          nativeQuery = true)
-  List<FlightsEntity> getFlights();
-
-
+  List<FlightsEntity> findByUserId(@Param("user_id") String user_id);
 }
