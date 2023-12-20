@@ -5,7 +5,9 @@
 package com.ascentdev.wims.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -41,5 +43,6 @@ public class CargoReleaseEntity {
   
   @Column(name="hawb_number")
   String hawbNumber;
+
   
 }

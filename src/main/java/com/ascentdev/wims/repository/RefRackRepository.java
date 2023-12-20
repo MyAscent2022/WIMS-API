@@ -5,12 +5,22 @@
 package com.ascentdev.wims.repository;
 
 import com.ascentdev.wims.entity.RefRackEntity;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
-public interface RefRackRepository extends JpaRepository<RefRackEntity, Long>{
-  
+public interface RefRackRepository extends JpaRepository<RefRackEntity, Long> {
+
+  RefRackEntity findByLayerNameAndRackName(@Param("layer_name") String layerName, @Param("rack_name") String rackName);
+
+  List<RefRackEntity> findByRackName(@Param("rack_name") String rackName);
+
+  RefRackEntity findById(@Param("id") int id);
+
 }

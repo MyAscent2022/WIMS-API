@@ -30,10 +30,11 @@ public class StoreCargoController {
   }
   
   @PostMapping("assign_rack")
-  public ApiResponseModel saveRack(@RequestParam("old_ref_rack_id") long old_ref_rack_id, 
-          @RequestParam("new_ref_rack_id") long new_ref_rack_id,
-          @RequestParam("id") long id) {
-    return storeCargoServiceImp.saveRack(old_ref_rack_id, new_ref_rack_id, id);
+  public ApiResponseModel saveRack(@RequestParam("rack_name") String rack_name, 
+          @RequestParam("layer_name") String layer_name,
+          @RequestParam("rack_util_id") int rack_util_id,
+          @RequestParam("user_id") int user_id) {
+    return storeCargoServiceImp.saveRack(rack_name, layer_name, rack_util_id, user_id);
   }
   
   @GetMapping("get_images")
@@ -42,8 +43,8 @@ public class StoreCargoController {
   }
   
   @GetMapping("get_ref_rack")
-  public ApiResponseModel getRackRacks() {
-    return storeCargoServiceImp.getRefRacks();
+  public ApiResponseModel getRackRacks(boolean is_layer, String rackName) {
+    return storeCargoServiceImp.getRefRacks(is_layer,rackName);
   }
   
   @GetMapping("get_rack_details")
@@ -57,7 +58,7 @@ public class StoreCargoController {
   }
   
   @PostMapping("update_storager_status")
-  public ApiResponseModel updateStoragerStatus(@RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number) {
-    return storeCargoServiceImp.updateStoragerStatus(hawb_number, mawb_number);
+  public ApiResponseModel updateStoragerStatus(@RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number, @RequestParam("user_id") int user_id) {
+    return storeCargoServiceImp.updateStoragerStatus(hawb_number, mawb_number, user_id);
   }
 }

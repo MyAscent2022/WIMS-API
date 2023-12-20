@@ -4,6 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
+import com.ascentdev.wims.entity.RefULDEntity;
 import com.ascentdev.wims.entity.UldsEntity;
 import java.util.List;
 import lombok.Data;
@@ -17,5 +18,5 @@ public class UldsModel {
   UldsEntity ulds;
   String uld_number;
   
-  List<UldsEntity> uldList;
+  List<RefULDEntity> uldList;
 }

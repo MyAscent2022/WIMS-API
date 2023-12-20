@@ -17,7 +17,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="ref_cargo_category", schema="refs")
+@Table(name="ref_cargo_category", schema="public")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CargoCategoryEntity {
   @Id

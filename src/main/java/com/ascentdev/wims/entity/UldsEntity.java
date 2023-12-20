@@ -30,7 +30,7 @@ public class UldsEntity {
   String uldNo;
   
   @Column(name="uld_type")
-  long uldType;
+  long uldTypeId;
   
   @Column(name="flight_number")
   String flightNumber;
