@@ -12,35 +12,59 @@ import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Data
 @Entity
-@Subselect("SELECT m.id, m.flight_number, m.mawb_number, h.hawb_number, a.weight, cc.classdesc, CONCAT(up.firstname, ' ', up.lastname) AS storage_personnel FROM public.txn_acceptance a\n"
-        + "INNER JOIN manifest.txn_mawb m ON m.id = a.txn_mawb_id\n"
-        + "INNER JOIN manifest.txn_hawb h ON h.id = a.txn_hawb_id\n"
-        + "INNER JOIN refs.ref_cargo_class cc ON cc.id = a.cargo_class\n"
-        + "INNER JOIN public.txn_storage_logs sl ON sl.txn_mawb_id = m.id\n"
-        + "INNER JOIN  commons.user_profile up ON CAST(up.user_id AS TEXT) LIKE '%' || sl.user_id || '%'")
+@Subselect("SELECT tm.id, \n"
+        + "cal.actual_pcs, \n"
+        + "tm.mawb_number, \n"
+        + "th.hawb_number, \n"
+        + "f.flight_number, \n"
+        + "cc.classdesc,\n"
+        + "tm.actual_weight,\n"
+        + "CONCAT(up.firstname, ' ', up.lastname) AS storage_personnel, \n"
+        + "rr.rack_name, \n"
+        + "rr.layer_name\n"
+        + "FROM public.cargo_activity_logs cal\n"
+        + "INNER JOIN public.txn_mawb tm ON tm.id = cal.mawb_id\n"
+        + "LEFT JOIN public.txn_hawb th ON th.id = cal.hawb_id\n"
+        + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
+        + "INNER JOIN public.ref_cargo_class cc ON cc.id = tm.cargo_class_id\n"
+        + "INNER JOIN  public.user_profile up ON CAST(up.user_id AS TEXT) LIKE '%' || cal.handled_by_id || '%'\n"
+        + "INNER JOIN public.txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
+        + "INNER JOIN public.ref_rack rr ON rr.id = tru.ref_rack_id")
 public class RackDetailsEntity {
+
   @Id
   int id;
-  
-  @Column(name="flight_number")
+
+  @Column(name = "flight_number")
   String flightNumber;
-  
-  @Column(name="mawb_number")
+
+  @Column(name = "mawb_number")
   String mawbNumber;
-  
-  @Column(name="hawb_number")
+
+  @Column(name = "hawb_number")
   String hawbNumber;
-  
-  @Column(name="weight")
+
+  @Column(name = "weight")
   int weight;
-  
-  @Column(name="classdesc")
+
+  @Column(name = "actual_pcs")
+  int actualPcs;
+
+  @Column(name = "classdesc")
   String classdesc;
-  
-  @Column(name="storage_personnel")
+
+  @Column(name = "storage_personnel")
   String storagePersonnel;
+
+  @Column(name = "rack_name")
+  String rackName;
+
+  @Column(name = "layer_name")
+  String layerName;
+
 }

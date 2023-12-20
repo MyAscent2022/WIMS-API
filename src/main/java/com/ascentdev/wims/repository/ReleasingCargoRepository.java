@@ -14,5 +14,5 @@ import org.springframework.data.repository.query.Param;
  * @author ASCENT
  */
 public interface ReleasingCargoRepository extends JpaRepository<ReleasingCargoEntity, Long>{
-  List<ReleasingCargoEntity> findByStatus(@Param("status") String status);
+//  List<ReleasingCargoEntity> findByStatusAndReleasedDtIsNull(@Param("status") String status); 
 }

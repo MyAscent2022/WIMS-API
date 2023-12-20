@@ -59,4 +59,7 @@ public class StorageLogsEntity {
   
   @Column(name="hawb_number")
   String hawbNumber;
+  
+  @Column(name="txn_mawb_id")
+  long mawbId;
 }

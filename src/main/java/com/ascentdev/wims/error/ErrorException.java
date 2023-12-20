@@ -9,20 +9,22 @@ import org.springframework.http.HttpStatus;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Data
 public class ErrorException extends RuntimeException {
+
   String message;
   HttpStatus status;
   int status_code;
   long timestamp;
 
-  public ErrorException(String message, HttpStatus status, int status_code, long timestamp) {
+  public ErrorException(int status_code, HttpStatus status, String message, long timestamp) {
     super();
-    this.message = message;
-    this.status = status;
     this.status_code = status_code;
+    this.status = status;
+    this.message = message;
     this.timestamp = timestamp;
   }
 }

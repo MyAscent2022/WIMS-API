@@ -16,55 +16,79 @@ import lombok.Data;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Data
 @Entity
-@Table(name="txn_mawb", schema="manifest")
+@Table(name = "txn_mawb", schema = "public")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MawbEntity {
+
   @Id
-  long id;
-  
-  @Column(name="created_at")
-  Timestamp createdAt;
-  
-  @Column(name="date_of_arrival")
+  int id;
+
+  @Column(name = "date_of_arrival")
   Date dateOfArrival;
-  
-  @Column(name="destination_code")
+
+  @Column(name = "destination_code")
   String destinationCode;
-  
-  @Column(name="mawb_number")
+
+  @Column(name = "mawb_number")
   String mawbNumber;
-  
-  @Column(name="modified_at")
-  Timestamp modifiedAt;
-  
-  @Column(name="number_of_containers")
+
+  @Column(name = "number_of_containers")
   long numberOfContainers;
-  
-  @Column(name="number_of_packages")
+
+  @Column(name = "number_of_packages")
   int numberOfPackages;
-  
-  @Column(name="origin_code")
+
+  @Column(name = "origin_code")
   String originCode;
 
-  @Column(name="registry_number")  
+  @Column(name = "registry_number")
   String registryNumber;
-  
-  @Column(name="time_of_arrival") 
+
+  @Column(name = "time_of_arrival")
   Time timeOfArrival;
-  
-  @Column(name="volume") 
+
+  @Column(name = "volume")
   float volume;
-  
-  @Column(name="flight_number") 
-  String flightNumber;
-  
-  @Column(name="uld_number") 
+
+  @Column(name = "uld_number")
   String uldNumber;
-  
-  @Column(name="uld_container_type_id")
+
+  @Column(name = "uld_container_type_id")
   Long uldContainerTypeId;
+
+  @Column(name = "cargo_status")
+  String cargoStatus;
+
+  @Column(name = "length")
+  int length;
+
+  @Column(name = "width")
+  int width;
+
+  @Column(name = "height")
+  int height;
+
+  @Column(name = "actual_weight")
+  float actualWeight;
+
+  @Column(name = "actual_volume")
+  float actualVolume;
+
+  @Column(name = "actual_pcs")
+  int actualPcs;
+
+  @Column(name = "cargo_condition_id")
+  int cargoConditionId;
+
+  @Column(name = "cargo_category_id")
+  int cargoCategoryId;
+
+  @Column(name = "cargo_class_id")
+  int cargoClassId;
+
 }

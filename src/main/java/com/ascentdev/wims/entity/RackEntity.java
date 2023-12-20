@@ -28,7 +28,7 @@ public class RackEntity {
   long id;
   
   @Column(name="ref_rack_id")
-  Long refRackId;
+  long refRackId;
   
   @Column(name="stored_by_id")
   int storedById;
@@ -39,11 +39,11 @@ public class RackEntity {
   @Column(name="volume")
   Float volume;
   
-  @Column(name="location_number")
-  Long locationNumber;
+  @Column(name="location")
+  String location;
   
   @Column(name="no_of_pieces")
-  Long noOfPieces;
+  int noOfPieces;
   
   @Column(name="created_by_id")
   int createdById;
@@ -55,11 +55,11 @@ public class RackEntity {
   Timestamp modifiedAt;
   
   @Column(name="modified_by_id")
-  Long modifiedById;
+  int modifiedById;
   
   @Column(name="txn_mawb_id")
-  Long txnMawbId;
+  int txnMawbId;
   
   @Column(name="txn_hawb_id")
-  Long txnHawbId;
+  int txnHawbId;
 }

@@ -19,5 +19,5 @@ public interface FlightsRepository extends JpaRepository<FlightsEntity, Long> {
 
   List<FlightsEntity> findByIdIn(long[] ids);
 
-  List<FlightsEntity> findByUserId(@Param("user_id") String user_id);
+  List<FlightsEntity> findByUserIdContaining(@Param("user_id") String user_id);
 }

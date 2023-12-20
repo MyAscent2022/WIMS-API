@@ -14,5 +14,5 @@ import org.springframework.data.repository.query.Param;
  * @author ASCENT
  */
 public interface StorageCargoRepository extends JpaRepository<StorageCargoEntity, Integer>{
-  List<StorageCargoEntity> findByCargoStatus(@Param("cargo_status") int cargoStatus);
+//  List<StorageCargoEntity> findByInboundStatus(@Param("inbound_status") int inboundStatus);
 }

@@ -17,11 +17,11 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="ref_rack", schema="refs")
+@Table(name="ref_rack", schema="public")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RefRackEntity {
   @Id
-  long id;
+  int id;
   
   @Column(name="layer_id")
   long layerId;
@@ -42,7 +42,7 @@ public class RefRackEntity {
   Long layoutRow;
   
   @Column(name="rack_id")
-  long rackId;
+  int rackId;
   
   @Column(name="rack_name")
   String rackName;

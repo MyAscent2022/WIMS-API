@@ -17,7 +17,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="ref_uld_type", schema="refs")
+@Table(name="ref_uld_type", schema="public")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UldTypeEntity {
   @Id
