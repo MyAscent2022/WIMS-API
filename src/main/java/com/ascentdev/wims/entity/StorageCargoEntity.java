@@ -12,15 +12,30 @@ import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Data
 @Entity
-@Subselect("SELECT m.id, m.flight_number, m.mawb_number, h.hawb_number, cc.classdesc, h.number_of_packages, a.actual_pcs, a.cargo_status FROM public.txn_acceptance a\n"
-        + "INNER JOIN manifest.txn_mawb m ON m.id = a.txn_mawb_id\n"
-        + "INNER JOIN manifest.txn_hawb h ON h.id = a.txn_hawb_id\n"
-        + "INNER JOIN refs.ref_cargo_class cc ON cc.id = a.cargo_class")
+@Subselect("SELECT cal.id,\n"
+        + "cal.actual_pcs, \n"
+        + "m.mawb_number, \n"
+        + "tru. id AS rack_util_id, \n"
+        + "f.flight_number, \n"
+        + "h.hawb_number,\n"
+        + "cc.classdesc, \n"
+        + "m.cargo_status\n"
+        + "FROM public.cargo_activity_logs cal\n"
+        + "INNER JOIN public.txn_mawb m ON m.id = cal.mawb_id\n"
+        + "INNER JOIN public.txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
+        + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
+        + "LEFT JOIN public.txn_hawb h ON h.id = cal.hawb_id\n"
+        + "INNER JOIN public.ref_cargo_class cc ON cc.id = m.cargo_class_id\n"
+        + "WHERE cal.location = 'STORING'")
 public class StorageCargoEntity {
+
+  @Column(name = "rack_util_id")
+  int rackUtilId;
 
   @Column(name = "flight_number")
   String flightNumber;
@@ -34,11 +49,16 @@ public class StorageCargoEntity {
   @Column(name = "classdesc")
   String classdesc;
 
-  @Column(name = "number_of_packages")
-  int numberOfPackages;
-
+//  @Column(name = "number_of_packages")
+//  int numberOfPackages;
+//
+//  @Column(name = "mawb_packages")
+//  int mawbPackages;
   @Column(name = "cargo_status")
   int cargoStatus;
+
+  @Column(name = "inbound_status")
+  int inboundStatus;
 
   @Column(name = "actual_pcs")
   int actualPcs;

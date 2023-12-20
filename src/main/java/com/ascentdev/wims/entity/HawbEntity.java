@@ -16,51 +16,65 @@ import lombok.Data;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Data
 @Entity
-@Table(name="txn_hawb", schema="manifest")
+@Table(name = "txn_hawb", schema = "public")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class HawbEntity {
+
   @Id
-  long id;
-  
-  @Column(name="created_at")
-  Timestamp createdAt;
-  
-  @Column(name="date_of_arrival")
+  int id;
+
+  @Column(name = "date_of_arrival")
   Date dateOfArrival;
-  
-  @Column(name="flight_number")
-  String flightNumber;
-  
-  @Column(name="gross_mass")
+
+//  @Column(name="flight_number")
+//  String flightNumber;
+  @Column(name = "gross_mass")
   Float grossMass;
-  
-  @Column(name="hawb_number")
+
+  @Column(name = "hawb_number")
   String hawbNumber;
-  
-  @Column(name="mawb_number")
+
+  @Column(name = "mawb_number")
   String mawbNumber;
-  
-  @Column(name="modified_at")
-  Timestamp modifiedAt;
-  
-  @Column(name="number_of_containers")
+
+  @Column(name = "number_of_containers")
   Long numberOfContainers;
-  
-  @Column(name="number_of_packages")
+
+  @Column(name = "number_of_packages")
   String numberOfPackages;
-  
-  @Column(name="origin_code")
+
+  @Column(name = "origin_code")
   String originCode;
-  
-  @Column(name="registry_number")
+
+  @Column(name = "registry_number")
   String registryNumber;
-  
-  @Column(name="time_of_arrival")
+
+  @Column(name = "time_of_arrival")
   Time timeOfArrival;
-  
-  Float volume;
+
+  @Column(name = "volume")
+  float volume;
+
+  @Column(name = "length")
+  int length;
+
+  @Column(name = "width")
+  int width;
+
+  @Column(name = "height")
+  int height;
+
+  @Column(name = "actual_weight")
+  float actualWeight;
+
+  @Column(name = "actual_volume")
+  float actualVolume;
+
+  @Column(name = "actual_pcs")
+  int actualPcs;
 }

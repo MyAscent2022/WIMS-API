@@ -5,6 +5,9 @@
 package com.ascentdev.wims.service;
 
 import com.ascentdev.wims.entity.Acceptance;
+import com.ascentdev.wims.entity.CargoActivityLogsEntity;
+import com.ascentdev.wims.entity.HawbEntity;
+import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.entity.UldsEntity;
 import com.ascentdev.wims.model.ApiResponseModel;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,12 +32,12 @@ public interface ReceiveCargoService {
           String uldNumber,
           String remarks);
   ApiResponseModel saveHawbImage(MultipartFile[] file,
-          long cargoConditionId,
+          int cargoConditionId,
           String mawbNumber,
           String hawbNumber,
           String flightNumber,
-          String remarks);
-  ApiResponseModel confirmCargo(Acceptance acceptance);
+          String remarks, CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails);
+  ApiResponseModel confirmCargo(CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number);
   ApiResponseModel saveUldNumber(UldsEntity ulds, String[] mawbs);
   ApiResponseModel updateUldNumber(UldsEntity ulds, String uldNumber);
   ApiResponseModel updateReceivingStatus(String registryNumber, boolean isConfirmed);

@@ -4,6 +4,7 @@
  */
 package com.ascentdev.wims.entity;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,15 +14,27 @@ import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Data
 @Entity
-@Subselect("WITH rellogs as (SELECT unnest (string_to_array(user_id, ',')) as rel_handler, * FROM public.txn_receiving_logs)\n"
-        + "SELECT DISTINCT (rel.*), f.travel_status, f.flight_status, ra.description FROM rellogs rel\n"
-        + "INNER JOIN public.flights f ON f.flight_number = rel.flight_number\n"
-        + "INNER JOIN refs.ref_airline ra ON ra.code = f.ref_airline_code\n"
-        + "LEFT JOIN manifest.txn_mawb m ON m.flight_number = rel.flight_number")
+@Subselect("WITH cargoActlogs as (SELECT unnest (string_to_array(handled_by_id, ',')) as rel_handler_id, * FROM public.cargo_activity_logs)\n"
+        + "SELECT DISTINCT \n"
+        + "cal.id, \n"
+        + "ra.id AS airline_id, \n"
+        + "cal.handled_by_id AS user_id, \n"
+        + "f.id AS flight_id,\n"
+        + "f.flight_number,\n"
+        + "ra.description AS airline,\n"
+        + "f.registry_number, \n"
+        + "f.travel_status, \n"
+        + "f.flight_status,\n"
+        + "f.estimated_arrival_dt::DATE AS date_of_arrival\n"
+        + "FROM cargoActlogs cal\n"
+        + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
+        + "LEFT JOIN public.ref_airline ra ON ra.code = f.ref_airline_code\n"
+        + "WHERE f.travel_status = 'Done'")
 public class FlightsEntity {
 
   @Id
@@ -33,28 +46,11 @@ public class FlightsEntity {
   @Column(name = "flight_id")
   Long flightId;
 
-  String status;
+  @Column(name = "airline_id")
+  Long airlineId;
 
-  @Column(name = "cargo_status")
-  String cargoStatus;
-
-  @Column(name = "created_at")
-  Timestamp createdAt;
-
-  @Column(name = "created_by_id")
-  Long createdById;
-
-  @Column(name = "modified_at")
-  Timestamp modifiedAt;
-
-  @Column(name = "modified_by_id")
-  Long modifiedById;
-
-  @Column(name = "uld_id")
-  Long uld_id;
-
-  @Column(name = "mawb_number")
-  String mawbNumber;
+  @Column(name = "airline")
+  String airline;
 
   @Column(name = "flight_number")
   String flightNumber;
@@ -67,4 +63,7 @@ public class FlightsEntity {
 
   @Column(name = "flight_status")
   String flightStatus;
+
+  @Column(name = "date_of_arrival")
+  Date arrivalDate;
 }

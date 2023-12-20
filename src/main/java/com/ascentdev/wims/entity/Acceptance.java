@@ -15,7 +15,8 @@ import lombok.Data;
 
 /**
  *
- * @author ASCENT
+ * @author
+ * ASCENT
  */
 @Data
 @Entity
@@ -26,8 +27,8 @@ public class Acceptance {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
-  
-  @Column(name="user_id")
+
+  @Column(name = "user_id")
   int userId;
 
   @Column(name = "actual_pcs")
@@ -43,10 +44,10 @@ public class Acceptance {
   Long txnMawbId;
 
   @Column(name = "txn_hawb_id")
-  Long txnHawbId;
+  int txnHawbId;
 
   @Column(name = "cargo_category")
-  private int cargoCategory;
+  private int cargoCategoryId;
 
   @Column(name = "excess_pcs")
   private int excessPcs;
@@ -55,11 +56,14 @@ public class Acceptance {
   private int shortLandedPcs;
 
   @Column(name = "cargo_class")
-  private int cargoClass;
+  private int cargoClassId;
 
   @Column(name = "cargo_status")
-  private int cargoStatus;
-  
+  private int cargoStatusId;
+
+  @Column(name = "inbound_status")
+  private int inboundStatus;
+
   @Column(name = "booked_pcs")
   int bookedPcs;
 
