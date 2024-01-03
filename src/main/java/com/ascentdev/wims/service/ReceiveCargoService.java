@@ -37,7 +37,8 @@ public interface ReceiveCargoService {
           String hawbNumber,
           String flightNumber,
           String remarks, CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails);
-  ApiResponseModel confirmCargo(CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number);
+  Integer uploadImage(MultipartFile[] file);
+  ApiResponseModel confirmCargo(CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number, int userId);
   ApiResponseModel saveUldNumber(UldsEntity ulds, String[] mawbs);
   ApiResponseModel updateUldNumber(UldsEntity ulds, String uldNumber);
   ApiResponseModel updateReceivingStatus(String registryNumber, boolean isConfirmed);

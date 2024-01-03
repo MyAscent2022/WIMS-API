@@ -21,7 +21,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "txn_mawb", schema = "public")
+@Table(name = "txn_mawb")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MawbEntity {
 
@@ -81,9 +81,6 @@ public class MawbEntity {
 
   @Column(name = "actual_pcs")
   int actualPcs;
-
-  @Column(name = "cargo_condition_id")
-  int cargoConditionId;
 
   @Column(name = "cargo_category_id")
   int cargoCategoryId;

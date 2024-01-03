@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
@@ -20,11 +22,12 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "cargo_activity_logs", schema = "public")
+@Table(name = "cargo_activity_log_old")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CargoActivityLogsEntity {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   int id;
 
   @Column(name = "flight_id")
@@ -68,8 +71,5 @@ public class CargoActivityLogsEntity {
 
   @Column(name = "updated_by_id")
   int updatedById;
-
-  @Column(name = "remarks")
-  String remarks;
 
 }

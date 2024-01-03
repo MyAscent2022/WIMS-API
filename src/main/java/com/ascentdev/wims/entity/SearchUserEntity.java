@@ -16,8 +16,8 @@ import org.hibernate.annotations.Subselect;
  */
 @Data
 @Entity
-@Subselect("SELECT u.id AS user_id, u.username, u.role_id, up.firstname, up.lastname FROM commons.users u\n"
-        + "INNER JOIN commons.user_profile up ON up.user_id = u.id")
+@Subselect("SELECT u.id AS user_id, u.username, u.role_id, up.firstname, up.lastname FROM public.users u\n"
+        + "INNER JOIN public.user_profile up ON up.user_id = u.id")
 public class SearchUserEntity {
   @Id
   @Column(name="user_id")

@@ -21,7 +21,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "txn_hawb", schema = "public")
+@Table(name = "txn_hawb")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class HawbEntity {
 
@@ -59,22 +59,4 @@ public class HawbEntity {
 
   @Column(name = "volume")
   float volume;
-
-  @Column(name = "length")
-  int length;
-
-  @Column(name = "width")
-  int width;
-
-  @Column(name = "height")
-  int height;
-
-  @Column(name = "actual_weight")
-  float actualWeight;
-
-  @Column(name = "actual_volume")
-  float actualVolume;
-
-  @Column(name = "actual_pcs")
-  int actualPcs;
 }

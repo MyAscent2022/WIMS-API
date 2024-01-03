@@ -14,25 +14,21 @@ import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @Data
 @Entity
-@Subselect("WITH cargoActlogs as (SELECT unnest (string_to_array(handled_by_id, ',')) as rel_handler_id, * FROM public.cargo_activity_logs)\n"
-        + "SELECT DISTINCT \n"
-        + "cal.id, \n"
-        + "ra.id AS airline_id, \n"
-        + "cal.handled_by_id AS user_id, \n"
-        + "f.id AS flight_id,\n"
+@Subselect("SELECT f.id,\n"
+        + "ra.id AS airline_id,\n"
+        + "raa.ramp_user_id AS user_id,\n"
         + "f.flight_number,\n"
         + "ra.description AS airline,\n"
-        + "f.registry_number, \n"
-        + "f.travel_status, \n"
+        + "f.registry_number,\n"
+        + "f.travel_status,\n"
         + "f.flight_status,\n"
         + "f.estimated_arrival_dt::DATE AS date_of_arrival\n"
-        + "FROM cargoActlogs cal\n"
-        + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
+        + "FROM public.flights f\n"
+        + "INNER JOIN public.flight_ramp_agent_assignments raa ON raa.flight_id = f.id\n"
         + "LEFT JOIN public.ref_airline ra ON ra.code = f.ref_airline_code\n"
         + "WHERE f.travel_status = 'Done'")
 public class FlightsEntity {
@@ -42,9 +38,6 @@ public class FlightsEntity {
 
   @Column(name = "user_id")
   String userId;
-
-  @Column(name = "flight_id")
-  Long flightId;
 
   @Column(name = "airline_id")
   Long airlineId;

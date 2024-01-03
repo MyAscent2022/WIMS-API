@@ -17,7 +17,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="users", schema="commons")
+@Table(name="users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UserEntity {
   @Id
