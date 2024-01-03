@@ -9,6 +9,7 @@ import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.model.ApiResponseModel;
+import com.ascentdev.wims.model.ConfirmCargoModel;
 import com.ascentdev.wims.model.SaveUldModel;
 import com.ascentdev.wims.model.UldsModel;
 import com.ascentdev.wims.serviceImp.ReceiveCargoServiceImp;
@@ -106,13 +107,11 @@ public class ReceiveCargoController {
     cargoLogs.setReceivedDatetime(Timestamp.valueOf(date));
     cargoLogs.setUpdatedAt(Timestamp.valueOf(date));
     cargoLogs.setUpdatedById(user_id);
-    cargoLogs.setRemarks(remarks);
 
     MawbEntity mawbDetails = new MawbEntity();
     mawbDetails.setCargoStatus(cargo_status);
     mawbDetails.setCargoCategoryId(cargo_category_id);
     mawbDetails.setCargoClassId(cargo_class_id);
-    mawbDetails.setCargoConditionId(cargo_condition_id);
     mawbDetails.setLength(length);
     mawbDetails.setWidth(width);
     mawbDetails.setHeight(height);
@@ -121,19 +120,13 @@ public class ReceiveCargoController {
     mawbDetails.setActualPcs(actual_pcs);
 
     HawbEntity hawbDetails = new HawbEntity();
-    hawbDetails.setLength(length);
-    hawbDetails.setWidth(width);
-    hawbDetails.setHeight(height);
-    hawbDetails.setActualPcs(actual_pcs);
-    hawbDetails.setActualVolume(Integer.parseInt(actual_volume));
-    hawbDetails.setActualWeight(Integer.parseInt(actual_weight));
 
     return receiveCargoServiceImp.saveHawbImage(file, cargo_condition_id, mawb_number, hawb_number, flight_number, remarks, cargoLogs, mawbDetails, hawbDetails);
   }
 
   @PostMapping("confirm_cargo")
-  public ApiResponseModel confirmCargo(@RequestBody CargoActivityLogsEntity cargoLogs,@RequestBody MawbEntity mawbDetails,@RequestBody HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number) {
-    return receiveCargoServiceImp.confirmCargo(cargoLogs,mawbDetails,hawbDetails, mawb_number, flightNumber, hawb_number);
+  public ApiResponseModel confirmCargo(@RequestBody ConfirmCargoModel confirmCargo, @RequestParam("mawb_number") String mawbNumber, @RequestParam("flight_number") String flightNumber, @RequestParam("hawb_number") String hawbNumber, @RequestParam("user_id") int userId) {
+    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(), mawbNumber, flightNumber, hawbNumber, userId);
   }
 
   @GetMapping("get_cargo_status")
@@ -159,6 +152,11 @@ public class ReceiveCargoController {
   @PostMapping("update_uld_number")
   public ApiResponseModel updateUldNumber(@RequestBody UldsModel updateUld) {
     return receiveCargoServiceImp.updateUldNumber(updateUld.getUlds(), updateUld.getUld_number());
+  }
+  
+  @PostMapping("upload_image")
+  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file) {
+    return receiveCargoServiceImp.uploadImage(file);
   }
 
 }

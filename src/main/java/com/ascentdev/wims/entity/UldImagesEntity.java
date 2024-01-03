@@ -19,7 +19,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="txn_uld_images", schema="manifest")
+@Table(name="txn_uld_images")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UldImagesEntity {
   

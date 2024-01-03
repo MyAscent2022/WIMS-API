@@ -19,7 +19,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="txn_cargo_images", schema="manifest")
+@Table(name="txn_cargo_images")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CargoImagesEntity {
   @Id

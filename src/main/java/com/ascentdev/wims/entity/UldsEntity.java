@@ -26,8 +26,8 @@ public class UldsEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
   
-  @Column(name="uld_no")
-  String uldNo;
+  @Column(name="uld_number")
+  String uldNumber;
   
   @Column(name="uld_type")
   long uldTypeId;

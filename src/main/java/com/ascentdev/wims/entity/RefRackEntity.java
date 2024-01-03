@@ -17,7 +17,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="ref_rack", schema="public")
+@Table(name="ref_rack")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RefRackEntity {
   @Id
@@ -33,7 +33,10 @@ public class RefRackEntity {
   String layerName;
   
   @Column(name="volume")
-  Float volume;
+  float volume;
+  
+  @Column(name="dimension")
+  String dimension;
   
   @Column(name="layout_column")
   Long layoutColumn;
