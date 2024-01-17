@@ -22,54 +22,48 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "cargo_activity_log_old")
+@Table(name = "cargo_activity_logs")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CargoActivityLogsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  int id;
+  long id;
 
   @Column(name = "flight_id")
-  int flightId;
+  long flightId;
 
   @Column(name = "mawb_id")
-  int mawbId;
+  long mawbId;
 
   @Column(name = "hawb_id")
-  int hawbId;
+  long hawbId;
 
   @Column(name = "location")
   String location;
 
-  @Column(name = "handled_by_id")
-  String handledById;
+  @Column(name = "actual_item_count")
+  int actualPcs;
+  
+  @Column(name = "received_released_by_id")
+  long handledById;
 
-  @Column(name = "received_date")
-  Timestamp receivedDatetime;
-
-  @Column(name = "stored_datetime")
-  Timestamp storedDatetime;
-
-  @Column(name = "released_datetime")
-  Timestamp releasedDatetime;
-
-  @Column(name = "payment_datetime")
-  Timestamp paymentDatetime;
+  @Column(name = "received_released_date")
+  Timestamp receivedReleasedDate;
+  
+  @Column(name = "created_at")
+  Timestamp createdAt;
 
   @Column(name = "updated_at")
   Timestamp updatedAt;
 
-  @Column(name = "released_type_id")
-  int releasedTypeId;
-
-  @Column(name = "actual_pcs")
-  int actualPcs;
-
   @Column(name = "created_by_id")
-  int createdById;
+  long createdById;
 
   @Column(name = "updated_by_id")
-  int updatedById;
+  Long updatedById;
+  
+  @Column(name = "is_deleted")
+  boolean isDeleted;
 
 }

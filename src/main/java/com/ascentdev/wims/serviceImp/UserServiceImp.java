@@ -7,7 +7,6 @@ package com.ascentdev.wims.serviceImp;
 import com.ascentdev.wims.entity.SearchUserEntity;
 import com.ascentdev.wims.entity.UserEntity;
 import com.ascentdev.wims.entity.UserLogsEntity;
-import com.ascentdev.wims.entity.UserProfileEntity;
 import com.ascentdev.wims.error.ErrorException;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.repository.SearchUserRepository;
@@ -37,9 +36,6 @@ public class UserServiceImp implements UserService {
 
   @Autowired
   UserLogsRepository ulRepo;
-
-  @Autowired
-  UserProfileRepository upRepo;
 
   @Autowired
   SearchUserRepository suRepo;
@@ -79,7 +75,7 @@ public class UserServiceImp implements UserService {
             resp.setStatus(status);
             resp.setStatusCode(statusCode);
           } else {
-            message = "oh shit";
+            message = "Wrong User";
             statusCode = 404;
             status = false;
           }
@@ -115,7 +111,7 @@ public class UserServiceImp implements UserService {
         resp.setStatus(status);
         resp.setStatusCode(statusCode);
       } else {
-        message = "oh shit";
+        message = "No User Found";
         statusCode = 404;
         status = false;
       }

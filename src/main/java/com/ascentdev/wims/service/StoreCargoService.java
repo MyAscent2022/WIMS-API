@@ -4,8 +4,12 @@
  */
 package com.ascentdev.wims.service;
 
+import com.ascentdev.wims.entity.CargoActivityLogsEntity;
+import com.ascentdev.wims.entity.HawbEntity;
+import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.model.ApiResponseModel;
 import java.sql.Timestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -13,10 +17,30 @@ import java.sql.Timestamp;
  */
 public interface StoreCargoService {
   ApiResponseModel getStorageCargo();
-  ApiResponseModel saveRack(String rackName, String layerName, long rackUtilId, int user_id);
+  ApiResponseModel saveRack(CargoActivityLogsEntity cargoLogs, 
+          String mawbNumber,
+          String flightNumber,
+          String hawb_number,
+          String rackName, 
+          String layerName, 
+          long rackUtilId, 
+          long user_id);
   ApiResponseModel getImages(String mawbNumber, String hawbNumber, boolean isHawb);
   ApiResponseModel getRefRacks(boolean is_layer, String rackName);
   ApiResponseModel getRackDetails(boolean isHawb, String hawbNumber, String mawbNumber);
   ApiResponseModel getReleaseCargo();
   ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber, int user_id);
+  ApiResponseModel getCargoImages(long cargoActivityLogId);
+  ApiResponseModel saveStorageImages(MultipartFile[] file, 
+          int cargoConditionId, 
+          long userId,
+          String rackName,
+          String layerName,
+          int storedPcs,
+          String remarks,
+          String flightNumber,
+          CargoActivityLogsEntity cargoLogs, 
+          MawbEntity mawbDetails, 
+          HawbEntity hawbDetails);
+  Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, String cargoCondition1, String cargoCondition2);
 }

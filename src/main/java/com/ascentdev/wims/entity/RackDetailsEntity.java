@@ -12,13 +12,12 @@ import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @Data
 @Entity
 @Subselect("SELECT tm.id, \n"
-        + "cal.actual_pcs, \n"
+        + "cal.actual_item_count, \n"
         + "tm.mawb_number, \n"
         + "th.hawb_number, \n"
         + "f.flight_number, \n"
@@ -32,7 +31,7 @@ import org.hibernate.annotations.Subselect;
         + "LEFT JOIN public.txn_hawb th ON th.id = cal.hawb_id\n"
         + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
         + "INNER JOIN public.ref_cargo_class cc ON cc.id = tm.cargo_class_id\n"
-        + "INNER JOIN  public.user_profile up ON CAST(up.user_id AS TEXT) LIKE '%' || cal.handled_by_id || '%'\n"
+        + "INNER JOIN  public.user_profile up ON up.user_id = cal.received_released_by_id\n"
         + "INNER JOIN public.txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
         + "INNER JOIN public.ref_rack rr ON rr.id = tru.ref_rack_id")
 public class RackDetailsEntity {
@@ -49,10 +48,10 @@ public class RackDetailsEntity {
   @Column(name = "hawb_number")
   String hawbNumber;
 
-  @Column(name = "weight")
+  @Column(name = "actual_weight")
   int weight;
 
-  @Column(name = "actual_pcs")
+  @Column(name = "actual_item_count")
   int actualPcs;
 
   @Column(name = "classdesc")

@@ -29,6 +29,9 @@ public class UldsEntity {
   @Column(name="uld_number")
   String uldNumber;
   
+  @Column(name="mawb_number")
+  String mawbNumber;
+  
   @Column(name="uld_type")
   long uldTypeId;
   

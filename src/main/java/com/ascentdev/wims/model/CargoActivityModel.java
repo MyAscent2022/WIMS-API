@@ -4,8 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
-import com.ascentdev.wims.entity.UldsEntity;
-import java.util.List;
+import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import lombok.Data;
 
 /**
@@ -13,8 +12,6 @@ import lombok.Data;
  * @author ASCENT
  */
 @Data
-public class SaveUldModel {
-  UldsEntity ulds;
-  String[] mawbs;
-  String uldNumber;
+public class CargoActivityModel {
+  CargoActivityLogsEntity cargoActivity;
 }

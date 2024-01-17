@@ -19,10 +19,10 @@ import org.hibernate.annotations.Subselect;
 @Data
 @Entity
 @Subselect("SELECT f.id,\n"
-        + "ra.id AS airline_id,\n"
         + "raa.ramp_user_id AS user_id,\n"
-        + "f.flight_number,\n"
+        + "ra.id AS airline_id,\n"
         + "ra.description AS airline,\n"
+        + "f.flight_number,\n"
         + "f.registry_number,\n"
         + "f.travel_status,\n"
         + "f.flight_status,\n"
@@ -37,7 +37,7 @@ public class FlightsEntity {
   long id;
 
   @Column(name = "user_id")
-  String userId;
+  long userId;
 
   @Column(name = "airline_id")
   Long airlineId;

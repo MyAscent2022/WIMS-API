@@ -4,7 +4,6 @@
  */
 package com.ascentdev.wims.service;
 
-import com.ascentdev.wims.entity.Acceptance;
 import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.MawbEntity;
@@ -17,12 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
  * @author ASCENT
  */
 public interface ReceiveCargoService {
-  ApiResponseModel searchFlights(String userId);
+  ApiResponseModel searchFlights(long userId);
   ApiResponseModel getCargoCondition();
   ApiResponseModel getCargoCategory();
   ApiResponseModel getCargoClass();
   ApiResponseModel getCargoStatus();
   ApiResponseModel getUldType();
+  ApiResponseModel getContainerType();
   ApiResponseModel getUlds(String flightNumber);
   ApiResponseModel getMawbs(boolean isUld, String uldNumber, String flightNumber);
   ApiResponseModel getHawbs(String mawbNumber);
@@ -37,9 +37,9 @@ public interface ReceiveCargoService {
           String hawbNumber,
           String flightNumber,
           String remarks, CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails);
-  Integer uploadImage(MultipartFile[] file);
-  ApiResponseModel confirmCargo(CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number, int userId);
-  ApiResponseModel saveUldNumber(UldsEntity ulds, String[] mawbs);
+  Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, String cargoCondition1, String cargoCondition2, String remarks1, String remarks2);
+  ApiResponseModel confirmCargo(CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number, int userId, String cargoCategory, String cargoClass);
+  ApiResponseModel saveUldNumber(UldsEntity ulds, String[] mawbs, String uldNumber);
   ApiResponseModel updateUldNumber(UldsEntity ulds, String uldNumber);
   ApiResponseModel updateReceivingStatus(String registryNumber, boolean isConfirmed);
   

@@ -12,15 +12,16 @@ import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @Data
 @Entity
 @Subselect("SELECT cal.id,\n"
-        + "cal.actual_pcs, \n"
+        + "cal.actual_item_count, \n"
         + "m.mawb_number, \n"
-        + "tru. id AS rack_util_id, \n"
+        + "tru.id AS rack_util_id, \n"
+        + "rr.rack_name,\n"
+        + "rr.layer_name,\n"
         + "f.flight_number, \n"
         + "h.hawb_number,\n"
         + "cc.classdesc, \n"
@@ -28,41 +29,40 @@ import org.hibernate.annotations.Subselect;
         + "FROM public.cargo_activity_logs cal\n"
         + "INNER JOIN public.txn_mawb m ON m.id = cal.mawb_id\n"
         + "INNER JOIN public.txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
+        + "INNER JOIN public.ref_rack rr ON rr.id = tru.ref_rack_id\n"
         + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
         + "LEFT JOIN public.txn_hawb h ON h.id = cal.hawb_id\n"
         + "INNER JOIN public.ref_cargo_class cc ON cc.id = m.cargo_class_id\n"
         + "WHERE cal.location = 'STORING'")
 public class StorageCargoEntity {
 
-  @Column(name = "rack_util_id")
-  int rackUtilId;
+  @Id
+  int id;
 
-  @Column(name = "flight_number")
-  String flightNumber;
+  @Column(name = "actual_item_count")
+  int actualPcs;
 
   @Column(name = "mawb_number")
   String mawbNumber;
+
+  @Column(name = "rack_util_id")
+  int rackUtilId;
+  
+  @Column(name = "rack_name")
+  String rackName;
+  
+  @Column(name = "layer_name")
+  String layerName;
+
+  @Column(name = "flight_number")
+  String flightNumber;
 
   @Column(name = "hawb_number")
   String hawbNumber;
 
   @Column(name = "classdesc")
-  String classdesc;
+  String classDesc;
 
-//  @Column(name = "number_of_packages")
-//  int numberOfPackages;
-//
-//  @Column(name = "mawb_packages")
-//  int mawbPackages;
   @Column(name = "cargo_status")
-  int cargoStatus;
-
-  @Column(name = "inbound_status")
-  int inboundStatus;
-
-  @Column(name = "actual_pcs")
-  int actualPcs;
-
-  @Id
-  int id;
+  String cargoStatus;
 }

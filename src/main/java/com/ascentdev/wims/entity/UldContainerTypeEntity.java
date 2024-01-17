@@ -17,36 +17,12 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="ref_rack")
+@Table(name="ref_uld_container_type")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class RefRackEntity {
+public class UldContainerTypeEntity {
   @Id
   long id;
   
-  @Column(name="layer_id")
-  long layerId;
-  
-  @Column(name="max_volume")
-  float maxVolume;
-  
-  @Column(name="layer_name")
-  String layerName;
-  
-  @Column(name="volume")
-  float volume;
-  
-  @Column(name="dimension")
-  String dimension;
-  
-  @Column(name="layout_column")
-  Long layoutColumn;
-  
-  @Column(name="layout_row")
-  Long layoutRow;
-  
-  @Column(name="rack_id")
-  int rackId;
-  
-  @Column(name="rack_name")
-  String rackName;
+  @Column(name="type")
+  String type;
 }

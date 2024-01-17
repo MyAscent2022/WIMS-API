@@ -17,12 +17,17 @@ import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @Data
 @Entity
-@Subselect("SELECT tm.id, tm.uld_number, rut.type, tm.gross_mass, rut.id AS uld_container_type_id, f.flight_number FROM public.txn_mawb tm\n"
+@Subselect("SELECT tm.id, \n"
+        + "tm.uld_number, \n"
+        + "rut.type, \n"
+        + "tm.gross_mass, \n"
+        + "rut.id AS uld_container_type_id, \n"
+        + "f.flight_number \n"
+        + "FROM public.txn_mawb tm\n"
         + "INNER JOIN public.ref_uld_container_type rut ON rut.id = tm.uld_container_type_id\n"
         + "INNER JOIN public.flights f ON f.id = tm.flight_id")
 public class RefULDEntity {

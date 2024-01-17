@@ -13,9 +13,9 @@ import org.springframework.data.repository.query.Param;
  *
  * @author ASCENT
  */
-public interface HawbRepository extends JpaRepository<HawbEntity, Long> {
+public interface HawbRepository extends JpaRepository<HawbEntity, Integer> {
   
-  List<HawbEntity> findByMawbNumberAndHawbNumber(@Param("mawb_number") String mawbNumber, @Param("hawb_number") String hawbNumber);
-  List<HawbEntity> findByMawbNumber(@Param("mawb_number") String mawbNumber);
-  HawbEntity findByHawbNumber(@Param("hawb_number") String hawbNumber);
+  List<HawbEntity> findByMawbNumberAndHawbNumber(String mawbNumber, String hawbNumber);
+  List<HawbEntity> findByMawbNumber(String mawbNumber);
+  HawbEntity findByHawbNumber(String hawbNumber);
 }

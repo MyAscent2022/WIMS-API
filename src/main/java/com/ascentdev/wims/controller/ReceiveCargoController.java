@@ -4,7 +4,6 @@
  */
 package com.ascentdev.wims.controller;
 
-import com.ascentdev.wims.entity.Acceptance;
 import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.MawbEntity;
@@ -37,8 +36,8 @@ public class ReceiveCargoController {
   ReceiveCargoServiceImp receiveCargoServiceImp;
 
   @GetMapping("flights")
-  public ApiResponseModel searchFlights(@RequestParam("user_id") int user_id) {
-    return receiveCargoServiceImp.searchFlights(String.valueOf(user_id));
+  public ApiResponseModel searchFlights(@RequestParam("user_id") long user_id) {
+    return receiveCargoServiceImp.searchFlights(user_id);
   }
 
   @GetMapping("ulds_per_flight")
@@ -88,8 +87,8 @@ public class ReceiveCargoController {
           @RequestParam("flight_number") String flight_number,
           @RequestParam("remarks") String remarks,
           @RequestParam("actual_pcs") int actual_pcs,
-          @RequestParam("actual_weight") String actual_weight,
-          @RequestParam("actual_volume") String actual_volume,
+          @RequestParam("actual_weight") float actual_weight,
+          @RequestParam("actual_volume") Float actual_volume,
           @RequestParam("length") int length,
           @RequestParam("width") int width,
           @RequestParam("height") int height,
@@ -102,11 +101,13 @@ public class ReceiveCargoController {
     LocalDateTime date = LocalDateTime.now();
 
     CargoActivityLogsEntity cargoLogs = new CargoActivityLogsEntity();
-    cargoLogs.setHandledById(String.valueOf(user_id));
+    cargoLogs.setHandledById(user_id);
     cargoLogs.setActualPcs(actual_pcs);
-    cargoLogs.setReceivedDatetime(Timestamp.valueOf(date));
+    cargoLogs.setReceivedReleasedDate(Timestamp.valueOf(date));
     cargoLogs.setUpdatedAt(Timestamp.valueOf(date));
-    cargoLogs.setUpdatedById(user_id);
+    cargoLogs.setUpdatedById((long)user_id);
+    cargoLogs.setCreatedAt(Timestamp.valueOf(date));
+    cargoLogs.setCreatedById(user_id);
 
     MawbEntity mawbDetails = new MawbEntity();
     mawbDetails.setCargoStatus(cargo_status);
@@ -115,8 +116,8 @@ public class ReceiveCargoController {
     mawbDetails.setLength(length);
     mawbDetails.setWidth(width);
     mawbDetails.setHeight(height);
-    mawbDetails.setActualVolume(Integer.parseInt(actual_volume));
-    mawbDetails.setActualWeight(Integer.parseInt(actual_weight));
+    mawbDetails.setActualVolume(actual_volume);
+    mawbDetails.setActualWeight(actual_weight);
     mawbDetails.setActualPcs(actual_pcs);
 
     HawbEntity hawbDetails = new HawbEntity();
@@ -125,8 +126,14 @@ public class ReceiveCargoController {
   }
 
   @PostMapping("confirm_cargo")
-  public ApiResponseModel confirmCargo(@RequestBody ConfirmCargoModel confirmCargo, @RequestParam("mawb_number") String mawbNumber, @RequestParam("flight_number") String flightNumber, @RequestParam("hawb_number") String hawbNumber, @RequestParam("user_id") int userId) {
-    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(), mawbNumber, flightNumber, hawbNumber, userId);
+  public ApiResponseModel confirmCargo(@RequestBody ConfirmCargoModel confirmCargo, 
+          @RequestParam("mawb_number") String mawbNumber, 
+          @RequestParam("flight_number") String flightNumber, 
+          @RequestParam("hawb_number") String hawbNumber, 
+          @RequestParam("user_id") int userId,
+          @RequestParam("cargo_category") String cargo_category,
+          @RequestParam("cargo_class") String cargo_class) {
+    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(), mawbNumber, flightNumber, hawbNumber, userId, cargo_category, cargo_class);
   }
 
   @GetMapping("get_cargo_status")
@@ -141,7 +148,7 @@ public class ReceiveCargoController {
 
   @PostMapping("save_uld_number")
   public ApiResponseModel saveUldNumber(@RequestBody SaveUldModel saveUld) {
-    return receiveCargoServiceImp.saveUldNumber(saveUld.getUlds(), saveUld.getMawbs());
+    return receiveCargoServiceImp.saveUldNumber(saveUld.getUlds(), saveUld.getMawbs(), saveUld.getUldNumber());
   }
 
   @PostMapping("update_receiver_status")
@@ -155,8 +162,13 @@ public class ReceiveCargoController {
   }
   
   @PostMapping("upload_image")
-  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file) {
-    return receiveCargoServiceImp.uploadImage(file);
+  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") long hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2, @RequestParam("remarks1") String remarks1, @RequestParam("remarks2") String remarks2) {
+    return receiveCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2, remarks1, remarks2);
+  }
+  
+  @GetMapping("get_uld_container_type")
+  public ApiResponseModel getContainerType() {
+    return receiveCargoServiceImp.getContainerType();
   }
 
 }

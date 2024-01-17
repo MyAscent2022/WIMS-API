@@ -17,10 +17,10 @@ import org.springframework.data.repository.query.Param;
  */
 public interface RefRackRepository extends JpaRepository<RefRackEntity, Long> {
 
-  RefRackEntity findByLayerNameAndRackName(@Param("layer_name") String layerName, @Param("rack_name") String rackName);
+  RefRackEntity findByLayerNameAndRackName(String layerName, String rackName);
 
-  List<RefRackEntity> findByRackName(@Param("rack_name") String rackName);
+  List<RefRackEntity> findByRackName(String rackName);
 
-  RefRackEntity findById(@Param("id") int id);
+  RefRackEntity findById(@Param("id") long id);
 
 }

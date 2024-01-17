@@ -12,5 +12,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author ASCENT
  */
 public interface CargoClassRepository extends JpaRepository<CargoClassEntity, Long>{
-  
+  CargoClassEntity findByClassdesc(String classdesc);
 }

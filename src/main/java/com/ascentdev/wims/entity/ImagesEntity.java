@@ -7,6 +7,8 @@ package com.ascentdev.wims.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
@@ -17,36 +19,25 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="ref_rack")
+@Table(name="txn_cargo_images")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class RefRackEntity {
+public class ImagesEntity {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
   
-  @Column(name="layer_id")
-  long layerId;
+  @Column(name="cargo_activity_log_id")
+  long cargoActivityLogId;
   
-  @Column(name="max_volume")
-  float maxVolume;
+  @Column(name="cargo_condition_id")
+  long cargoConditionId;
   
-  @Column(name="layer_name")
-  String layerName;
+  @Column(name="file_name")
+  String fileName;
   
-  @Column(name="volume")
-  float volume;
+  @Column(name="file_path")
+  String filePath;
   
-  @Column(name="dimension")
-  String dimension;
-  
-  @Column(name="layout_column")
-  Long layoutColumn;
-  
-  @Column(name="layout_row")
-  Long layoutRow;
-  
-  @Column(name="rack_id")
-  int rackId;
-  
-  @Column(name="rack_name")
-  String rackName;
+  @Column(name="remarks")
+  String remarks;
 }
