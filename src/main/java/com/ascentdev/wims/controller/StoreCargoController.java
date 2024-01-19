@@ -114,8 +114,8 @@ public class StoreCargoController {
   }
   
   @PostMapping("upload_storage_image")
-  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") long hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2) {
-    return storeCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2);
+  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") long hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2, @RequestParam("remarks1") String remarks1, @RequestParam("remarks2") String remarks2) {
+    return storeCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2, remarks1, remarks2);
   }
   
   @RequestMapping(value = "view_checklist_image")

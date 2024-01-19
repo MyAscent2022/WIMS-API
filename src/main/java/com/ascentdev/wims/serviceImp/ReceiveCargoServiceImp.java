@@ -359,12 +359,13 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
           cargoEntity.setActualPcs(mawbDetails.getActualPcs());
           cargoEntity.setUpdatedAt(Timestamp.valueOf(new Dates().getCurrentDateTime()));
           cargoEntity.setUpdatedById((long) userId);
-          cargoEntity.setLocation("STORING");
+          cargoEntity.setLocation("STORING AREA");
           cargoEntity.setMawbId(mawb1.getId());
           cargoEntity.setHawbId(hawb1.getId());
           cargoEntity.setFlightId(flights.getId());
           cargoEntity.setCreatedAt(Timestamp.valueOf(new Dates().getCurrentDateTime()));
           cargoEntity.setCreatedById(userId);
+          cargoEntity.setActivityStatus("STORING");
           //cargoEntity.setRemarks(cargoLogs.getRemarks());
 
           cargoActivityRepo.save(cargoEntity);
@@ -466,24 +467,35 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Override
   public ApiResponseModel saveUldImage(MultipartFile[] file,
-          long uldConditionId,
+          String uldCondition1,
+          String uldCondition2,
           String flightNumber,
           String uldNumber,
-          String remarks) {
+          String remarks1,
+          String remarks2) {
     ApiResponseModel resp = new ApiResponseModel();
+    CargoConditionEntity condition = new CargoConditionEntity();
+    FlightsEntity flights = new FlightsEntity();
+    UldsEntity ulds = new UldsEntity();
 
     try {
+      int count = 0;
+      condition = cargoRepo.findByCondition(count == 0 ? uldCondition1 : uldCondition2);
+      flights = fRepo.findByFlightNumber(flightNumber);
+      ulds = uRepo.findByUldNumber(uldNumber);
       for (MultipartFile f : file) {
         UldImagesEntity images = new UldImagesEntity();
         String filename = f.getOriginalFilename();
         images.setFilePath(fileUploadPath + "/" + filename);
         images.setFileName(filename);
-        images.setRemarks(remarks);
-        images.setUldConditionId(uldConditionId);
-        images.setFlightNumber(flightNumber);
-        images.setRemarks(remarks);
+        images.setRemarks(count == 0 ? remarks1 : remarks2);
+        images.setUldNumber(ulds.getUldNumber());
+        images.setUldConditionId(condition.getId());
+        images.setFlightNumber(flights.getFlightNumber());
         iRepo.save(images);
         saveImage(f);
+        condition = new CargoConditionEntity();
+        count++;
       }
       resp.setMessage("Successfully Saved Images");
       resp.setStatus(true);

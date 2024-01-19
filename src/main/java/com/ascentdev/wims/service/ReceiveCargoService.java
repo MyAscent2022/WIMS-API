@@ -27,10 +27,12 @@ public interface ReceiveCargoService {
   ApiResponseModel getMawbs(boolean isUld, String uldNumber, String flightNumber);
   ApiResponseModel getHawbs(String mawbNumber);
   ApiResponseModel saveUldImage(MultipartFile[] file,
-          long uldConditionId,
+          String uldCondition1,
+          String uldCondition2,
           String flightNumber,
           String uldNumber,
-          String remarks);
+          String remarks1,
+          String remarks2);
   ApiResponseModel saveHawbImage(MultipartFile[] file,
           int cargoConditionId,
           String mawbNumber,

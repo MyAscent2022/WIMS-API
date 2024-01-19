@@ -19,7 +19,7 @@ import org.hibernate.annotations.Subselect;
 @Data
 @Entity
 @Subselect("SELECT f.id,\n"
-        + "raa.ramp_user_id AS user_id,\n"
+        + "ja.assigned_user_id AS user_id,\n"
         + "ra.id AS airline_id,\n"
         + "ra.description AS airline,\n"
         + "f.flight_number,\n"
@@ -27,9 +27,9 @@ import org.hibernate.annotations.Subselect;
         + "f.travel_status,\n"
         + "f.flight_status,\n"
         + "f.estimated_arrival_dt::DATE AS date_of_arrival\n"
-        + "FROM public.flights f\n"
-        + "INNER JOIN public.flight_ramp_agent_assignments raa ON raa.flight_id = f.id\n"
-        + "LEFT JOIN public.ref_airline ra ON ra.code = f.ref_airline_code\n"
+        + "FROM flights f\n"
+        + "INNER JOIN job_assignments ja ON ja.flight_id = f.id\n"
+        + "INNER JOIN ref_airline ra ON ra.code = f.ref_airline_code\n"
         + "WHERE f.travel_status = 'Done'")
 public class FlightsEntity {
 

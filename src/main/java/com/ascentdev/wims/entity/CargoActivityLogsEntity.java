@@ -45,7 +45,7 @@ public class CargoActivityLogsEntity {
   @Column(name = "actual_item_count")
   int actualPcs;
   
-  @Column(name = "received_released_by_id")
+  @Column(name = "job_assignment_id")
   long handledById;
 
   @Column(name = "received_released_date")
@@ -65,5 +65,8 @@ public class CargoActivityLogsEntity {
   
   @Column(name = "is_deleted")
   boolean isDeleted;
+  
+  @Column(name = "activity_status")
+  String activityStatus;
 
 }

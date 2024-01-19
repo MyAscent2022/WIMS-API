@@ -71,12 +71,14 @@ public class ReceiveCargoController {
   }
 
   @PostMapping("save_uld_image")
-  public ApiResponseModel saveUldImage(@RequestParam("file_name") MultipartFile[] file,
-          @RequestParam("uld_condition_id") long uld_condition_id,
+  public ApiResponseModel saveUldImage(@RequestParam("file[]") MultipartFile[] file,
+          @RequestParam("uld_condition1") String uld_condition1,
+          @RequestParam("uld_condition2") String uld_condition2,
           @RequestParam("flight_number") String flight_number,
           @RequestParam("uld_number") String uld_number,
-          @RequestParam("remarks") String remarks) {
-    return receiveCargoServiceImp.saveUldImage(file, uld_condition_id, flight_number, uld_number, remarks);
+          @RequestParam("remarks1") String remarks1,
+          @RequestParam("remarks2") String remarks2) {
+    return receiveCargoServiceImp.saveUldImage(file, uld_condition1, uld_condition2, flight_number, uld_number, remarks1, remarks2);
   }
 
   @PostMapping("save_hawb_image")

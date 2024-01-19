@@ -42,5 +42,5 @@ public interface StoreCargoService {
           CargoActivityLogsEntity cargoLogs, 
           MawbEntity mawbDetails, 
           HawbEntity hawbDetails);
-  Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, String cargoCondition1, String cargoCondition2);
+  Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, String cargoCondition1, String cargoCondition2, String remarks1, String remarks2);
 }

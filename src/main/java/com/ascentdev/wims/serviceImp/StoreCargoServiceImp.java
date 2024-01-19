@@ -178,7 +178,8 @@ public class StoreCargoServiceImp implements StoreCargoService {
         logs.setUpdatedById(user_id);
         logs.setCreatedAt(Timestamp.valueOf(date));
         logs.setCreatedById(user_id);
-        logs.setLocation("RELEASING");
+        logs.setLocation("RELEASING AREA");
+        logs.setActivityStatus("RELEASING");
         cargoRepo.save(logs);
       } else {
         ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Data not save", System.currentTimeMillis());
@@ -540,7 +541,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
   
   @Override
-  public Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber,String cargoCondition1, String cargoCondition2) {
+  public Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber,String cargoCondition1, String cargoCondition2, String remarks1, String remarks2) {
     Integer resp = 0;
     long id = 0;
     
@@ -566,6 +567,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
         images.setFileName(filename);
         images.setCargoConditionId(1);
         images.setCargoActivityLogId(cal.getId());
+        images.setRemarks(count == 0 ? remarks1 : remarks2);
         imgRepo.save(images);
         saveImage(f);
         condition1 = new CargoConditionEntity();

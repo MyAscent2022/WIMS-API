@@ -21,7 +21,7 @@ public interface CargoActivityLogsRepository extends JpaRepository<CargoActivity
           value = "SELECT cal.* FROM cargo_activity_logs cal\n"
           + "WHERE cal.mawb_id = :mawb_id\n"
           + "AND cal.hawb_id = :hawb_id\n"
-          + "AND cal.location = 'STORING'",
+          + "AND cal.activity_status = 'STORING'",
           nativeQuery = true)
   List<CargoActivityLogsEntity> getByMawbIdAndHawbId(@Param("mawb_id") long mawbId, @Param("hawb_id") long hawbId);
 
