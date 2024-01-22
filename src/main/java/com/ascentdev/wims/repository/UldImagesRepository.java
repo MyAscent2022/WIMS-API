@@ -15,5 +15,5 @@ import org.springframework.data.repository.query.Param;
  * @author ASCENT
  */
 public interface UldImagesRepository extends JpaRepository<UldImagesEntity, Long> {
-  
+  List<UldImagesEntity> findByFlightNumberAndUldNumber(String flightNumber, String uldNumber);
 }

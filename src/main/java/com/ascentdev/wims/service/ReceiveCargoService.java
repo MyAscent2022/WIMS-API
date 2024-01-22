@@ -44,5 +44,5 @@ public interface ReceiveCargoService {
   ApiResponseModel saveUldNumber(UldsEntity ulds, String[] mawbs, String uldNumber);
   ApiResponseModel updateUldNumber(UldsEntity ulds, String uldNumber);
   ApiResponseModel updateReceivingStatus(String registryNumber, boolean isConfirmed);
-  
+  ApiResponseModel getUldImages(String flightNumber, String uldNumber);
 }

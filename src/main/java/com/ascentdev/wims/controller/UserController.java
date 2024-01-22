@@ -29,7 +29,7 @@ public class UserController {
   }
   
   @GetMapping("user_logout")
-  public ApiResponseModel userLogout(@RequestParam("username") String username) {
-    return userServiceImp.userLogout(username);
+  public ApiResponseModel userLogout(@RequestParam("user_id") long user_id) {
+    return userServiceImp.userLogout(user_id);
   }
 }

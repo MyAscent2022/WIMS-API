@@ -172,5 +172,10 @@ public class ReceiveCargoController {
   public ApiResponseModel getContainerType() {
     return receiveCargoServiceImp.getContainerType();
   }
+  
+  @GetMapping("get_uld_images")
+  public ApiResponseModel getUldImages(@RequestParam("flight_number") String flight_number, @RequestParam("uld_number") String uld_number) {
+    return receiveCargoServiceImp.getUldImages(flight_number, uld_number);
+  }
 
 }

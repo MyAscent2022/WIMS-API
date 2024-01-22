@@ -62,15 +62,15 @@ public class StoreCargoServiceImp implements StoreCargoService {
   boolean status = true;
   String message = "Success!";
   int statusCode = 200;
-  
+
   String fileUploadPath = "C:\\wms_paircargo\\SUPPORTING_DOCUMENTS\\images";
 
   @Autowired
   RackRepository rRepo;
-  
+
   @Autowired
   CargoActivityLogsRepository cargoActivityRepo;
-  
+
   @Autowired
   ImagesRepository imgRepo;
 
@@ -79,7 +79,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
 
   @Autowired
   RefRackRepository rrRepo;
-  
+
   @Autowired
   FlightsRepository fRepo;
 
@@ -100,10 +100,10 @@ public class StoreCargoServiceImp implements StoreCargoService {
 
   @Autowired
   HawbRepository hRepo;
-  
+
   @Autowired
   ImagesRepository iRepo;
-  
+
   @Autowired
   CargoConditionRepository ccRepo;
 
@@ -139,13 +139,13 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel saveRack(CargoActivityLogsEntity cargoLogs, 
+  public ApiResponseModel saveRack(CargoActivityLogsEntity cargoLogs,
           String mawbNumber,
           String flightNumber,
           String hawb_number,
-          String rackName, 
-          String layerName, 
-          long rack_util_id, 
+          String rackName,
+          String layerName,
+          long rack_util_id,
           long user_id) {
     ErrorException ex1 = null;
     ApiResponseModel resp = new ApiResponseModel();
@@ -158,33 +158,29 @@ public class StoreCargoServiceImp implements StoreCargoService {
     MawbEntity mawb = new MawbEntity();
     HawbEntity hawb = new HawbEntity();
     FlightsEntity flights = new FlightsEntity();
-    
+
     List<HawbEntity> hawbs = new ArrayList<>();
 
     float tempV = 0;
     float volume = 0;
-    
+
     try {
       rackUtil = rRepo.findById(rack_util_id);
       flights = fRepo.findByFlightNumber(flightNumber);
       mawb = mRepo.findByMawbNumber(mawbNumber);
       hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawb_number);
 
-      logs = cargoRepo.getByMawbIdAndHawbId(rackUtil.getTxnMawbId(), rackUtil.getTxnHawbId()).get(0);
-      if (logs != null) {
-        logs.setReceivedReleasedDate(Timestamp.valueOf(date));
-        logs.setHandledById(user_id);
-        logs.setUpdatedAt(Timestamp.valueOf(date));
-        logs.setUpdatedById(user_id);
-        logs.setCreatedAt(Timestamp.valueOf(date));
-        logs.setCreatedById(user_id);
-        logs.setLocation("RELEASING AREA");
-        logs.setActivityStatus("RELEASING");
-        cargoRepo.save(logs);
-      } else {
-        ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Data not save", System.currentTimeMillis());
-        throw ex1;
-      }
+//      logs = cargoRepo.getByMawbIdAndHawbId(rackUtil.getTxnMawbId(), rackUtil.getTxnHawbId()).get(0);
+
+      logs.setReceivedReleasedDate(Timestamp.valueOf(date));
+      logs.setHandledById(user_id);
+      logs.setUpdatedAt(Timestamp.valueOf(date));
+      logs.setUpdatedById(user_id);
+      logs.setCreatedAt(Timestamp.valueOf(date));
+      logs.setCreatedById(user_id);
+      logs.setLocation("RELEASING AREA");
+      logs.setActivityStatus("RELEASING");
+      cargoRepo.save(logs);
 
       if (rackUtil == null) {
         ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Data not save", System.currentTimeMillis());
@@ -499,19 +495,19 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel saveStorageImages(MultipartFile[] file, 
-          int cargoConditionId, 
+  public ApiResponseModel saveStorageImages(MultipartFile[] file,
+          int cargoConditionId,
           long userId,
           String rackName,
           String layerName,
           int storedPcs,
           String remarks,
           String flightNumber,
-          CargoActivityLogsEntity cargoLogs, 
-          MawbEntity mawbDetails, 
+          CargoActivityLogsEntity cargoLogs,
+          MawbEntity mawbDetails,
           HawbEntity hawbDetails) {
     ApiResponseModel resp = new ApiResponseModel();
-    
+
     resp = saveRack(cargoLogs, mawbDetails.getMawbNumber(), flightNumber, hawbDetails.getHawbNumber(), rackName, layerName, 0, 0);
     if (resp.isStatus()) {
       for (MultipartFile f : file) {
@@ -525,10 +521,10 @@ public class StoreCargoServiceImp implements StoreCargoService {
         saveImage(f);
       }
     }
-    
+
     return resp;
   }
-  
+
   private void saveImage(MultipartFile file) {
 
     try {
@@ -539,12 +535,12 @@ public class StoreCargoServiceImp implements StoreCargoService {
       Logger.getLogger(ReceiveCargoServiceImp.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
-  
+
   @Override
-  public Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber,String cargoCondition1, String cargoCondition2, String remarks1, String remarks2) {
+  public Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, String cargoCondition1, String cargoCondition2, String remarks1, String remarks2) {
     Integer resp = 0;
     long id = 0;
-    
+
     MawbEntity mawb = new MawbEntity();
     CargoActivityLogsEntity cal = new CargoActivityLogsEntity();
     List<CargoActivityLogsEntity> cargoList = new ArrayList<>();
@@ -553,14 +549,14 @@ public class StoreCargoServiceImp implements StoreCargoService {
     try {
       mawb = mRepo.findByMawbNumber(mawbNumber);
       if (hawbId == 0) {
-        cargoList = cargoActivityRepo.findByMawbId(mawb.getId());
+        cargoList = cargoActivityRepo.findByMawbIdAndActivityStatus(mawb.getId(), "STORING");
       } else {
-        cargoList = cargoActivityRepo.getByMawbIdAndHawbId(mawb.getId(), hawbId);
+        cargoList = cargoActivityRepo.findByMawbIdAndHawbIdAndActivityStatus(mawb.getId(), hawbId, "STORING");
       }
-      cal = cargoList.get(cargoList.size() - 1);
+      cal = cargoList.get(cargoList.size());
       int count = 0;
       for (MultipartFile f : file) {
-        condition1 = ccRepo.findByCondition(count == 0 ? cargoCondition1:cargoCondition2);
+        condition1 = ccRepo.findByCondition(count == 0 ? cargoCondition1 : cargoCondition2);
         ImagesEntity images = new ImagesEntity();
         String filename = f.getOriginalFilename();
         images.setFilePath(fileUploadPath + "/" + filename);

@@ -92,7 +92,7 @@ public class UserServiceImp implements UserService {
   }
 
   @Override
-  public ApiResponseModel userLogout(String username) {
+  public ApiResponseModel userLogout(long userId) {
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
 
@@ -100,7 +100,7 @@ public class UserServiceImp implements UserService {
     UserLogsEntity userLogs  = new UserLogsEntity();
 
     try {
-      searchUser = suRepo.findByUsername(username);
+      searchUser = suRepo.findByUserId(userId);
       if (searchUser != null) {
         userLogs = ulRepo.findByUserIdAndLogOutAt(searchUser.getUserId(), null);
         userLogs.setLogOutAt(Timestamp.valueOf(date));

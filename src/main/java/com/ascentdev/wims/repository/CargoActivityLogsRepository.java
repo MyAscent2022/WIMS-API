@@ -24,8 +24,10 @@ public interface CargoActivityLogsRepository extends JpaRepository<CargoActivity
           + "AND cal.activity_status = 'STORING'",
           nativeQuery = true)
   List<CargoActivityLogsEntity> getByMawbIdAndHawbId(@Param("mawb_id") long mawbId, @Param("hawb_id") long hawbId);
+  
+  List<CargoActivityLogsEntity> findByMawbIdAndHawbIdAndActivityStatus(long mawbId, long hawbId, String activityStatus);
 
-  List<CargoActivityLogsEntity> findByMawbId(long mawbId);
+  List<CargoActivityLogsEntity> findByMawbIdAndActivityStatus(long mawbId, String activityStatus);
 
   CargoActivityLogsEntity findByMawbIdAndLocationAndReceivedReleasedDateNull(long mawbId, String location);
 
