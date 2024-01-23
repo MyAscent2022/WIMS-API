@@ -18,5 +18,6 @@ public class UldsModel {
   UldsEntity ulds;
   String uld_number;
   
+  List<UldsEntity> uldList1;
   List<RefULDEntity> uldList;
 }

@@ -179,22 +179,22 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     ApiResponseModel resp = new ApiResponseModel();
     UldsModel data = new UldsModel();
 
-//    List<UldsEntity> ulds = new ArrayList<>();
-    List<RefULDEntity> ulds = new ArrayList<>();
+    List<UldsEntity> ulds = new ArrayList<>();
+//    List<RefULDEntity> ulds = new ArrayList<>();
 
     try {
-      ulds = refUldRepo.findByFlightNumber(flightNumber);
+      ulds = uRepo.findByFlightNumber(flightNumber);
       if (ulds.size() == 0) {
         resp.setMessage("No Data to Show");
         resp.setStatus(false);
         resp.setStatusCode(404);
       } else {
-        data.setUldList(ulds);
+        data.setUldList1(ulds);
+        resp.setData(data);
         resp.setMessage("Success!");
         resp.setStatus(true);
         resp.setStatusCode(200);
       }
-      resp.setData(data);
     } catch (ErrorException e) {
       e.printStackTrace();
     }
