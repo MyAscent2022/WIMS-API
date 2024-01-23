@@ -14,6 +14,7 @@ import com.ascentdev.wims.entity.UldImagesEntity;
 import com.ascentdev.wims.entity.FlightsEntity;
 import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.ImagesEntity;
+import com.ascentdev.wims.entity.JobAssignmentEntity;
 import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.entity.RackEntity;
 import com.ascentdev.wims.entity.ReceivingLogsEntity;
@@ -45,6 +46,7 @@ import com.ascentdev.wims.repository.CargoStatusRepository;
 import com.ascentdev.wims.repository.FlightsRepository;
 import com.ascentdev.wims.repository.HawbRepository;
 import com.ascentdev.wims.repository.ImagesRepository;
+import com.ascentdev.wims.repository.JobAssignmentRepository;
 import com.ascentdev.wims.repository.MawbRepository;
 import com.ascentdev.wims.repository.UldsRepository;
 import com.ascentdev.wims.service.ReceiveCargoService;
@@ -142,6 +144,9 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   
   @Autowired
   UldImagesRepository uiRepo;
+  
+  @Autowired
+  JobAssignmentRepository jaRepo;
 
   @Override
   public ApiResponseModel searchFlights(long userId) {
@@ -307,12 +312,12 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     List<MawbEntity> mawbs = new ArrayList<>();
     List<RefRackEntity> refRack = new ArrayList<>();
     List<RackEntity> rackList = new ArrayList<>();
+    List<JobAssignmentEntity> jobAssigns = new ArrayList<>();
 
     CargoActivityLogsEntity cargoEntity = new CargoActivityLogsEntity();
     HawbEntity hawb1 = new HawbEntity();
     CargoCategoryEntity category = new CargoCategoryEntity();
     CargoClassEntity cargoClass1 = new CargoClassEntity();
-//    StorageLogsEntity storage = new StorageLogsEntity();
     MawbEntity mawb1 = new MawbEntity();
     RackEntity rack = new RackEntity();
     RefRackEntity refRackDetail = new RefRackEntity();
@@ -327,6 +332,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       mawb1 = mRepo.findByMawbNumber(mawb_number);
       category = ccRepo.findByDescription(cargoCategory);
       cargoClass1 = classRepo.findByClassdesc(cargoClass);
+      jobAssigns = jaRepo.findByAssignedUserIdAndFlightId(userId, flights.getId());
 
       if (mawb1.getId() > 0) {
         if (hawbs.size() > 0) {
@@ -357,18 +363,18 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         mawbs.add(mawb1);
 
 //      -- SAVE TO CARGO ACTIVITY LOGS TABLE (ADD DATA)
-        cargoEntity.setHandledById(userId);
+        cargoEntity.setHandledById(jobAssigns.get(0).getId());
         cargoEntity.setReceivedReleasedDate(Timestamp.valueOf(new Dates().getCurrentDateTime()));
         cargoEntity.setActualPcs(mawbDetails.getActualPcs());
         cargoEntity.setUpdatedAt(Timestamp.valueOf(new Dates().getCurrentDateTime()));
         cargoEntity.setUpdatedById((long) userId);
-        cargoEntity.setLocation("STORING AREA");
+        cargoEntity.setLocation("RECEIVING AREA");
         cargoEntity.setMawbId(mawb1.getId());
         cargoEntity.setHawbId(hawb1.getId());
         cargoEntity.setFlightId(flights.getId());
         cargoEntity.setCreatedAt(Timestamp.valueOf(new Dates().getCurrentDateTime()));
         cargoEntity.setCreatedById(userId);
-        cargoEntity.setActivityStatus("STORING");
+        cargoEntity.setActivityStatus("RECEIVING");
         //cargoEntity.setRemarks(cargoLogs.getRemarks());
 
         cargoActivityRepo.save(cargoEntity);

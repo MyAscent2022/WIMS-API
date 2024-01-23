@@ -178,8 +178,8 @@ public class StoreCargoServiceImp implements StoreCargoService {
       logs.setUpdatedById(user_id);
       logs.setCreatedAt(Timestamp.valueOf(date));
       logs.setCreatedById(user_id);
-      logs.setLocation("RELEASING AREA");
-      logs.setActivityStatus("RELEASING");
+      logs.setLocation("STORING AREA");
+      logs.setActivityStatus("STORING");
       cargoRepo.save(logs);
 
       if (rackUtil == null) {
@@ -438,7 +438,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
 
       } else {
         hawbDetails = hRepo.findByHawbNumber(hawbNumber);
-        logs = cargoRepo.findByHawbIdAndLocationAndReceivedReleasedDateNull(hawbDetails.getId(), "RELEASING");
+        logs = cargoRepo.findByHawbIdAndLocationAndReceivedReleasedDateNull(hawbDetails.getId(), "RELEASING AREA");
         if (logs.getId() > 0) {
           logs.setReceivedReleasedDate(Timestamp.valueOf(date));
           logs.setUpdatedAt(Timestamp.valueOf(date));
