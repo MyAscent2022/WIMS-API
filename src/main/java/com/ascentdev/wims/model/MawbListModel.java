@@ -33,7 +33,7 @@ public class MawbListModel {
   float actualWeight;
   Float actualVolume;
   int actualPcs;
-  long cargoCategoryId;
+  Long cargoCategoryId;
   long cargoClassId;
   long flightId;
   int hawbCount;

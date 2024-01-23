@@ -96,8 +96,8 @@ public class ReceiveCargoController {
           @RequestParam("height") int height,
           @RequestParam("volume") String volume,
           @RequestParam("cargo_condition_id") int cargo_condition_id,
-          @RequestParam("cargo_category_id") int cargo_category_id,
-          @RequestParam("cargo_class_id") int cargo_class_id,
+          @RequestParam("cargo_category_id") Long cargo_category_id,
+          @RequestParam("cargo_class_id") Long cargo_class_id,
           @RequestParam("cargo_status") String cargo_status) {
 
     LocalDateTime date = LocalDateTime.now();

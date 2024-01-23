@@ -85,7 +85,7 @@ public class MawbEntity {
   long cargoCategoryId;
 
   @Column(name = "cargo_class_id")
-  long cargoClassId;
+  Long cargoClassId;
   
   @Column(name = "flight_id")
   long flightId;
