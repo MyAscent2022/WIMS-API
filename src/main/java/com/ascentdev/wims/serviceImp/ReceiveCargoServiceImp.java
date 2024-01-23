@@ -84,7 +84,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   String message = "Success!";
   int statusCode = 200;
 
-  String fileUploadPath = "C:\\wms_paircargo\\SUPPORTING_DOCUMENTS\\images";
+  String fileUploadPath = "C:\\wms_paircargo\\SUPPORTING_DOCUMENTS\\images\\";
 
   @Autowired
   UldsRepository uRepo;
@@ -290,7 +290,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
     try {
       byte[] data = file.getBytes();
-      Path path = Paths.get(fileUploadPath + "/" + file.getOriginalFilename());
+      Path path = Paths.get(fileUploadPath + file.getOriginalFilename());
       Files.write(path, data);
     } catch (IOException ex) {
       Logger.getLogger(ReceiveCargoServiceImp.class.getName()).log(Level.SEVERE, null, ex);
@@ -488,12 +488,14 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       for (MultipartFile f : file) {
         UldImagesEntity images = new UldImagesEntity();
         String filename = f.getOriginalFilename();
-        images.setFilePath(fileUploadPath + "/" + filename);
+        images.setFilePath(fileUploadPath + filename);
         images.setFileName(filename);
         images.setRemarks(count == 0 ? remarks1 : remarks2);
         images.setUldNumber(ulds.getUldNumber());
         images.setUldConditionId(condition.getId());
         images.setFlightNumber(flights.getFlightNumber());
+        System.out.println("filename " + filename);
+        System.out.println("images " + images);
         iRepo.save(images);
         saveImage(f);
         condition = new CargoConditionEntity();
@@ -534,7 +536,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         for (MultipartFile f : file) {
           CargoImagesEntity images = new CargoImagesEntity();
           String filename = f.getOriginalFilename();
-          images.setFilePath(fileUploadPath + "/" + filename);
+          images.setFilePath(fileUploadPath + filename);
           images.setFileName(filename);
           images.setCargoConditionId(cargoConditionId);
           images.setRemarks(remarks);
@@ -852,7 +854,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         condition = cargoRepo.findByCondition(count == 0 ? cargoCondition1 : cargoCondition2);
         ImagesEntity images = new ImagesEntity();
         String filename = f.getOriginalFilename();
-        images.setFilePath(fileUploadPath + "/" + filename);
+        images.setFilePath(fileUploadPath + filename);
         images.setFileName(filename);
         images.setCargoConditionId(condition.getId());
         images.setCargoActivityLogId(cal.getId());

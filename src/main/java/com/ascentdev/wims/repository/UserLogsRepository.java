@@ -15,4 +15,5 @@ import org.springframework.data.repository.query.Param;
  */
 public interface UserLogsRepository extends JpaRepository<UserLogsEntity, Long>{
   UserLogsEntity findByUserIdAndLogOutAt(long userId, Timestamp logOutAt);
+  UserLogsEntity findByUserIdAndLogOutAtAndIsMobile(long userId, Timestamp logOutAt, boolean isMobile);
 }

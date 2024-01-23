@@ -63,7 +63,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
   String message = "Success!";
   int statusCode = 200;
 
-  String fileUploadPath = "C:\\wms_paircargo\\SUPPORTING_DOCUMENTS\\images";
+  String fileUploadPath = "C:\\wms_paircargo\\SUPPORTING_DOCUMENTS\\images\\";
 
   @Autowired
   RackRepository rRepo;
@@ -513,7 +513,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
       for (MultipartFile f : file) {
         ImagesEntity images = new ImagesEntity();
         String filename = f.getOriginalFilename();
-        images.setFilePath(fileUploadPath + "/" + filename);
+        images.setFilePath(fileUploadPath + filename);
         images.setFileName(filename);
         images.setCargoActivityLogId(cargoConditionId);
         images.setRemarks(remarks);
@@ -559,7 +559,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
         condition1 = ccRepo.findByCondition(count == 0 ? cargoCondition1 : cargoCondition2);
         ImagesEntity images = new ImagesEntity();
         String filename = f.getOriginalFilename();
-        images.setFilePath(fileUploadPath + "/" + filename);
+        images.setFilePath(fileUploadPath + "\\" + filename);
         images.setFileName(filename);
         images.setCargoConditionId(1);
         images.setCargoActivityLogId(cal.getId());

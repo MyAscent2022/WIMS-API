@@ -102,7 +102,7 @@ public class UserServiceImp implements UserService {
     try {
       searchUser = suRepo.findByUserId(userId);
       if (searchUser != null) {
-        userLogs = ulRepo.findByUserIdAndLogOutAt(searchUser.getUserId(), null);
+        userLogs = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true);
         userLogs.setLogOutAt(Timestamp.valueOf(date));
         userLogs.setActive(false);
         userLogs = ulRepo.save(userLogs);
