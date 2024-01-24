@@ -573,7 +573,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
       } else {
         cargoList = cargoActivityRepo.findByMawbIdAndHawbIdAndActivityStatus(mawb.getId(), hawbId, "STORING");
       }
-      cal = cargoList.get(cargoList.size());
+      cal = cargoList.get(cargoList.size() - 1);
       int count = 0;
       for (MultipartFile f : file) {
         condition1 = ccRepo.findByCondition(count == 0 ? cargoCondition1 : cargoCondition2);
