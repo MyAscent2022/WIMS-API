@@ -141,10 +141,10 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Autowired
   UldContainerTypeRepository ucRepo;
-  
+
   @Autowired
   UldImagesRepository uiRepo;
-  
+
   @Autowired
   JobAssignmentRepository jaRepo;
 
@@ -213,31 +213,40 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     MawbModel data = new MawbModel();
 
     List<MawbEntity> mawb = new ArrayList<>();
+    List<HawbEntity> hawb = new ArrayList<>();
     List<MawbListModel> mawbList = new ArrayList<>();
+    List<CargoActivityLogsEntity> cal = new ArrayList<>();
     FlightsEntity flight = new FlightsEntity();
 
     try {
 
       if (isUld) {
         mawb = mRepo.findByUldNumber(uldNumber);
-        if (mawb != null) {
+        hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
+        cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
+        if (!cal.isEmpty()) {
+          resp.setMessage("No New Data!");
+          resp.setStatus(false);
+          resp.setStatusCode(404);
+        } else {
+          data.setMawbs(mawbMapper(mawb));
+          resp.setData(data);
+          resp.setMessage("New Data Found!");
+          resp.setStatus(true);
+          resp.setStatusCode(200);
+        }
+      } else {
+        flight = fRepo.findByFlightNumber(flightNumber);
+        mawb = mRepo.findByFlightId(flight.getId());
+        hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
+        cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
+        if (cal.isEmpty()) {
           data.setMawbs(mawbMapper(mawb));
           resp.setData(data);
           resp.setMessage("Data found!");
           resp.setStatus(true);
           resp.setStatusCode(200);
         } else {
-          message = "No Data to Show";
-          status = false;
-          statusCode = 404;
-          resp.setMessage(message);
-          resp.setStatus(status);
-          resp.setStatusCode(statusCode);
-        }
-      } else {
-        flight = fRepo.findByFlightNumber(flightNumber);
-        mawb = mRepo.findByFlightId(flight.getId());
-        if (mawb.size() == 0) {
           message = "No Data to Show";
           status = false;
           statusCode = 404;
@@ -245,12 +254,6 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
           resp.setMessage(message);
           resp.setStatus(status);
           resp.setStatusCode(statusCode);
-        } else {
-          data.setMawbs(mawbMapper(mawb));
-          resp.setData(data);
-          resp.setMessage("Data found!");
-          resp.setStatus(true);
-          resp.setStatusCode(200);
         }
 
       }
@@ -916,9 +919,9 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   public ApiResponseModel getUldImages(String flightNumber, String uldNumber) {
     ApiResponseModel resp = new ApiResponseModel();
     UldImagesModel data = new UldImagesModel();
-    
+
     List<UldImagesEntity> images = new ArrayList<>();
-    
+
     try {
       images = uiRepo.findByFlightNumberAndUldNumber(flightNumber, uldNumber);
       if (images.size() == 0) {
@@ -932,10 +935,10 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         resp.setData(data);
         data.setImages(images);
       }
-    } catch (ErrorException e){
+    } catch (ErrorException e) {
       e.printStackTrace();
     }
-    
+
     return resp;
   }
 

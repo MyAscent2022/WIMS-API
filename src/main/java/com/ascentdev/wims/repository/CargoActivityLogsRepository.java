@@ -25,6 +25,8 @@ public interface CargoActivityLogsRepository extends JpaRepository<CargoActivity
           nativeQuery = true)
   List<CargoActivityLogsEntity> getByMawbIdAndHawbId(@Param("mawb_id") long mawbId, @Param("hawb_id") long hawbId);
   
+  List<CargoActivityLogsEntity> findByMawbIdAndHawbId(long mawbId, long hawbId);
+  
   List<CargoActivityLogsEntity> findByMawbIdAndHawbIdAndActivityStatus(long mawbId, long hawbId, String activityStatus);
 
   List<CargoActivityLogsEntity> findByMawbIdAndActivityStatus(long mawbId, String activityStatus);
