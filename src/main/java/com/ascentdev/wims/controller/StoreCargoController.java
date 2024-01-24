@@ -118,6 +118,11 @@ public class StoreCargoController {
     return storeCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2, remarks1, remarks2);
   }
   
+  @PostMapping("save_releasing_cargo")
+  public ApiResponseModel saveReleaseCargo(@RequestParam("mawb_number") String mawb_number, @RequestParam("hawb_number") String hawb_number, @RequestParam("flight_number") String flight_number, @RequestParam("user_id") long user_id) {
+    return storeCargoServiceImp.saveReleaseCargo(mawb_number, hawb_number, flight_number, user_id);
+  }
+  
   @RequestMapping(value = "view_checklist_image")
   public @ResponseBody
   void viewCheckListImage(@RequestParam("file_path") String file_path, HttpServletRequest request, HttpServletResponse response) throws Exception {

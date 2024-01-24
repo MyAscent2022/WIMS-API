@@ -29,7 +29,8 @@ public interface StoreCargoService {
   ApiResponseModel getRefRacks(boolean is_layer, String rackName);
   ApiResponseModel getRackDetails(boolean isHawb, String hawbNumber, String mawbNumber);
   ApiResponseModel getReleaseCargo();
-  ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber, int user_id);
+  ApiResponseModel saveReleaseCargo(String mawbNumber, String hawbNumber, String flightNumber, long userId);
+  ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber, long user_id);
   ApiResponseModel getCargoImages(long cargoActivityLogId);
   ApiResponseModel saveStorageImages(MultipartFile[] file, 
           int cargoConditionId, 

@@ -31,7 +31,7 @@ import org.hibernate.annotations.Subselect;
         + "INNER JOIN txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
         + "INNER JOIN storage_payments sp ON sp.mawb_id = cal.mawb_id\n"
         + "LEFT JOIN ref_rack r ON r.id = tru.ref_rack_id\n"
-        + "WHERE cal.activity_status = 'RELEASING'\n"
+        + "WHERE cal.activity_status = 'STORING'\n"
         + "AND sp.datepaid IS NOT NULL")
 public class ReleasingCargoEntity {
 

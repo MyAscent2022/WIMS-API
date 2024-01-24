@@ -10,6 +10,7 @@ import com.ascentdev.wims.entity.CargoImagesEntity;
 import com.ascentdev.wims.entity.FlightsEntity;
 import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.ImagesEntity;
+import com.ascentdev.wims.entity.JobAssignmentEntity;
 import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.entity.RackDetailsEntity;
 import com.ascentdev.wims.entity.RackEntity;
@@ -29,6 +30,7 @@ import com.ascentdev.wims.repository.CargoImagesRepository;
 import com.ascentdev.wims.repository.FlightsRepository;
 import com.ascentdev.wims.repository.HawbRepository;
 import com.ascentdev.wims.repository.ImagesRepository;
+import com.ascentdev.wims.repository.JobAssignmentRepository;
 import com.ascentdev.wims.repository.MawbRepository;
 import com.ascentdev.wims.repository.RackDetailsRepository;
 import com.ascentdev.wims.repository.RackRepository;
@@ -36,6 +38,7 @@ import com.ascentdev.wims.repository.RefRackRepository;
 import com.ascentdev.wims.repository.ReleasingCargoRepository;
 import com.ascentdev.wims.repository.StorageCargoRepository;
 import com.ascentdev.wims.service.StoreCargoService;
+import com.ascentdev.wims.utils.Dates;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -107,6 +110,9 @@ public class StoreCargoServiceImp implements StoreCargoService {
   @Autowired
   CargoConditionRepository ccRepo;
 
+  @Autowired
+  JobAssignmentRepository jaRepo;
+
   @Override
   public ApiResponseModel getStorageCargo() {
     ApiResponseModel resp = new ApiResponseModel();
@@ -158,6 +164,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
     MawbEntity mawb = new MawbEntity();
     HawbEntity hawb = new HawbEntity();
     FlightsEntity flights = new FlightsEntity();
+    List<JobAssignmentEntity> jobAssigns = new ArrayList<>();
 
     List<HawbEntity> hawbs = new ArrayList<>();
 
@@ -169,11 +176,14 @@ public class StoreCargoServiceImp implements StoreCargoService {
       flights = fRepo.findByFlightNumber(flightNumber);
       mawb = mRepo.findByMawbNumber(mawbNumber);
       hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawb_number);
+      jobAssigns = jaRepo.findByAssignedUserIdAndFlightId(user_id, flights.getId());
 
 //      logs = cargoRepo.getByMawbIdAndHawbId(rackUtil.getTxnMawbId(), rackUtil.getTxnHawbId()).get(0);
-
       logs.setReceivedReleasedDate(Timestamp.valueOf(date));
-      logs.setHandledById(user_id);
+      logs.setHandledById(jobAssigns.get(0).getId());
+      logs.setFlightId(flights.getId());
+      logs.setMawbId(mawb.getId());
+      logs.setHawbId(hawbs.get(0).getId());
       logs.setUpdatedAt(Timestamp.valueOf(date));
       logs.setUpdatedById(user_id);
       logs.setCreatedAt(Timestamp.valueOf(date));
@@ -407,7 +417,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber, int user_id) {
+  public ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber, long user_id) {
     ErrorException ex1 = null;
     ApiResponseModel resp = new ApiResponseModel();
 //    StorageLogsEntity storageLogs = new StorageLogsEntity();
@@ -416,25 +426,35 @@ public class StoreCargoServiceImp implements StoreCargoService {
     HawbEntity hawbDetails = new HawbEntity();
     CargoActivityLogsEntity logs = new CargoActivityLogsEntity();
     LocalDateTime date = LocalDateTime.now();
+    
+    List<JobAssignmentEntity> jobAssigns = new ArrayList<>();
+    List<HawbEntity> hawbs = new ArrayList<>();
+
+    MawbEntity mawb1 = new MawbEntity();
+    FlightsEntity flights = new FlightsEntity();
 
     try {
       if (hawbNumber.equals("null") || hawbNumber.equals("")) {
-        mawbDetails = mRepo.findByMawbNumber(mawbNumber);
-        logs = cargoRepo.findByMawbIdAndLocationAndReceivedReleasedDateNull(mawbDetails.getId(), "RELEASING");
-        if (logs.getId() > 0) {
-          logs.setReceivedReleasedDate(Timestamp.valueOf(date));
-          logs.setUpdatedAt(Timestamp.valueOf(date));
-          logs.setHandledById(user_id);
-          logs.setUpdatedById((long) user_id);
-          cargoRepo.save(logs);
+        mawb1 = mRepo.findByMawbNumber(mawbNumber);
+        hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawbNumber);
+//        logs = cargoRepo.findByMawbIdAndLocationAndReceivedReleasedDateNull(mawbDetails.getId(), "RELEASING AREA");
 
-          resp.setMessage("Successfully Released");
-          resp.setStatus(true);
-          resp.setStatusCode(200);
-        } else {
-          ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Failed to RELEASE this cargo", System.currentTimeMillis());
-          throw ex1;
-        }
+        logs.setReceivedReleasedDate(Timestamp.valueOf(date));
+        logs.setHandledById(jobAssigns.get(0).getId());
+        logs.setFlightId(mawb1.getFlightId());
+        logs.setMawbId(mawb1.getId());
+        logs.setHawbId(hawbs.get(0).getId());
+        logs.setUpdatedAt(Timestamp.valueOf(date));
+        logs.setUpdatedById(user_id);
+        logs.setCreatedAt(Timestamp.valueOf(date));
+        logs.setCreatedById(user_id);
+        logs.setLocation("RELEASING AREA");
+        logs.setActivityStatus("RELEASING");
+        cargoRepo.save(logs);
+
+        resp.setMessage("Successfully Released");
+        resp.setStatus(true);
+        resp.setStatusCode(200);
 
       } else {
         hawbDetails = hRepo.findByHawbNumber(hawbNumber);
@@ -575,6 +595,43 @@ public class StoreCargoServiceImp implements StoreCargoService {
     }
     return resp;
 
+  }
+
+  @Override
+  public ApiResponseModel saveReleaseCargo(String mawbNumber, String hawbNumber, String flightNumber, long userId) {
+    ApiResponseModel resp = new ApiResponseModel();
+    LocalDateTime date = LocalDateTime.now();
+
+    List<JobAssignmentEntity> jobAssigns = new ArrayList<>();
+    List<HawbEntity> hawbs = new ArrayList<>();
+
+    MawbEntity mawb1 = new MawbEntity();
+    FlightsEntity flights = new FlightsEntity();
+    CargoActivityLogsEntity logs = new CargoActivityLogsEntity();
+
+    try {
+      flights = fRepo.findByFlightNumber(flightNumber);
+      mawb1 = mRepo.findByMawbNumber(mawbNumber);
+      hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawbNumber);
+
+      logs.setReceivedReleasedDate(Timestamp.valueOf(date));
+      logs.setHandledById(jobAssigns.get(0).getId());
+      logs.setFlightId(flights.getId());
+      logs.setMawbId(mawb1.getId());
+      logs.setHawbId(hawbs.get(0).getId());
+      logs.setUpdatedAt(Timestamp.valueOf(date));
+      logs.setUpdatedById(userId);
+      logs.setCreatedAt(Timestamp.valueOf(date));
+      logs.setCreatedById(userId);
+      logs.setLocation("RELEASING AREA");
+      logs.setActivityStatus("RELEASING");
+      cargoRepo.save(logs);
+
+    } catch (ErrorException e) {
+      e.printStackTrace();
+    }
+
+    return resp;
   }
 
 }

@@ -225,7 +225,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         mawb = mRepo.findByUldNumber(uldNumber);
         hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
         cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
-        if (cal.size() == 0) {
+        if (cal.size() != 0) {
           resp.setMessage("No New Data!");
           resp.setStatus(false);
           resp.setStatusCode(404);
@@ -241,7 +241,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         mawb = mRepo.findByFlightId(flight.getId());
         hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
         cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
-        if (cal.size() == 0) {
+        if (cal.size() != 0) {
           message = "No Data to Show";
           status = false;
           statusCode = 404;
@@ -371,8 +371,6 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         cargoEntity.setHandledById(jobAssigns.get(0).getId());
         cargoEntity.setReceivedReleasedDate(Timestamp.valueOf(new Dates().getCurrentDateTime()));
         cargoEntity.setActualPcs(mawbDetails.getActualPcs());
-        cargoEntity.setUpdatedAt(Timestamp.valueOf(new Dates().getCurrentDateTime()));
-        cargoEntity.setUpdatedById((long) userId);
         cargoEntity.setLocation("RECEIVING AREA");
         cargoEntity.setMawbId(mawb1.getId());
         cargoEntity.setHawbId(hawb1.getId());
