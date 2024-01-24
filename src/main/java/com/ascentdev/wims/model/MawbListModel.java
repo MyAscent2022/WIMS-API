@@ -34,7 +34,7 @@ public class MawbListModel {
   Float actualVolume;
   int actualPcs;
   Long cargoCategoryId;
-  long cargoClassId;
+  Long cargoClassId;
   long flightId;
   int hawbCount;
 }

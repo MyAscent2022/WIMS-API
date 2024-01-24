@@ -25,6 +25,7 @@ import com.ascentdev.wims.entity.UldTypeEntity;
 import com.ascentdev.wims.entity.UldsEntity;
 import com.ascentdev.wims.error.ErrorException;
 import com.ascentdev.wims.model.ApiResponseModel;
+import com.ascentdev.wims.model.CargoActivityModel;
 import com.ascentdev.wims.model.CargoCategoryModel;
 import com.ascentdev.wims.model.CargoClassModel;
 import com.ascentdev.wims.model.CargoConditionModel;
@@ -224,7 +225,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         mawb = mRepo.findByUldNumber(uldNumber);
         hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
         cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
-        if (!cal.isEmpty()) {
+        if (cal.size() == 0) {
           resp.setMessage("No New Data!");
           resp.setStatus(false);
           resp.setStatusCode(404);
@@ -240,13 +241,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         mawb = mRepo.findByFlightId(flight.getId());
         hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
         cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
-        if (cal.isEmpty()) {
-          data.setMawbs(mawbMapper(mawb));
-          resp.setData(data);
-          resp.setMessage("Data found!");
-          resp.setStatus(true);
-          resp.setStatusCode(200);
-        } else {
+        if (cal.size() == 0) {
           message = "No Data to Show";
           status = false;
           statusCode = 404;
@@ -254,6 +249,13 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
           resp.setMessage(message);
           resp.setStatus(status);
           resp.setStatusCode(statusCode);
+        } else {
+          
+          data.setMawbs(mawbMapper(mawb));
+          resp.setData(data);
+          resp.setMessage("Data found!");
+          resp.setStatus(true);
+          resp.setStatusCode(200);
         }
 
       }

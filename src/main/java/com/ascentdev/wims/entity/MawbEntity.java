@@ -82,7 +82,7 @@ public class MawbEntity {
   int actualPcs;
 
   @Column(name = "cargo_category_id")
-  long cargoCategoryId;
+  Long cargoCategoryId;
 
   @Column(name = "cargo_class_id")
   Long cargoClassId;
