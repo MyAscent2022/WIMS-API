@@ -23,7 +23,6 @@ import org.hibernate.annotations.Subselect;
         + "f.flight_number, \n"
         + "cc.classdesc,\n"
         + "tm.actual_weight,\n"
-        + "CONCAT(up.firstname, ' ', up.lastname) AS storage_personnel, \n"
         + "rr.rack_name, \n"
         + "rr.layer_name\n"
         + "FROM public.cargo_activity_logs cal\n"
@@ -32,7 +31,7 @@ import org.hibernate.annotations.Subselect;
         + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
         + "INNER JOIN public.ref_cargo_class cc ON cc.id = tm.cargo_class_id\n"
         + "INNER JOIN public.txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
-        + "INNER JOIN public.ref_rack rr ON rr.id = tru.ref_rack_id")
+        + "INNER JOIN public.ref_rack rr ON rr.id = tru.ref_rack_idF")
 public class RackDetailsEntity {
 
   @Id
@@ -56,9 +55,8 @@ public class RackDetailsEntity {
   @Column(name = "classdesc")
   String classdesc;
 
-  @Column(name = "storage_personnel")
-  String storagePersonnel;
-
+//  @Column(name = "storage_personnel")
+//  String storagePersonnel;
   @Column(name = "rack_name")
   String rackName;
 
