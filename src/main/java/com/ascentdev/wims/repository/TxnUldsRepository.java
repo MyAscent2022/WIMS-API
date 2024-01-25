@@ -4,13 +4,13 @@
  */
 package com.ascentdev.wims.repository;
 
-import com.ascentdev.wims.entity.UldContainerTypeEntity;
+import com.ascentdev.wims.entity.TxnUldsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author ASCENT
  */
-public interface UldContainerTypeRepository extends JpaRepository<UldContainerTypeEntity, Long>{
-  UldContainerTypeEntity findByType (String type);
+public interface TxnUldsRepository extends JpaRepository<TxnUldsEntity, Long>{
+  
 }

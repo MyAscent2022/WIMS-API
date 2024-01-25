@@ -150,7 +150,7 @@ public class ReceiveCargoController {
 
   @PostMapping("save_uld_number")
   public ApiResponseModel saveUldNumber(@RequestBody SaveUldModel saveUld) {
-    return receiveCargoServiceImp.saveUldNumber(saveUld.getUlds(), saveUld.getMawbs(), saveUld.getUldNumber());
+    return receiveCargoServiceImp.saveUldNumber(saveUld.getUlds(), saveUld.getMawbs(), saveUld.getUldNumber(), saveUld.getFlightNumber(), saveUld.getUldType());
   }
 
   @PostMapping("update_receiver_status")

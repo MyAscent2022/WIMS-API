@@ -20,6 +20,7 @@ import com.ascentdev.wims.entity.RackEntity;
 import com.ascentdev.wims.entity.ReceivingLogsEntity;
 import com.ascentdev.wims.entity.RefRackEntity;
 import com.ascentdev.wims.entity.RefULDEntity;
+import com.ascentdev.wims.entity.TxnUldsEntity;
 import com.ascentdev.wims.entity.UldContainerTypeEntity;
 import com.ascentdev.wims.entity.UldTypeEntity;
 import com.ascentdev.wims.entity.UldsEntity;
@@ -68,6 +69,7 @@ import com.ascentdev.wims.repository.ReceivingLogsRepository;
 import com.ascentdev.wims.repository.RefRackRepository;
 import com.ascentdev.wims.repository.RefULDRepository;
 import com.ascentdev.wims.repository.StorageLogsRepository;
+import com.ascentdev.wims.repository.TxnUldsRepository;
 import com.ascentdev.wims.repository.UldContainerTypeRepository;
 import com.ascentdev.wims.repository.UldTypeRepository;
 import java.sql.Timestamp;
@@ -133,6 +135,9 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Autowired
   RefULDRepository refUldRepo;
+  
+  @Autowired
+  TxnUldsRepository tuRepo;
 
   @Autowired
   CargoActivityLogsRepository cargoActivityRepo;
@@ -225,37 +230,52 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         mawb = mRepo.findByUldNumber(uldNumber);
         hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
         cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
-        if (cal.size() != 0) {
-          resp.setMessage("No New Data!");
-          resp.setStatus(false);
-          resp.setStatusCode(404);
+
+        if (mawb.size() == 0) {
+          message = "No Data to Show";
+          status = false;
+          statusCode = 404;
         } else {
-          data.setMawbs(mawbMapper(mawb));
-          resp.setData(data);
-          resp.setMessage("New Data Found!");
-          resp.setStatus(true);
-          resp.setStatusCode(200);
+          if (cal.size() != 0) {
+            resp.setMessage("No New Data!");
+            resp.setStatus(false);
+            resp.setStatusCode(404);
+          } else {
+            data.setMawbs(mawbMapper(mawb));
+            resp.setData(data);
+            resp.setMessage("New Data Found!");
+            resp.setStatus(true);
+            resp.setStatusCode(200);
+          }
         }
+
       } else {
         flight = fRepo.findByFlightNumber(flightNumber);
         mawb = mRepo.findByFlightId(flight.getId());
         hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
         cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
-        if (cal.size() != 0) {
+
+        if (mawb.size() == 0) {
           message = "No Data to Show";
           status = false;
           statusCode = 404;
-
-          resp.setMessage(message);
-          resp.setStatus(status);
-          resp.setStatusCode(statusCode);
         } else {
-          
-          data.setMawbs(mawbMapper(mawb));
-          resp.setData(data);
-          resp.setMessage("Data found!");
-          resp.setStatus(true);
-          resp.setStatusCode(200);
+          if (cal.size() != 0) {
+            message = "No Data to Show";
+            status = false;
+            statusCode = 404;
+
+            resp.setMessage(message);
+            resp.setStatus(status);
+            resp.setStatusCode(statusCode);
+          } else {
+
+            data.setMawbs(mawbMapper(mawb));
+            resp.setData(data);
+            resp.setMessage("Data found!");
+            resp.setStatus(true);
+            resp.setStatusCode(200);
+          }
         }
 
       }
@@ -720,26 +740,40 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   }
 
   @Override
-  public ApiResponseModel saveUldNumber(UldsEntity ulds, String[] mawbs, String uldNumber) {
+  public ApiResponseModel saveUldNumber(UldsEntity ulds, String[] mawbs, String uldNumber, String flightNumber, String uldType) {
     ApiResponseModel resp = new ApiResponseModel();
+    TxnUldsEntity tu = new TxnUldsEntity();
+    FlightsEntity flights = new FlightsEntity();
+    UldContainerTypeEntity uc = new UldContainerTypeEntity();
 
     try {
-      ulds.setUldNumber(uldNumber);
-      UldsEntity u = uRepo.save(ulds);
-      u.setTotalMawb(mawbs.length);
-      MawbEntity m;
+      flights = fRepo.findByFlightNumber(flightNumber);
+      uc = ucRepo.findByType(uldType);
+      
+      //saving in txn_uld
+      tu.setUldNumber(uldNumber);
+      tu.setTotalMawb(mawbs.length);
+      tu.setFlightNumber(ulds.getFlightNumber());
+      tu.setUldType(ulds.getUldTypeId());
+      tu = tuRepo.save(tu);
+      
+//      ulds.setUldNumber(uldNumber);
+//      UldsEntity u = uRepo.save(ulds);
+//      u.setTotalMawb(mawbs.length);
 
+      MawbEntity m;
+      
       for (int i = 0; i < mawbs.length; i++) {
         String mawbNumber = mawbs[i];
         m = mRepo.findByMawbNumber(mawbNumber);
-        m.setUldNumber(u.getUldNumber());
+        m.setUldNumber(tu.getUldNumber());
         mRepo.save(m);
 
         resp.setMawbs(mawbs);
 
-        if (u.getId() > 0) {
-          resp.setData(u);
-          resp.setMessage("SUCCESSFULLY ADDED ULD NO. [ " + u.getUldNumber() + " ]");
+        if (tu.getId() > 0) {
+          resp.setData(ulds);
+          resp.setMessage("SUCCESSFULLY ADDED ULD NO. [ " + tu.getUldNumber() + " ]");
           resp.setStatus(true);
           resp.setStatusCode(200);
 
