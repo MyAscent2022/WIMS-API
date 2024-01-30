@@ -33,7 +33,7 @@ public class RefRackEntity {
   String layerName;
   
   @Column(name="volume")
-  float volume;
+  Float volume;
   
   @Column(name="dimension")
   String dimension;

@@ -16,6 +16,7 @@ import com.ascentdev.wims.repository.UserRepository;
 import com.ascentdev.wims.service.UserService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,13 @@ public class UserServiceImp implements UserService {
         if (passwordEncoder.matches(passkey, user.getPasskey())) {
           user = uRepo.save(user);
           resp.setData(user);
+          
+          List<UserLogsEntity> activeSessions = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true);
+                for (UserLogsEntity activeSession : activeSessions) {
+                    activeSession.setLogOutAt(Timestamp.valueOf(date));
+                    activeSession.setActive(false);
+                    ulRepo.save(activeSession);
+                }
 
           if (searchUser != null) {
             UserLogsEntity userLogs = new UserLogsEntity();
@@ -102,7 +110,7 @@ public class UserServiceImp implements UserService {
     try {
       searchUser = suRepo.findByUserId(userId);
       if (searchUser != null) {
-        userLogs = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true);
+        userLogs = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true).get(0);
         userLogs.setLogOutAt(Timestamp.valueOf(date));
         userLogs.setActive(false);
         userLogs = ulRepo.save(userLogs);
