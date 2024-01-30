@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UldsRepository extends JpaRepository<UldsEntity, Long> {
 
-  UldsEntity findByUldNumber(String uldNumber);
+  UldsEntity findByUldNumberAndFlightNumber(String uldNumber, String flightNumber);
+  UldsEntity findByUldNumber (String uldNumber);
   List<UldsEntity> findByFlightNumber(String flightNumber);
 }

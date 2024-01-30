@@ -61,5 +61,5 @@ public class RackEntity {
   long txnMawbId;
   
   @Column(name="txn_hawb_id")
-  int txnHawbId;
+  long txnHawbId;
 }

@@ -135,7 +135,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Autowired
   RefULDRepository refUldRepo;
-  
+
   @Autowired
   TxnUldsRepository tuRepo;
 
@@ -442,14 +442,12 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
             rack.setLocation(refRackDetail.getRackName() + " - " + refRackDetail.getLayerName());
             rack = rRepo.save(rack);
           }
-
           r = rrRepo.save(r);
           status = true;
           statusCode = 200;
           message = "Saved Successfully";
           break;
         }
-
       }
       resp.setData(mawb1);
       resp.setMessage("Saved Successfully");
@@ -513,7 +511,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       int count = 0;
       condition = cargoRepo.findByCondition(count == 0 ? uldCondition1 : uldCondition2);
       flights = fRepo.findByFlightNumber(flightNumber);
-      ulds = uRepo.findByUldNumber(uldNumber);
+      ulds = uRepo.findByUldNumberAndFlightNumber(uldNumber, flights.getFlightNumber());
       for (MultipartFile f : file) {
         UldImagesEntity images = new UldImagesEntity();
         String filename = f.getOriginalFilename();
@@ -749,20 +747,19 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     try {
       flights = fRepo.findByFlightNumber(flightNumber);
       uc = ucRepo.findByType(uldType);
-      
+
       //saving in txn_uld
       tu.setUldNumber(uldNumber);
       tu.setTotalMawb(mawbs.length);
       tu.setFlightNumber(ulds.getFlightNumber());
       tu.setUldType(ulds.getUldTypeId());
       tu = tuRepo.save(tu);
-      
+
 //      ulds.setUldNumber(uldNumber);
 //      UldsEntity u = uRepo.save(ulds);
 //      u.setTotalMawb(mawbs.length);
-
       MawbEntity m;
-      
+
       for (int i = 0; i < mawbs.length; i++) {
         String mawbNumber = mawbs[i];
         m = mRepo.findByMawbNumber(mawbNumber);
