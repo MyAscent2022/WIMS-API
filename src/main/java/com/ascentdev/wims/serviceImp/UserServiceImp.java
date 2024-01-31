@@ -61,13 +61,13 @@ public class UserServiceImp implements UserService {
         if (passwordEncoder.matches(passkey, user.getPasskey())) {
           user = uRepo.save(user);
           resp.setData(user);
-          
+
           List<UserLogsEntity> activeSessions = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true);
-                for (UserLogsEntity activeSession : activeSessions) {
-                    activeSession.setLogOutAt(Timestamp.valueOf(date));
-                    activeSession.setActive(false);
-                    ulRepo.save(activeSession);
-                }
+          for (UserLogsEntity activeSession : activeSessions) {
+            activeSession.setLogOutAt(Timestamp.valueOf(date));
+            activeSession.setActive(false);
+            ulRepo.save(activeSession);
+          }
 
           if (searchUser != null) {
             UserLogsEntity userLogs = new UserLogsEntity();
@@ -105,7 +105,7 @@ public class UserServiceImp implements UserService {
     LocalDateTime date = LocalDateTime.now();
 
     SearchUserEntity searchUser = new SearchUserEntity();
-    UserLogsEntity userLogs  = new UserLogsEntity();
+    UserLogsEntity userLogs = new UserLogsEntity();
 
     try {
       searchUser = suRepo.findByUserId(userId);

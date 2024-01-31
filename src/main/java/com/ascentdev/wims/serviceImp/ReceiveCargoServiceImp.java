@@ -229,7 +229,13 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       if (isUld) {
         mawb = mRepo.findByUldNumber(uldNumber);
         hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
-        cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
+        
+        if (!mawb.isEmpty() && !hawb.isEmpty()) {
+          cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
+        } else {
+          cal = new ArrayList<>();
+        }
+        
 
         if (mawb.size() == 0) {
           message = "No Data to Show";
@@ -253,7 +259,12 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
         flight = fRepo.findByFlightNumber(flightNumber);
         mawb = mRepo.findByFlightId(flight.getId());
         hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
-        cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
+        
+        if (!mawb.isEmpty() && !hawb.isEmpty()) {
+          cal = cargoActivityRepo.findByMawbIdAndHawbId(mawb.get(0).getId(), hawb.get(0).getId());
+        } else {
+          cal = new ArrayList<>();
+        }
 
         if (mawb.size() == 0) {
           message = "No Data to Show";
