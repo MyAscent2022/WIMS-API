@@ -5,6 +5,7 @@
 package com.ascentdev.wims.repository;
 
 import com.ascentdev.wims.entity.TxnUldsEntity;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,5 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author ASCENT
  */
 public interface TxnUldsRepository extends JpaRepository<TxnUldsEntity, Long>{
-  
+  List<TxnUldsEntity> findByFlightNumber (String flightNumber);
 }

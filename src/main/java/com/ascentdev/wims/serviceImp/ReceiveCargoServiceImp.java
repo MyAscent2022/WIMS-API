@@ -747,13 +747,23 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     try {
       flights = fRepo.findByFlightNumber(flightNumber);
       uc = ucRepo.findByType(uldType);
+      tu = tuRepo.findByFlightNumber(ulds.getFlightNumber()).get(0);
 
       //saving in txn_uld
-      tu.setUldNumber(uldNumber);
-      tu.setTotalMawb(mawbs.length);
-      tu.setFlightNumber(ulds.getFlightNumber());
-      tu.setUldType(ulds.getUldTypeId());
-      tu = tuRepo.save(tu);
+      if (tu != null) {
+//        tu = tuRepo.findByFlightNumber(flightNumber).get(0);
+        tu.setUldNumber(uldNumber);
+        tu.setTotalMawb(mawbs.length);
+        tu.setUldType(ulds.getUldTypeId());
+        tu = tuRepo.save(tu);
+      } else {
+        tu = new TxnUldsEntity();
+        tu.setUldNumber(uldNumber);
+        tu.setTotalMawb(mawbs.length);
+        tu.setFlightNumber(ulds.getFlightNumber());
+        tu.setUldType(ulds.getUldTypeId());
+        tu = tuRepo.save(tu);
+      }
 
 //      ulds.setUldNumber(uldNumber);
 //      UldsEntity u = uRepo.save(ulds);
