@@ -53,9 +53,9 @@ public class UserServiceImp implements UserService {
       searchUser = suRepo.findByUsername(username);
       user = uRepo.findByUsername(username);
       if (user == null) {
-        message = "Wrong username";
-        statusCode = 404;
-        status = false;
+        resp.setMessage("User not found");
+        resp.setStatusCode(404);
+        resp.setStatus(false);
       } else {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (passwordEncoder.matches(passkey, user.getPasskey())) {
@@ -83,14 +83,14 @@ public class UserServiceImp implements UserService {
             resp.setStatus(status);
             resp.setStatusCode(statusCode);
           } else {
-            message = "Wrong User";
-            statusCode = 404;
-            status = false;
+            resp.setMessage("Wrong username");
+            resp.setStatusCode(404);
+            resp.setStatus(false);
           }
         } else {
-          message = "Wrong password";
-          statusCode = 404;
-          status = false;
+          resp.setMessage("Wrong password");
+          resp.setStatusCode(404);
+          resp.setStatus(false);
         }
       }
     } catch (ErrorException e) {
