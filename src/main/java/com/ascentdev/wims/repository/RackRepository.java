@@ -16,5 +16,6 @@ import org.springframework.data.repository.query.Param;
  */
 public interface RackRepository extends JpaRepository<RackEntity, Long> {
 
-  RackEntity findById(@Param("rack_util_id") long rackUtilId);
+  RackEntity findById(long rackUtilId);
+  List<RackEntity> findByTxnMawbIdAndTxnHawbId(long txnMawbId, long txnHawbId);
 }

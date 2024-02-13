@@ -16,23 +16,28 @@ import org.hibernate.annotations.Subselect;
  */
 @Data
 @Entity
-@Subselect("SELECT u.id AS user_id, u.username, u.role_id, up.firstname, up.lastname FROM public.users u\n"
+@Subselect("SELECT u.id AS user_id, \n"
+        + "u.username, \n"
+        + "u.role_id, \n"
+        + "up.firstname, \n"
+        + "up.lastname \n"
+        + "FROM public.users u\n"
         + "INNER JOIN public.user_profile up ON up.user_id = u.id")
 public class SearchUserEntity {
+
   @Id
-  @Column(name="user_id")
+  @Column(name = "user_id")
   long userId;
-  
-  
-  @Column(name="username")
+
+  @Column(name = "username")
   String username;
-  
-  @Column(name="role_id")
+
+  @Column(name = "role_id")
   long roleId;
-  
-  @Column(name="firstname")
+
+  @Column(name = "firstname")
   String firstname;
-  
-  @Column(name="lastname")
+
+  @Column(name = "lastname")
   String lastname;
 }

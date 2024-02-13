@@ -6,7 +6,11 @@ package com.ascentdev.wims.model;
 
 import com.ascentdev.wims.entity.MawbEntity;
 import java.security.Timestamp;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Id;
 import lombok.Data;
 
 /**
@@ -15,5 +19,5 @@ import lombok.Data;
  */
 @Data
 public class MawbModel {
-  List<MawbEntity> mawbs;
+  List<MawbListModel> mawbs;
 }

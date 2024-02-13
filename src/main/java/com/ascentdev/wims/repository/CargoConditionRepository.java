@@ -15,6 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * ASCENT
  */
 public interface CargoConditionRepository extends JpaRepository<CargoConditionEntity, Long>{
-  
-  
+  CargoConditionEntity findByCondition(String condition);
 }

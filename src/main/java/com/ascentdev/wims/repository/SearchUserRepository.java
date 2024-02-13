@@ -13,5 +13,6 @@ import org.springframework.data.repository.query.Param;
  * @author ASCENT
  */
 public interface SearchUserRepository extends JpaRepository<SearchUserEntity, Long>{
-  SearchUserEntity findByUsername(@Param("username") String username);
+  SearchUserEntity findByUsername(String username);
+  SearchUserEntity findByUserId(long userId);
 }

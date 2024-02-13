@@ -7,8 +7,6 @@ package com.ascentdev.wims.repository;
 import com.ascentdev.wims.entity.FlightsEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -18,6 +16,6 @@ import org.springframework.data.repository.query.Param;
 public interface FlightsRepository extends JpaRepository<FlightsEntity, Long> {
 
   List<FlightsEntity> findByIdIn(long[] ids);
-
-  List<FlightsEntity> findByUserIdContaining(@Param("user_id") String user_id);
+  List<FlightsEntity> findByUserId(long user_id);
+  FlightsEntity findByFlightNumber(String flightNumber);
 }

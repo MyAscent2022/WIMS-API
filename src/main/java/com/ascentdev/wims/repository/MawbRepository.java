@@ -15,11 +15,11 @@ import org.springframework.stereotype.Repository;
  *
  * @author ASCENT
  */
-public interface MawbRepository extends JpaRepository<MawbEntity, Integer> {
+public interface MawbRepository extends JpaRepository<MawbEntity, Long> {
 
-//  List<MawbEntity> findByFlightNumber(@Param("flight_number") String flightNumber);
+  List<MawbEntity> findByFlightId(long flightId);
 
-  List<MawbEntity> findByUldNumber(@Param("uld_number") String uldNumber);
+  List<MawbEntity> findByUldNumber(String uldNumber);
 
-  MawbEntity findByMawbNumber(@Param("mawb_number") String mawbNumber);
+  MawbEntity findByMawbNumber(String mawbNumber);
 }

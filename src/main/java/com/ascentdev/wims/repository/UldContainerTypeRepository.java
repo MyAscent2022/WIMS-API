@@ -4,13 +4,13 @@
  */
 package com.ascentdev.wims.repository;
 
-import com.ascentdev.wims.entity.CargoCategoryEntity;
+import com.ascentdev.wims.entity.UldContainerTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author ASCENT
  */
-public interface CargoCategoryRepository extends JpaRepository<CargoCategoryEntity, Long>{
-  CargoCategoryEntity findByDescription(String description);
+public interface UldContainerTypeRepository extends JpaRepository<UldContainerTypeEntity, Long>{
+  UldContainerTypeEntity findByType (String type);
 }

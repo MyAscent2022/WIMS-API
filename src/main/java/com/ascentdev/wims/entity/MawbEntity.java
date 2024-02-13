@@ -7,7 +7,6 @@ package com.ascentdev.wims.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.sql.Date;
 import java.sql.Time;
-import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -26,7 +25,7 @@ import lombok.Data;
 public class MawbEntity {
 
   @Id
-  int id;
+  long id;
 
   @Column(name = "date_of_arrival")
   Date dateOfArrival;
@@ -77,15 +76,18 @@ public class MawbEntity {
   float actualWeight;
 
   @Column(name = "actual_volume")
-  float actualVolume;
+  Float actualVolume;
 
   @Column(name = "actual_pcs")
   int actualPcs;
 
   @Column(name = "cargo_category_id")
-  int cargoCategoryId;
+  Long cargoCategoryId;
 
   @Column(name = "cargo_class_id")
-  int cargoClassId;
+  Long cargoClassId;
+  
+  @Column(name = "flight_id")
+  long flightId;
 
 }

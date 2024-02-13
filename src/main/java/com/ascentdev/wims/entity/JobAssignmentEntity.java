@@ -5,6 +5,8 @@
 package com.ascentdev.wims.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.sql.Date;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -17,36 +19,33 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="ref_rack")
+@Table(name="job_assignments")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class RefRackEntity {
+public class JobAssignmentEntity {
   @Id
   long id;
   
-  @Column(name="layer_id")
-  long layerId;
+  @Column(name="assigned_user_id")
+  long assignedUserId;
   
-  @Column(name="max_volume")
-  float maxVolume;
+  @Column(name="flight_id")
+  long flightId;
   
-  @Column(name="layer_name")
-  String layerName;
+  @Column(name="auth_role_id")
+  long authRoleId;
   
-  @Column(name="volume")
-  Float volume;
+  @Column(name="date_assigned")
+  Date dateAssigned;
   
-  @Column(name="dimension")
-  String dimension;
+  @Column(name="assigned_by_id")
+  long assignedById;
   
-  @Column(name="layout_column")
-  Long layoutColumn;
+  @Column(name="created_at")
+  Timestamp createdAt;
   
-  @Column(name="layout_row")
-  Long layoutRow;
+  @Column(name="modified_by_id")
+  Long modifiedById;
   
-  @Column(name="rack_id")
-  int rackId;
-  
-  @Column(name="rack_name")
-  String rackName;
+  @Column(name="modified_at")
+  Timestamp modifiedAt;
 }

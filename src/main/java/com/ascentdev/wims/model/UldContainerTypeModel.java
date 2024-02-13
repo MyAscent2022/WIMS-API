@@ -4,7 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
-import com.ascentdev.wims.entity.Acceptance;
+import com.ascentdev.wims.entity.UldContainerTypeEntity;
 import java.util.List;
 import lombok.Data;
 
@@ -13,6 +13,6 @@ import lombok.Data;
  * @author ASCENT
  */
 @Data
-public class AcceptanceModel {
-  List<Acceptance> acceptance;
+public class UldContainerTypeModel {
+  List<UldContainerTypeEntity> containers;
 }

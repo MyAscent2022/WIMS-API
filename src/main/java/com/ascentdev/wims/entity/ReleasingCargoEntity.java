@@ -13,29 +13,26 @@ import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @Data
 @Entity
-@Subselect("SELECT tm.id, \n"
-        + "tm.mawb_number, \n"
-        + "th.hawb_number, \n"
-        + "cal.actual_pcs, \n"
-        + "rs.release_status, \n"
-        + "cal.payment_datetime, \n"
+@Subselect("SELECT tm.id,\n"
+        + "tm.mawb_number,\n"
+        + "th.hawb_number,\n"
+        + "cal.actual_item_count,\n"
+        + "sp.datepaid,\n"
         + "cal.location,\n"
-        + "r.rack_name, \n"
+        + "r.rack_name,\n"
         + "r.layer_name\n"
-        + "FROM public.cargo_activity_logs cal\n"
-        + "INNER JOIN public.txn_mawb tm ON tm.id = cal.mawb_id\n"
-        + "LEFT JOIN public.txn_hawb th ON th.id = cal.hawb_id\n"
-        + "LEFT JOIN public.ref_release_status rs ON rs.id = cal.released_type_id\n"
-        + "INNER JOIN public.txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
-        + "LEFT JOIN public.ref_rack r ON r.id = tru.ref_rack_id\n"
-        + "WHERE NOT cal.payment_datetime IS NULL \n"
-        + "AND cal.location = 'RELEASING' \n"
-        + "AND cal.released_datetime IS NULL")
+        + "FROM cargo_activity_logs cal\n"
+        + "INNER JOIN txn_mawb tm ON tm.id = cal.mawb_id\n"
+        + "INNER JOIN txn_hawb th ON th.id = cal.hawb_id\n"
+        + "INNER JOIN txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
+        + "INNER JOIN storage_payments sp ON sp.mawb_id = cal.mawb_id\n"
+        + "LEFT JOIN ref_rack r ON r.id = tru.ref_rack_id\n"
+        + "WHERE cal.activity_status = 'STORING'\n"
+        + "AND sp.datepaid IS NOT NULL")
 public class ReleasingCargoEntity {
 
   @Id
@@ -47,16 +44,16 @@ public class ReleasingCargoEntity {
   @Column(name = "hawb_number")
   String hawbNumber;
 
-  @Column(name = "actual_pcs")
+  @Column(name = "actual_item_count")
   int actualPcs;
 
   @Column(name = "location")
   String location;
 
-  @Column(name = "release_status")
-  String releaseStatus;
+//  @Column(name = "release_status")
+//  String releaseStatus;
 
-  @Column(name = "payment_datetime")
+  @Column(name = "datepaid")
   String paidDt;
 
   @Column(name = "rack_name")

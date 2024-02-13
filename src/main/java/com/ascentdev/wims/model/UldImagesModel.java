@@ -4,8 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
-import com.ascentdev.wims.entity.RefULDEntity;
-import com.ascentdev.wims.entity.UldsEntity;
+import com.ascentdev.wims.entity.UldImagesEntity;
 import java.util.List;
 import lombok.Data;
 
@@ -14,10 +13,6 @@ import lombok.Data;
  * @author ASCENT
  */
 @Data
-public class UldsModel {
-  UldsEntity ulds;
-  String uld_number;
-  
-  List<UldsEntity> uldList1;
-  List<RefULDEntity> uldList;
+public class UldImagesModel {
+  List<UldImagesEntity> images;
 }

@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Subselect;
 
 /**
  *
@@ -19,34 +20,40 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="txn_ulds")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Subselect("SELECT u.id,\n"
+        + "u.uld_number,\n"
+        + "u.total_count,\n"
+        + "u.flight_number,\n"
+        + "u.uld_type,\n"
+        + "u.total_expected,\n"
+        + "ut.type,\n"
+        + "u.total_mawb\n"
+        + "FROM txn_ulds u\n"
+        + "INNER JOIN ref_uld_container_type ut ON ut.id = u.uld_type")
 public class UldsEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
-  
-  @Column(name="uld_number")
+
+  @Column(name = "uld_number")
   String uldNumber;
-  
-  @Column(name="uld_type")
-  long uldTypeId;
-  
-  @Column(name="flight_number")
+
+  @Column(name = "total_count")
+  int totalCount;
+
+  @Column(name = "flight_number")
   String flightNumber;
+
+  @Column(name = "uld_type")
+  long uldTypeId;
+
+  @Column(name = "total_expected")
+  int totalExpected;
+
+  @Column(name = "type")
+  String type;
   
-  @Column(name="total_count")
-  Long totalCount;
-  
-  @Column(name="short_landed")
-  Long shortLanded;
-  
-  @Column(name="total_expected")
-  Long totalExpected;
-  
-  @Column(name="total_mawb")
+  @Column(name = "total_mawb")
   int totalMawb;
-  
-  @Column(name="uld_status")
-  Long uldStatus;
 }

@@ -58,8 +58,8 @@ public class RackEntity {
   int modifiedById;
   
   @Column(name="txn_mawb_id")
-  int txnMawbId;
+  long txnMawbId;
   
   @Column(name="txn_hawb_id")
-  int txnHawbId;
+  long txnHawbId;
 }

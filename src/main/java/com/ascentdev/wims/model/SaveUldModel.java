@@ -16,4 +16,7 @@ import lombok.Data;
 public class SaveUldModel {
   UldsEntity ulds;
   String[] mawbs;
+  String uldNumber;
+  String flightNumber;
+  String uldType;
 }

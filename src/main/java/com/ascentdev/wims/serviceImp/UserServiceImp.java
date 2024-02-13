@@ -7,7 +7,6 @@ package com.ascentdev.wims.serviceImp;
 import com.ascentdev.wims.entity.SearchUserEntity;
 import com.ascentdev.wims.entity.UserEntity;
 import com.ascentdev.wims.entity.UserLogsEntity;
-import com.ascentdev.wims.entity.UserProfileEntity;
 import com.ascentdev.wims.error.ErrorException;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.repository.SearchUserRepository;
@@ -17,6 +16,7 @@ import com.ascentdev.wims.repository.UserRepository;
 import com.ascentdev.wims.service.UserService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,9 +39,6 @@ public class UserServiceImp implements UserService {
   UserLogsRepository ulRepo;
 
   @Autowired
-  UserProfileRepository upRepo;
-
-  @Autowired
   SearchUserRepository suRepo;
 
   @Override
@@ -56,14 +53,21 @@ public class UserServiceImp implements UserService {
       searchUser = suRepo.findByUsername(username);
       user = uRepo.findByUsername(username);
       if (user == null) {
-        message = "Wrong username";
-        statusCode = 404;
-        status = false;
+        resp.setMessage("User not found");
+        resp.setStatusCode(404);
+        resp.setStatus(false);
       } else {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (passwordEncoder.matches(passkey, user.getPasskey())) {
           user = uRepo.save(user);
           resp.setData(user);
+
+          List<UserLogsEntity> activeSessions = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true);
+          for (UserLogsEntity activeSession : activeSessions) {
+            activeSession.setLogOutAt(Timestamp.valueOf(date));
+            activeSession.setActive(false);
+            ulRepo.save(activeSession);
+          }
 
           if (searchUser != null) {
             UserLogsEntity userLogs = new UserLogsEntity();
@@ -79,14 +83,14 @@ public class UserServiceImp implements UserService {
             resp.setStatus(status);
             resp.setStatusCode(statusCode);
           } else {
-            message = "oh shit";
-            statusCode = 404;
-            status = false;
+            resp.setMessage("Wrong username");
+            resp.setStatusCode(404);
+            resp.setStatus(false);
           }
         } else {
-          message = "Wrong password";
-          statusCode = 404;
-          status = false;
+          resp.setMessage("Wrong password");
+          resp.setStatusCode(404);
+          resp.setStatus(false);
         }
       }
     } catch (ErrorException e) {
@@ -96,17 +100,17 @@ public class UserServiceImp implements UserService {
   }
 
   @Override
-  public ApiResponseModel userLogout(String username) {
+  public ApiResponseModel userLogout(long userId) {
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
 
     SearchUserEntity searchUser = new SearchUserEntity();
-    UserLogsEntity userLogs  = new UserLogsEntity();
+    UserLogsEntity userLogs = new UserLogsEntity();
 
     try {
-      searchUser = suRepo.findByUsername(username);
+      searchUser = suRepo.findByUserId(userId);
       if (searchUser != null) {
-        userLogs = ulRepo.findByUserIdAndLogOutAt(searchUser.getUserId(), null);
+        userLogs = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true).get(0);
         userLogs.setLogOutAt(Timestamp.valueOf(date));
         userLogs.setActive(false);
         userLogs = ulRepo.save(userLogs);
@@ -115,7 +119,7 @@ public class UserServiceImp implements UserService {
         resp.setStatus(status);
         resp.setStatusCode(statusCode);
       } else {
-        message = "oh shit";
+        message = "No User Found";
         statusCode = 404;
         status = false;
       }
