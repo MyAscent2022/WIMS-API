@@ -14,4 +14,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface TxnUldsRepository extends JpaRepository<TxnUldsEntity, Long>{
   List<TxnUldsEntity> findByFlightNumber (String flightNumber);
+  TxnUldsEntity findByUldNumber(String uldNumber);
 }

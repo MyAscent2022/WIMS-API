@@ -30,7 +30,7 @@ import org.hibernate.annotations.Subselect;
         + "FROM flights f\n"
         + "INNER JOIN job_assignments ja ON ja.flight_id = f.id\n"
         + "INNER JOIN ref_airline ra ON ra.code = f.ref_airline_code\n"
-        + "WHERE f.travel_status = 'Done'")
+        + "WHERE f.travel_status = 'Done' AND f.estimated_arrival_dt::DATE = CURRENT_DATE")
 public class FlightsEntity {
 
   @Id

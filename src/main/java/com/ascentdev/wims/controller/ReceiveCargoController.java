@@ -159,8 +159,8 @@ public class ReceiveCargoController {
   }
 
   @PostMapping("update_uld_number")
-  public ApiResponseModel updateUldNumber(@RequestBody UldsModel updateUld) {
-    return receiveCargoServiceImp.updateUldNumber(updateUld.getUlds(), updateUld.getUld_number());
+  public ApiResponseModel updateUldNumber(@RequestBody UldsModel updateUld, @RequestParam("uld_number") String uldNumber) {
+    return receiveCargoServiceImp.updateUldNumber(updateUld.getUlds(), uldNumber);
   }
   
   @PostMapping("upload_image")

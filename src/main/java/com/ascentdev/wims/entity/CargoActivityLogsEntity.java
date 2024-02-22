@@ -37,7 +37,7 @@ public class CargoActivityLogsEntity {
   long mawbId;
 
   @Column(name = "hawb_id")
-  long hawbId;
+  int hawbId;
 
   @Column(name = "location")
   String location;
