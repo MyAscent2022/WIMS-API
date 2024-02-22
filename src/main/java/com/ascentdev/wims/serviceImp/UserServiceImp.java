@@ -7,6 +7,7 @@ package com.ascentdev.wims.serviceImp;
 import com.ascentdev.wims.entity.SearchUserEntity;
 import com.ascentdev.wims.entity.UserEntity;
 import com.ascentdev.wims.entity.UserLogsEntity;
+import com.ascentdev.wims.entity.UserProfileEntity;
 import com.ascentdev.wims.error.ErrorException;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.repository.SearchUserRepository;
@@ -40,6 +41,9 @@ public class UserServiceImp implements UserService {
 
   @Autowired
   SearchUserRepository suRepo;
+  
+  @Autowired
+  UserProfileRepository uPRepo;
 
   @Override
   public ApiResponseModel userLogin(String username, String passkey) {
@@ -60,7 +64,6 @@ public class UserServiceImp implements UserService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (passwordEncoder.matches(passkey, user.getPasskey())) {
           user = uRepo.save(user);
-          resp.setData(user);
 
           List<UserLogsEntity> activeSessions = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true);
           for (UserLogsEntity activeSession : activeSessions) {
@@ -70,6 +73,8 @@ public class UserServiceImp implements UserService {
           }
 
           if (searchUser != null) {
+            UserProfileEntity uProfile =new UserProfileEntity();
+            uProfile = uPRepo.findByUserId(searchUser.getUserId());
             UserLogsEntity userLogs = new UserLogsEntity();
             userLogs.setLogInAt(Timestamp.valueOf(date));
             userLogs.setName(searchUser.getFirstname() + " " + searchUser.getLastname());
@@ -79,6 +84,8 @@ public class UserServiceImp implements UserService {
             userLogs.setMobile(true);
             userLogs = ulRepo.save(userLogs);
 
+            user.setUsername(uProfile.getFirstname()+" "+uProfile.getLastname());
+            resp.setData(user);
             resp.setMessage(message);
             resp.setStatus(status);
             resp.setStatusCode(statusCode);

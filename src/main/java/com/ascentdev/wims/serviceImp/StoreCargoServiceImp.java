@@ -51,6 +51,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -290,6 +291,39 @@ public class StoreCargoServiceImp implements StoreCargoService {
       }
     } catch (ErrorException e) {
       e.printStackTrace();
+    }
+    return resp;
+  }
+  
+  @Override
+  public ApiResponseModel getAllRefRacks() {
+    ApiResponseModel resp = new ApiResponseModel();
+    RefRackModel data = new RefRackModel();
+
+    List<RefRackEntity> refRacks = new ArrayList<>();
+
+    try {
+      
+      Sort sort = Sort.by(Sort.Order.asc("id"));
+      refRacks = rrRepo.findAll(sort);
+      
+      if (refRacks.size() > 0) {
+          data.setRefRacks(refRacks);
+          resp.setData(data);
+          resp.setMessage("Data Found");
+          resp.setStatus(true);
+          resp.setStatusCode(200);
+        } else {
+          resp.setMessage("NO DATA FOUND");
+          resp.setStatus(false);
+          resp.setStatusCode(404);
+        }
+
+    } catch (ErrorException e) {
+      e.printStackTrace();
+      resp.setMessage("NO DATA FOUND");
+      resp.setStatus(false);
+      resp.setStatusCode(404);
     }
     return resp;
   }

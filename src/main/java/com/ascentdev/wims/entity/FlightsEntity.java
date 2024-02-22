@@ -27,10 +27,12 @@ import org.hibernate.annotations.Subselect;
         + "f.travel_status,\n"
         + "f.flight_status,\n"
         + "f.estimated_arrival_dt::DATE AS date_of_arrival\n"
-        + "FROM flights f\n"
+        + "FROM uld_activity_logs ul\n"
+        + "INNER JOIN flights f ON f.id = ul.flight_id\n"
         + "INNER JOIN job_assignments ja ON ja.flight_id = f.id\n"
         + "INNER JOIN ref_airline ra ON ra.code = f.ref_airline_code\n"
-        + "WHERE f.travel_status = 'Done' AND f.estimated_arrival_dt::DATE = CURRENT_DATE")
+        + "WHERE f.travel_status = 'Done'\n"
+        + "AND f.estimated_arrival_dt::DATE = CURRENT_DATE")
 public class FlightsEntity {
 
   @Id

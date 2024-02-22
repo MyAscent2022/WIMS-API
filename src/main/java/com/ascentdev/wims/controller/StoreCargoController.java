@@ -12,10 +12,7 @@ import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.model.CargoActivityModel;
 import com.ascentdev.wims.model.CargoImageRequestModel;
 import com.ascentdev.wims.serviceImp.StoreCargoServiceImp;
-import com.google.api.client.json.Json;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.io.File;
 import java.nio.file.Files;
 import java.sql.Timestamp;
@@ -97,9 +94,11 @@ public class StoreCargoController {
   }
   
   @GetMapping("get_ref_rack")
-  public ApiResponseModel getRackRacks(boolean is_layer, String rackName) {
-    return storeCargoServiceImp.getRefRacks(is_layer,rackName);
+  public ApiResponseModel getRackRacks() {
+    return storeCargoServiceImp.getAllRefRacks();
   }
+  
+ 
   
   @GetMapping("get_rack_details")
   public ApiResponseModel getRackDetails(@RequestParam("is_hawb") boolean is_hawb, @RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number) {

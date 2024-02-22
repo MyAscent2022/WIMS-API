@@ -19,16 +19,16 @@ import org.hibernate.annotations.Subselect;
  */
 @Data
 @Entity
-@Subselect("SELECT u.id,\n"
-        + "u.uld_number,\n"
-        + "u.total_count,\n"
-        + "u.flight_number,\n"
-        + "u.uld_type,\n"
-        + "u.total_expected,\n"
-        + "ut.type,\n"
-        + "u.total_mawb\n"
-        + "FROM txn_ulds u\n"
-        + "INNER JOIN ref_uld_container_type ut ON ut.id = u.uld_type")
+@Subselect("SELECT ul.id,\n"
+        + "ru.id AS uld_id,\n"
+        + "ru.uld_no,\n"
+        + "ru.uld_type,\n"
+        + "ul.flight_id,\n"
+        + "f.flight_number,\n"
+        + "ru.tare_weight\n"
+        + "FROM uld_activity_logs ul\n"
+        + "INNER JOIN ref_uld ru ON ru.id = ul.uld_id\n"
+        + "INNER JOIN flights f ON f.id = ul.flight_id")
 public class UldsEntity {
 
   @Id
@@ -52,7 +52,7 @@ public class UldsEntity {
 
   @Column(name = "type")
   String type;
-  
+
   @Column(name = "total_mawb")
   int totalMawb;
 }

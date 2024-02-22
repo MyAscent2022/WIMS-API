@@ -46,4 +46,5 @@ public interface StoreCargoService {
           MawbEntity mawbDetails, 
           HawbEntity hawbDetails);
   Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, List<ImagesEntity> imagesEntity);
+  ApiResponseModel getAllRefRacks();
 }
