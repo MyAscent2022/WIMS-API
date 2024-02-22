@@ -46,7 +46,7 @@ public class TxnUldsEntity {
   String flightNumber;
   
   @Column(name="airline_returnee")
-  int airlineReturnee;
+  Integer airlineReturnee;
   
   @Column(name="arrival_date")
   Date arrivalDate;

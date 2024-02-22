@@ -6,14 +6,22 @@ package com.ascentdev.wims.controller;
 
 import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import com.ascentdev.wims.entity.HawbEntity;
+import com.ascentdev.wims.entity.ImagesEntity;
 import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.model.CargoActivityModel;
+import com.ascentdev.wims.model.CargoImageRequestModel;
 import com.ascentdev.wims.serviceImp.StoreCargoServiceImp;
+import com.google.api.client.json.Json;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.File;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +112,7 @@ public class StoreCargoController {
   }
   
   @PostMapping("update_storager_status")
-  public ApiResponseModel updateStoragerStatus(@RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number, @RequestParam("user_id") int user_id) {
+  public ApiResponseModel updateStoragerStatus(@RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number, @RequestParam("user_id") long user_id) {
     return storeCargoServiceImp.updateStoragerStatus(hawb_number, mawb_number, user_id);
   }
   
@@ -114,8 +122,16 @@ public class StoreCargoController {
   }
   
   @PostMapping("upload_storage_image")
-  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") long hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2, @RequestParam("remarks1") String remarks1, @RequestParam("remarks2") String remarks2) {
-    return storeCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2, remarks1, remarks2);
+  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") long hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("list_image_details") String list_image_details) {
+    Gson gson = new Gson();
+    List<ImagesEntity> imagesEntity = new ArrayList<>();
+    
+    CargoImageRequestModel req = new CargoImageRequestModel();
+    req.setImagesEntity(imagesEntity);
+    req = gson.fromJson(list_image_details,CargoImageRequestModel.class);
+    
+    
+    return storeCargoServiceImp.uploadImage(file, hawb_id, mawb_number, req.getImagesEntity());
   }
   
   @PostMapping("save_releasing_cargo")

@@ -6,9 +6,11 @@ package com.ascentdev.wims.service;
 
 import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import com.ascentdev.wims.entity.HawbEntity;
+import com.ascentdev.wims.entity.ImagesEntity;
 import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.model.ApiResponseModel;
 import java.sql.Timestamp;
+import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -43,5 +45,5 @@ public interface StoreCargoService {
           CargoActivityLogsEntity cargoLogs, 
           MawbEntity mawbDetails, 
           HawbEntity hawbDetails);
-  Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, String cargoCondition1, String cargoCondition2, String remarks1, String remarks2);
+  Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, List<ImagesEntity> imagesEntity);
 }
