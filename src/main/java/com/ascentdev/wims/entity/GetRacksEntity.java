@@ -4,26 +4,27 @@
  */
 package com.ascentdev.wims.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author ASCENT
+ * @author ASCENT SOLUTIONS INC
  */
 @Data
 @Entity
-@Table(name="ref_cargo_category")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class CargoCategoryEntity {
+@Subselect("SELECT DISTINCT rack_id, rack_name\n"
+        + "FROM ref_rack\n"
+        + "ORDER BY rack_id ASC")
+public class GetRacksEntity {
+  
   @Id
-  Long id;
+  @Column(name = "rack_id")
+  int rackId;
   
-  @Column(name="description")
-  String description;
-  
+  @Column(name = "rack_name")
+  String rackName;    
 }

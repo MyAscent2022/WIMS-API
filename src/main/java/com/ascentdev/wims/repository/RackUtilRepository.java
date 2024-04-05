@@ -4,7 +4,7 @@
  */
 package com.ascentdev.wims.repository;
 
-import com.ascentdev.wims.entity.RackEntity;
+import com.ascentdev.wims.entity.RackUtilEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,8 +14,8 @@ import org.springframework.data.repository.query.Param;
  *
  * @author ASCENT
  */
-public interface RackRepository extends JpaRepository<RackEntity, Long> {
+public interface RackUtilRepository extends JpaRepository<RackUtilEntity, Long> {
 
-  RackEntity findById(long rackUtilId);
-  List<RackEntity> findByTxnMawbIdAndTxnHawbId(long txnMawbId, long txnHawbId);
+  RackUtilEntity findById(long rackUtilId);
+  List<RackUtilEntity> findByTxnMawbIdAndTxnHawbId(long txnMawbId, long txnHawbId);
 }

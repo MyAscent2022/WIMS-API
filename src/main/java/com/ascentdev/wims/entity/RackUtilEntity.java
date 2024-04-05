@@ -22,7 +22,7 @@ import lombok.Data;
 @Entity
 @Table(name="txn_rack_utilization")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class RackEntity {
+public class RackUtilEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;

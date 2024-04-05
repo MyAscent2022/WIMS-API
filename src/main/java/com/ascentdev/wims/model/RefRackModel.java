@@ -4,6 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
+import com.ascentdev.wims.entity.GetRacksEntity;
 import com.ascentdev.wims.entity.RefRackEntity;
 import java.util.List;
 import lombok.Data;
@@ -14,5 +15,6 @@ import lombok.Data;
  */
 @Data
 public class RefRackModel {
-  List<RefRackEntity> refRacks;
+  List<RefRackEntity> layers;
+  List<GetRacksEntity> refRacks;
 }

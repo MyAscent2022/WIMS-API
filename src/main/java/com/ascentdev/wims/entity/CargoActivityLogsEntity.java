@@ -31,13 +31,13 @@ public class CargoActivityLogsEntity {
   long id;
 
   @Column(name = "flight_id")
-  long flightId;
+  int flightId;
 
   @Column(name = "mawb_id")
-  long mawbId;
+  int mawbId;
 
   @Column(name = "hawb_id")
-  long hawbId;
+  int hawbId;
 
   @Column(name = "location")
   String location;

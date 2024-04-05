@@ -90,7 +90,7 @@ public class ReceiveCargoController {
           @RequestParam("remarks") String remarks,
           @RequestParam("actual_pcs") int actual_pcs,
           @RequestParam("actual_weight") float actual_weight,
-          @RequestParam("actual_volume") Float actual_volume,
+          @RequestParam("actual_volume") float actual_volume,
           @RequestParam("length") int length,
           @RequestParam("width") int width,
           @RequestParam("height") int height,
@@ -159,12 +159,12 @@ public class ReceiveCargoController {
   }
 
   @PostMapping("update_uld_number")
-  public ApiResponseModel updateUldNumber(@RequestBody UldsModel updateUld) {
-    return receiveCargoServiceImp.updateUldNumber(updateUld.getUlds(), updateUld.getUld_number());
+  public ApiResponseModel updateUldNumber(@RequestBody UldsModel updateUld, @RequestParam("uld_number") String uldNumber) {
+    return receiveCargoServiceImp.updateUldNumber(updateUld.getUlds(), uldNumber);
   }
   
   @PostMapping("upload_image")
-  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") long hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2, @RequestParam("remarks1") String remarks1, @RequestParam("remarks2") String remarks2) {
+  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") int hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2, @RequestParam("remarks1") String remarks1, @RequestParam("remarks2") String remarks2) {
     return receiveCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2, remarks1, remarks2);
   }
   

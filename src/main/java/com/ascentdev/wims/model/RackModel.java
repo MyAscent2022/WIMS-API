@@ -4,7 +4,7 @@
  */
 package com.ascentdev.wims.model;
 
-import com.ascentdev.wims.entity.RackEntity;
+import com.ascentdev.wims.entity.RackUtilEntity;
 import java.util.List;
 import lombok.Data;
 
@@ -14,5 +14,5 @@ import lombok.Data;
  */
 @Data
 public class RackModel {
-  List<RackEntity> racks;
+  List<RackUtilEntity> racks;
 }

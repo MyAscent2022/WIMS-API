@@ -21,7 +21,7 @@ import lombok.Data;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CargoClassEntity {
   @Id
-  long id;
+  Long id;
   
   @Column(name="ref_cargo_class")
   String refCargoClass;

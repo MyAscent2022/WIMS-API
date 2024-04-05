@@ -25,13 +25,27 @@ public interface CargoActivityLogsRepository extends JpaRepository<CargoActivity
           nativeQuery = true)
   List<CargoActivityLogsEntity> getByMawbIdAndHawbId(@Param("mawb_id") long mawbId, @Param("hawb_id") long hawbId);
   
-  List<CargoActivityLogsEntity> findByMawbIdAndHawbId(long mawbId, long hawbId);
+  @Query(
+          value = "SELECT cal.* FROM cargo_activity_logs cal\n"
+          + "WHERE cal.mawb_id = :mawb_id\n"
+          + "AND cal.hawb_id = :hawb_id\n"
+          + "AND cal.activity_status = :activity_status",
+          nativeQuery = true)
+  List<CargoActivityLogsEntity> getByMawbIdAndHawbIdAndActivityStatus(@Param("mawb_id") long mawbId, @Param("hawb_id") long hawbId, @Param("activity_status") String activityStatus);
+//  List<CargoActivityLogsEntity> findByMawbIdAndHawbIdAndActivityStatus(int mawbId, int hawbId, String activityStatus);
   
-  List<CargoActivityLogsEntity> findByMawbIdAndHawbIdAndActivityStatus(long mawbId, long hawbId, String activityStatus);
+  List<CargoActivityLogsEntity> findByMawbIdAndHawbId(int mawbId, int hawbId);
+  
+  
+    @Query(
+          value = "SELECT cal.* FROM cargo_activity_logs cal\n"
+          + "WHERE cal.mawb_id = :mawb_id\n"
+          + "AND cal.activity_status = :activity_status",
+          nativeQuery = true)
+  List<CargoActivityLogsEntity> getByMawbIdAndActivityStatus(@Param("mawb_id") long mawbId, @Param("activity_status") String activityStatus);
+//  List<CargoActivityLogsEntity> findByMawbIdAndActivityStatus(int mawbId, String activityStatus);
 
-  List<CargoActivityLogsEntity> findByMawbIdAndActivityStatus(long mawbId, String activityStatus);
-
-  CargoActivityLogsEntity findByMawbIdAndLocationAndReceivedReleasedDateNull(long mawbId, String location);
+  CargoActivityLogsEntity findByMawbIdAndLocationAndReceivedReleasedDateNull(int mawbId, String location);
 
   CargoActivityLogsEntity findByHawbIdAndLocationAndReceivedReleasedDateNull(int hawb_id, String location);
 
