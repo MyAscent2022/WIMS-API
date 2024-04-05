@@ -25,7 +25,7 @@ import lombok.Data;
 public class MawbEntity {
 
   @Id
-  long id;
+  int id;
 
   @Column(name = "date_of_arrival")
   Date dateOfArrival;
@@ -37,7 +37,7 @@ public class MawbEntity {
   String mawbNumber;
 
   @Column(name = "number_of_containers")
-  long numberOfContainers;
+  int numberOfContainers;
 
   @Column(name = "number_of_packages")
   int numberOfPackages;
@@ -58,19 +58,19 @@ public class MawbEntity {
   String uldNumber;
 
   @Column(name = "uld_container_type_id")
-  Long uldContainerTypeId;
+  int uldContainerTypeId;
 
   @Column(name = "cargo_status")
   String cargoStatus;
 
   @Column(name = "length")
-  int length;
+  float length;
 
   @Column(name = "width")
-  int width;
+  float width;
 
   @Column(name = "height")
-  int height;
+  float height;
 
   @Column(name = "actual_weight")
   float actualWeight;
@@ -88,6 +88,6 @@ public class MawbEntity {
   Long cargoClassId;
   
   @Column(name = "flight_id")
-  long flightId;
+  int flightId;
 
 }

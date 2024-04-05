@@ -39,7 +39,7 @@ public interface ReceiveCargoService {
           String hawbNumber,
           String flightNumber,
           String remarks, CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails);
-  Integer uploadImage(MultipartFile[] file, long hawbId, String mawbNumber, String cargoCondition1, String cargoCondition2, String remarks1, String remarks2);
+  Integer uploadImage(MultipartFile[] file, int hawbId, String mawbNumber, String cargoCondition1, String cargoCondition2, String remarks1, String remarks2);
   ApiResponseModel confirmCargo(CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number, int userId, String cargoCategory, String cargoClass);
   ApiResponseModel saveUldNumber(UldsEntity ulds, String[] mawbs, String uldNumber, String flightNumber, String uldType);
   ApiResponseModel updateUldNumber(UldsEntity ulds, String uldNumber);

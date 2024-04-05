@@ -15,9 +15,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author ASCENT
  */
-public interface MawbRepository extends JpaRepository<MawbEntity, Long> {
+public interface MawbRepository extends JpaRepository<MawbEntity, Integer> {
 
-  List<MawbEntity> findByFlightId(long flightId);
+  List<MawbEntity> findByFlightId(int flightId);
 
   List<MawbEntity> findByUldNumber(String uldNumber);
 

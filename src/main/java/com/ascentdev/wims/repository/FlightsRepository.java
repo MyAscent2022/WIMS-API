@@ -16,6 +16,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface FlightsRepository extends JpaRepository<FlightsEntity, Long> {
 
   List<FlightsEntity> findByIdIn(long[] ids);
-  List<FlightsEntity> findByUserId(long user_id);
+//  List<FlightsEntity> findByUserId(long user_id);
   FlightsEntity findByFlightNumber(String flightNumber);
 }

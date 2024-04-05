@@ -18,5 +18,6 @@ public class ApiResponseModel {
   int statusCode;
   Object data;
   List<?> condition; 
+  List<?> layers;
   String[] mawbs;
 }

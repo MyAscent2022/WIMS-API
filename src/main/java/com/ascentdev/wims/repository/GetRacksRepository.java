@@ -4,15 +4,13 @@
  */
 package com.ascentdev.wims.repository;
 
-import com.ascentdev.wims.entity.TxnUldsEntity;
-import java.util.List;
+import com.ascentdev.wims.entity.GetRacksEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author ASCENT
+ * @author ASCENT SOLUTIONS INC
  */
-public interface TxnUldsRepository extends JpaRepository<TxnUldsEntity, Long>{
-  List<TxnUldsEntity> findByFlightNumber (String flightNumber);
-  TxnUldsEntity findByUldNumber(String uldNumber);
+public interface GetRacksRepository extends JpaRepository<GetRacksEntity, Integer> {
+  
 }
