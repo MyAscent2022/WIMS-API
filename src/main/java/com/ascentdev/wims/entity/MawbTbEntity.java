@@ -12,42 +12,17 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author ASCENT
+ * @author ASCENT SOLUTIONS INC
  */
 @Data
 @Entity
-@Subselect("SELECT tm.id, \n"
-        + "tm.date_of_arrival, \n"
-        + "tm.destination_code, \n"
-        + "tm.mawb_number,\n"
-        + "tm.number_of_containers,\n"
-        + "tm.number_of_packages,\n"
-        + "tm.origin_code,\n"
-        + "tm.registry_number,\n"
-        + "tm.time_of_arrival,\n"
-        + "tm.volume,\n"
-        + "tm.uld_number,\n"
-        + "tm.uld_container_type_id,\n"
-        + "tm.cargo_status,\n"
-        + "tm.length,\n"
-        + "tm.width,\n"
-        + "tm.height,\n"
-        + "tm.actual_weight,\n"
-        + "tm.actual_volume,\n"
-        + "tm.actual_pcs,\n"
-        + "tm.cargo_category_id,\n"
-        + "tm.cargo_class_id,\n"
-        + "tm.flight_id,\n"
-        + "ru.uld_status\n"
-        + "FROM txn_mawb tm\n"
-        + "INNER JOIN ref_uld ru ON ru.uld_no = tm.uld_number")
+@Table(name = "txn_mawb")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class MawbEntity {
-
+public class MawbTbEntity {
+  
   @Id
   int id;
 
@@ -113,8 +88,4 @@ public class MawbEntity {
 
   @Column(name = "flight_id")
   int flightId;
-
-  @Column(name = "uld_status")
-  int uldStatus;
-
 }

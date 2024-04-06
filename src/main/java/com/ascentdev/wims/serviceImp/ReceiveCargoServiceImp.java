@@ -16,6 +16,7 @@ import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.ImagesEntity;
 import com.ascentdev.wims.entity.JobAssignmentEntity;
 import com.ascentdev.wims.entity.MawbEntity;
+import com.ascentdev.wims.entity.MawbTbEntity;
 import com.ascentdev.wims.entity.RackUtilEntity;
 import com.ascentdev.wims.entity.ReceivingLogsEntity;
 import com.ascentdev.wims.entity.RefRackEntity;
@@ -50,6 +51,7 @@ import com.ascentdev.wims.repository.HawbRepository;
 import com.ascentdev.wims.repository.ImagesRepository;
 import com.ascentdev.wims.repository.JobAssignmentRepository;
 import com.ascentdev.wims.repository.MawbRepository;
+import com.ascentdev.wims.repository.MawbTbRepository;
 import com.ascentdev.wims.repository.UldsRepository;
 import com.ascentdev.wims.service.ReceiveCargoService;
 import java.io.IOException;
@@ -96,6 +98,9 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
 
   @Autowired
   MawbRepository mRepo;
+
+  @Autowired
+  MawbTbRepository m3Repo;
 
   @Autowired
   FlightsRepository fRepo;
@@ -228,7 +233,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     try {
 
       if (isUld) {
-        mawb = mRepo.findByUldNumber(uldNumber);
+        mawb = mRepo.findByUldNumberAndUldStatusNot(uldNumber, 11);
         if (mawb.size() > 0) {
           hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
         }
@@ -260,7 +265,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
       } else {
         flight = fRepo.findByFlightNumber(flightNumber);
         mawb = mRepo.findByFlightId(flight.getId());
-        if(mawb.size() > 0){
+        if (mawb.size() > 0) {
           hawb = hRepo.findByMawbNumber(mawb.get(0).getMawbNumber());
         }
 
@@ -344,13 +349,14 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
   }
 
   @Override
-  public ApiResponseModel confirmCargo(CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number, int userId, String cargoCategory, String cargoClass) {
+  public ApiResponseModel confirmCargo(CargoActivityLogsEntity cargoLogs, MawbEntity mawbDetails, HawbEntity hawbDetails, String mawb_number, String flightNumber, String hawb_number, int userId, String cargoCategory, String cargoClass, String uld_number) {
     ErrorException ex1 = null;
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
 
     List<HawbEntity> hawbs = new ArrayList<>();
-    List<MawbEntity> mawbs = new ArrayList<>();
+    List<MawbEntity> checkMawbSize = new ArrayList<>();
+    List<MawbTbEntity> mawbs = new ArrayList<>();
     List<RefRackEntity> refRack = new ArrayList<>();
     List<RackUtilEntity> rackList = new ArrayList<>();
     List<JobAssignmentEntity> jobAssigns = new ArrayList<>();
@@ -359,113 +365,133 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     HawbEntity hawb1 = new HawbEntity();
     CargoCategoryEntity category = new CargoCategoryEntity();
     CargoClassEntity cargoClass1 = new CargoClassEntity();
-    MawbEntity mawb1 = new MawbEntity();
+//    MawbEntity mawb2 = new MawbEntity();
+    MawbTbEntity mawb2 = new MawbTbEntity();
     RackUtilEntity rack = new RackUtilEntity();
     RefRackEntity refRackDetail = new RefRackEntity();
     FlightsEntity flights = new FlightsEntity();
+    UldsEntity uld = new UldsEntity();
+    RefULDEntity refUld = new RefULDEntity();
 
     float tempV = 0;
 
     try {
+//      uld = uRepo.findByUldNumberAndFlightNumber(uld_number, flightNumber);
+      refUld = refUldRepo.findByUldNo(uld_number);
       refRack = rrRepo.findAll();
       flights = fRepo.findByFlightNumber(flightNumber);
       hawbs = hRepo.findByMawbNumberAndHawbNumber(mawb_number, hawb_number);
-      mawb1 = mRepo.findByMawbNumber(mawb_number);
+      mawb2 = m3Repo.findByMawbNumber(mawb_number);
       category = ccRepo.findByDescription(cargoCategory);
       cargoClass1 = classRepo.findByClassdesc(cargoClass);
 //      jobAssigns = jaRepo.findByAssignedUserIdAndFlightId(userId, flights.getId());
 
-      if (mawb1.getId() > 0) {
-        if (hawbs.size() > 0) {
-          for (HawbEntity h : hawbs) {
-            hawb1 = hRepo.findByHawbNumber(h.getHawbNumber());
-            hawb1 = hRepo.save(hawb1);
+      if (refUld.getId() != 0) {
+        refUld.setUldStatus(11);
+        refUldRepo.save(refUld);
 
-            cargoEntity.setHawbId(h.getId());
-            rack.setTxnHawbId(h.getId());
+        if (mawb2.getId() > 0) {
+          if (hawbs.size() > 0) {
+            for (HawbEntity h : hawbs) {
+              hawb1 = hRepo.findByHawbNumber(h.getHawbNumber());
+              hawb1 = hRepo.save(hawb1);
+
+              cargoEntity.setHawbId(h.getId());
+              rack.setTxnHawbId(h.getId());
+            }
+
+          } else {
+            cargoEntity.setHawbId(0);
           }
 
-        } else {
-          cargoEntity.setHawbId(0);
-        }
-
 //      -- SAVE TO TXN MAWB TABLE (ADD DATA)
-        mawb1.setActualPcs(mawbDetails.getActualPcs());
-        mawb1.setActualVolume(mawbDetails.getVolume());
-        mawb1.setActualWeight(mawbDetails.getActualWeight());
-        mawb1.setCargoStatus(mawbDetails.getCargoStatus());
-        mawb1.setCargoClassId(cargoClass1.getId());
-        mawb1.setCargoCategoryId(category.getId());
-        mawb1.setLength(mawbDetails.getLength());
-        mawb1.setWidth(mawbDetails.getWidth());
-        mawb1.setHeight(mawbDetails.getHeight());
+          mawb2.setActualPcs(mawbDetails.getActualPcs());
+          mawb2.setActualVolume(mawbDetails.getVolume());
+          mawb2.setActualWeight(mawbDetails.getActualWeight());
+          mawb2.setCargoStatus(mawbDetails.getCargoStatus());
+          mawb2.setCargoClassId(cargoClass1.getId());
+          mawb2.setCargoCategoryId(category.getId());
+          mawb2.setLength(mawbDetails.getLength());
+          mawb2.setWidth(mawbDetails.getWidth());
+          mawb2.setHeight(mawbDetails.getHeight());
 
-        mawb1 = mRepo.save(mawb1);
-        mawbs.add(mawb1);
+          mawb2 = m3Repo.save(mawb2);
+          mawbs.add(mawb2);
+
+          checkMawbSize = mRepo.findByUldNumber(uld_number);
+          if (checkMawbSize.size() <= 1) {
+            refUld.setUldStatus(3);
+            refUldRepo.save(refUld);
+          }
 
 //      -- SAVE TO CARGO ACTIVITY LOGS TABLE (ADD DATA)
 //        cargoEntity.setHandledById(jobAssigns.get(0).getId());
-        cargoEntity.setReceivedReleasedDate(Timestamp.valueOf(new Dates().getCurrentDateTime()));
-        cargoEntity.setActualPcs(mawbDetails.getActualPcs());
-        cargoEntity.setLocation("RECEIVING AREA");
-        cargoEntity.setMawbId(mawb1.getId());
-        cargoEntity.setHawbId(hawb1.getId());
-        cargoEntity.setFlightId(flights.getId());
-        cargoEntity.setCreatedAt(Timestamp.valueOf(new Dates().getCurrentDateTime()));
-        cargoEntity.setCreatedById(userId);
-        cargoEntity.setActivityStatus("RECEIVED");
-        //cargoEntity.setRemarks(cargoLogs.getRemarks());
+          cargoEntity.setReceivedReleasedDate(Timestamp.valueOf(new Dates().getCurrentDateTime()));
+          cargoEntity.setActualPcs(mawbDetails.getActualPcs());
+          cargoEntity.setLocation("RECEIVING AREA");
+          cargoEntity.setMawbId(mawb2.getId());
+          cargoEntity.setHawbId(hawb1.getId());
+          cargoEntity.setFlightId(flights.getId());
+          cargoEntity.setCreatedAt(Timestamp.valueOf(new Dates().getCurrentDateTime()));
+          cargoEntity.setCreatedById(userId);
+          cargoEntity.setActivityStatus("RECEIVED");
+          //cargoEntity.setRemarks(cargoLogs.getRemarks());
 
-        cargoActivityRepo.save(cargoEntity);
+          cargoActivityRepo.save(cargoEntity);
 
-      } else {
-        ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "No MAWB NUMBER Found", System.currentTimeMillis());
-        throw ex1;
-      }
-
-      if (mawbs.size() > 0) {
-
-        rack.setNoOfPieces(mawbDetails.getActualPcs());
-        rack.setTxnMawbId(mawb1.getId());
-        rack.setStoredDt(Timestamp.valueOf(date));
-        rack.setCreatedAt(Timestamp.valueOf(date));
-        rack.setStoredById(userId);
-        rackList.add(rack);
-      } else {
-        ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Failed to Assign Rack in this Cargo", System.currentTimeMillis());
-        throw ex1;
-
-      }
-
-      for (RefRackEntity r : refRack) {
-        tempV = r.getMaxVolume() - r.getVolume();
-        if (tempV >= mawb1.getActualVolume()) {
-          r.setVolume(r.getVolume() + mawb1.getActualVolume());
-          refRackDetail = rrRepo.findById((int) r.getId());
-          rack.setLocation(refRackDetail.getRackName() + " - " + refRackDetail.getLayerName());
-          if (rackList.size() > 0) {
-            for (RackUtilEntity re : rackList) {
-              re.setRefRackId(r.getId());
-              re.setVolume(mawb1.getActualVolume());
-              re = rRepo.save(re);
-            }
-          } else {
-            refRackDetail = rrRepo.findById((long) r.getId());
-            rack = new RackUtilEntity();
-            rack.setNoOfPieces(mawb1.getActualPcs());
-            rack.setRefRackId(r.getId());
-            rack.setVolume(mawb1.getActualVolume());
-            rack.setLocation(refRackDetail.getRackName() + " - " + refRackDetail.getLayerName());
-            rack = rRepo.save(rack);
-          }
-          r = rrRepo.save(r);
-          status = true;
-          statusCode = 200;
-          message = "Saved Successfully";
-          break;
+        } else {
+          ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "No MAWB NUMBER Found", System.currentTimeMillis());
+          throw ex1;
         }
+
+        if (mawbs.size() > 0) {
+          rack.setNoOfPieces(mawbDetails.getActualPcs());
+          rack.setTxnMawbId(mawb2.getId());
+          rack.setStoredDt(Timestamp.valueOf(date));
+          rack.setCreatedAt(Timestamp.valueOf(date));
+          rack.setStoredById(userId);
+          rackList.add(rack);
+
+        } else {
+          ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Failed to Assign Rack in this Cargo", System.currentTimeMillis());
+          throw ex1;
+
+        }
+
+        for (RefRackEntity r : refRack) {
+          tempV = r.getMaxVolume() - r.getVolume();
+          if (tempV >= mawb2.getActualVolume()) {
+            r.setVolume(r.getVolume() + mawb2.getActualVolume());
+            refRackDetail = rrRepo.findById((int) r.getId());
+            rack.setLocation(refRackDetail.getRackName() + " - " + refRackDetail.getLayerName());
+            if (rackList.size() > 0) {
+              for (RackUtilEntity re : rackList) {
+                re.setRefRackId(r.getId());
+                re.setVolume(mawb2.getActualVolume());
+                re = rRepo.save(re);
+              }
+            } else {
+              refRackDetail = rrRepo.findById((long) r.getId());
+              rack = new RackUtilEntity();
+              rack.setNoOfPieces(mawb2.getActualPcs());
+              rack.setRefRackId(r.getId());
+              rack.setVolume(mawb2.getActualVolume());
+              rack.setLocation(refRackDetail.getRackName() + " - " + refRackDetail.getLayerName());
+              rack = rRepo.save(rack);
+            }
+            r = rrRepo.save(r);
+            status = true;
+            statusCode = 200;
+            message = "Saved Successfully";
+            break;
+          }
+        }
+      } else {
+        ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "No record Found", System.currentTimeMillis());
+        throw ex1;
       }
-      resp.setData(mawb1);
+
+      resp.setData(mawb2);
       resp.setMessage("Saved Successfully");
       resp.setStatus(true);
       resp.setStatusCode(200);
@@ -488,7 +514,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     List<CargoConditionEntity> condition1 = new ArrayList<>();
 
     try {
-      condition1 = cargoRepo.findAll();
+      condition1 = cargoRepo.findAllByOrderByIdDesc();
       if (condition1.size() == 0) {
         message = "No Data to Show";
         status = false;
@@ -522,28 +548,43 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     CargoConditionEntity condition = new CargoConditionEntity();
     FlightsEntity flights = new FlightsEntity();
     UldsEntity ulds = new UldsEntity();
+    RefULDEntity refUlds = new RefULDEntity();
 
     try {
       int count = 0;
       condition = cargoRepo.findByCondition(count == 0 ? uldCondition1 : uldCondition2);
       flights = fRepo.findByFlightNumber(flightNumber);
-      ulds = uRepo.findByUldNumberAndFlightNumber(uldNumber, flights.getFlightNumber());
-      for (MultipartFile f : file) {
-        UldImagesEntity images = new UldImagesEntity();
-        String filename = f.getOriginalFilename();
-        images.setFilePath(fileUploadPath + filename);
-        images.setFileName(filename);
-        images.setRemarks(count == 0 ? remarks1 : remarks2);
-        images.setUldNumber(ulds.getUldNumber());
-        images.setUldConditionId(condition.getId());
-        images.setFlightNumber(flights.getFlightNumber());
-        System.out.println("filename " + filename);
-        System.out.println("images " + images);
-        iRepo.save(images);
-        saveImage(f);
-        condition = new CargoConditionEntity();
-        count++;
+      ulds = uRepo.findByUldNumberAndFlightNumber(uldNumber, flightNumber);
+      refUlds = refUldRepo.findByUldNo(uldNumber);
+      if (refUlds.getId() != 0) {
+//        ulds.setUldStatus(10);
+        refUlds.setUldStatus(10);
+        refUldRepo.save(refUlds);
+
+        for (MultipartFile f : file) {
+          UldImagesEntity images = new UldImagesEntity();
+          String filename = f.getOriginalFilename();
+          images.setFilePath(fileUploadPath + filename);
+          images.setFileName(filename);
+          images.setRemarks(count == 0 ? remarks1 : remarks2);
+          images.setUldNumber(ulds.getUldNumber());
+          images.setUldConditionId(condition.getId());
+          images.setFlightNumber(flights.getFlightNumber());
+          System.out.println("filename " + filename);
+          System.out.println("images " + images);
+          iRepo.save(images);
+          saveImage(f);
+          condition = new CargoConditionEntity();
+          count++;
+        }
+
+      } else {
+        resp.setMessage("Image Did Not Upload");
+        resp.setStatus(false);
+        resp.setStatusCode(404);
+        resp.setData(0);
       }
+
       resp.setMessage("Successfully Saved Images");
       resp.setStatus(true);
       resp.setStatusCode(200);
@@ -574,7 +615,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     try {
 
 //      SAVE TO CARGO ACTIVITY LOGS 
-      resp = confirmCargo(cargoLogs, mawbDetails, hawbDetails, mawbNumber, flightNumber, hawbNumber, 0, "", "");
+//      resp = confirmCargo(cargoLogs, mawbDetails, hawbDetails, mawbNumber, flightNumber, hawbNumber, 0, "", "", );
       if (resp.isStatus()) {
         for (MultipartFile f : file) {
           CargoImagesEntity images = new CargoImagesEntity();
@@ -870,7 +911,7 @@ public class ReceiveCargoServiceImp implements ReceiveCargoService {
     try {
 //      u = uRepo.findByUldNumber(uldNumber);
       u = tuRepo.findByUldNumber(uldNumber);
-      m = mRepo.findByUldNumber(uldNumber);
+      m = mRepo.findByUldNumberAndUldStatusNot(uldNumber, 11);
 
       for (int i = 0; i < m.size(); i++) {
         String mawbNumber = m.get(i).getMawbNumber();

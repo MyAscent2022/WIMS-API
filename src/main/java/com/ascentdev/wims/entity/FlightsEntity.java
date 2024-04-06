@@ -32,7 +32,6 @@ import org.hibernate.annotations.Subselect;
 //        + "INNER JOIN ref_airline ra ON ra.code = f.ref_airline_code\n"
 //        + "WHERE f.travel_status = 'Done' AND f.estimated_arrival_dt::DATE = CURRENT_DATE")
 @Subselect("SELECT f.id,\n"
-//        + "ja.assigned_user_id AS user_id,\n"
         + "ra.id AS airline_id,\n"
         + "ra.description AS airline,\n"
         + "f.flight_number,\n"
@@ -41,7 +40,6 @@ import org.hibernate.annotations.Subselect;
         + "f.flight_status,\n"
         + "f.estimated_arrival_dt::DATE AS date_of_arrival\n"
         + "FROM flights f\n"
-//        + "INNER JOIN job_assignments ja ON ja.flight_id = f.id\n"
         + "INNER JOIN ref_airline ra ON ra.code = f.ref_airline_code\n"
         + "WHERE f.travel_status = 'Done' AND f.estimated_arrival_dt::DATE = CURRENT_DATE")
 public class FlightsEntity {
@@ -51,7 +49,6 @@ public class FlightsEntity {
 
 //  @Column(name = "user_id")
 //  long userId;
-
   @Column(name = "airline_id")
   Long airlineId;
 

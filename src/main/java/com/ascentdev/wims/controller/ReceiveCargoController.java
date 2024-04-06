@@ -134,8 +134,9 @@ public class ReceiveCargoController {
           @RequestParam("hawb_number") String hawbNumber, 
           @RequestParam("user_id") int userId,
           @RequestParam("cargo_category") String cargo_category,
-          @RequestParam("cargo_class") String cargo_class) {
-    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(), mawbNumber, flightNumber, hawbNumber, userId, cargo_category, cargo_class);
+          @RequestParam("cargo_class") String cargo_class,
+          @RequestParam("uld_number") String uld_number) {
+    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(), mawbNumber, flightNumber, hawbNumber, userId, cargo_category, cargo_class, uld_number);
   }
 
   @GetMapping("get_cargo_status")

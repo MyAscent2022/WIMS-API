@@ -17,5 +17,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RefULDRepository extends JpaRepository<RefULDEntity, Long>{
   
   List<RefULDEntity> findByFlightNumber(String flightNumber);
+  RefULDEntity findByUldNo(String uld_no);
   
 }

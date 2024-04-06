@@ -332,7 +332,6 @@ public class StoreCargoServiceImp implements StoreCargoService {
 //    }
 //    return resp;
 //  }
-
   @Override
   public ApiResponseModel getRefRacks(boolean is_layer, String rack_name) {
     ApiResponseModel resp = new ApiResponseModel();
@@ -545,15 +544,15 @@ public class StoreCargoServiceImp implements StoreCargoService {
     try {
       images = ciRepo.findByCargoActivityLogId(cargoActivityLogId);
       if (images.size() == 0) {
-        message = "No Data to show";
-        status = false;
-        statusCode = 400;
+        resp.setMessage("No Images found!");
+        resp.setStatus(false);
+        resp.setStatusCode(404);
       } else {
         resp.setMessage("Images found!");
         resp.setStatus(true);
         resp.setStatusCode(200);
-        resp.setData(data);
         data.setImages(images);
+        resp.setData(data);
       }
     } catch (ErrorException e) {
       e.printStackTrace();

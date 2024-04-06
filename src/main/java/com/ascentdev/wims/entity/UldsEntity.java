@@ -19,23 +19,30 @@ import org.hibernate.annotations.Subselect;
  */
 @Data
 @Entity
-@Subselect("SELECT u.id,\n"
-        + "u.uld_number,\n"
-        + "u.total_count,\n"
-        + "u.flight_number,\n"
-        + "u.uld_type,\n"
-        + "u.total_expected,\n"
-        + "ut.type,\n"
-        + "u.total_mawb\n"
-        + "FROM txn_ulds u\n"
-        + "INNER JOIN ref_uld_container_type ut ON ut.id = u.uld_type")
+@Subselect("SELECT ru.id, \n"
+        + "ru.uld_no,\n"
+        + "ru.flight_number,\n"
+        + "tu.mawb_number,\n"
+        + "ru.uld_type,\n"
+        + "ut.type, \n"
+        + "tu.id AS uld_id, \n"
+        + "tu.total_mawb,\n"
+        + "tu.total_count,\n"
+        + "tu.total_expected,\n"
+        + "tu.uld_status\n"
+        + "FROM ref_uld ru\n"
+        + "INNER JOIN ref_uld_container_type ut ON ut.id = ru.uld_type\n"
+        + "INNER JOIN txn_ulds tu ON tu.uld_number = ru.uld_no")
 public class UldsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
+  
+  @Column(name = "uld_id")
+  int uldId;
 
-  @Column(name = "uld_number")
+  @Column(name = "uld_no")
   String uldNumber;
 
   @Column(name = "total_count")
@@ -43,6 +50,9 @@ public class UldsEntity {
 
   @Column(name = "flight_number")
   String flightNumber;
+  
+  @Column(name = "mawb_number")
+  String mawbNumber;
 
   @Column(name = "uld_type")
   long uldTypeId;
@@ -52,7 +62,10 @@ public class UldsEntity {
 
   @Column(name = "type")
   String type;
-  
+
   @Column(name = "total_mawb")
   int totalMawb;
+
+  @Column(name = "uld_status")
+  int uldStatus;
 }
