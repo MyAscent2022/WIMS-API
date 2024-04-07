@@ -42,6 +42,7 @@ import org.hibernate.annotations.Subselect;
         + "tm.cargo_category_id,\n"
         + "tm.cargo_class_id,\n"
         + "tm.flight_id,\n"
+        + "tm.consignee_name,\n"
         + "ru.uld_status\n"
         + "FROM txn_mawb tm\n"
         + "INNER JOIN ref_uld ru ON ru.uld_no = tm.uld_number")
@@ -113,6 +114,9 @@ public class MawbEntity {
 
   @Column(name = "flight_id")
   int flightId;
+
+  @Column(name = "consignee_name")
+  String consigneeName;
 
   @Column(name = "uld_status")
   int uldStatus;

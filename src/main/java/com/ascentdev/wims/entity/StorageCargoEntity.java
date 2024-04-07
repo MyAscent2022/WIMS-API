@@ -33,7 +33,7 @@ import org.hibernate.annotations.Subselect;
         + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
         + "LEFT JOIN public.txn_hawb h ON h.id = cal.hawb_id\n"
         + "INNER JOIN public.ref_cargo_class cc ON cc.id = m.cargo_class_id\n"
-        + "WHERE cal.activity_status NOT IN ('RECEIVED', 'STORED', 'RELEASED')")
+        + "WHERE cal.activity_status = 'RECEIVED'")
 public class StorageCargoEntity {
 
   @Id
