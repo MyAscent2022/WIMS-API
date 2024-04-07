@@ -6,6 +6,7 @@
 package com.ascentdev.wims.serviceImp;
 
 import com.ascentdev.wims.controller.CargoReleasingController;
+import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import com.ascentdev.wims.entity.CargoReleasingEntity;
 import com.ascentdev.wims.entity.CargoReleasingImagesEntity;
 import com.ascentdev.wims.entity.HawbEntity;
@@ -17,6 +18,7 @@ import com.ascentdev.wims.model.ApprovedReleasingModel;
 import com.ascentdev.wims.model.CargoReleaseRequestModel;
 import com.ascentdev.wims.model.ForCargoReleasingModel;
 import com.ascentdev.wims.repository.ApprovedReleasingDao;
+import com.ascentdev.wims.repository.CargoActivityLogsRepository;
 import com.ascentdev.wims.repository.CargoReleasingImagesRepository;
 import com.ascentdev.wims.repository.CargoReleasingRepository;
 import com.ascentdev.wims.repository.HawbRepository;
@@ -30,6 +32,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -64,6 +68,9 @@ public class CargoReleasingServiceImp implements CargoReleasingService {
   
   @Autowired
   RackUtilRepository rRepo;
+  
+  @Autowired
+  CargoActivityLogsRepository caRepo;
   
   
   @Autowired
@@ -150,6 +157,8 @@ public class CargoReleasingServiceImp implements CargoReleasingService {
     HawbEntity hawb=new HawbEntity();
     String stHawb=null;
     String stMawb=null;
+    int mawb_id=0;
+    int hawb_id=0;
     CargoReleasingEntity cargoEntity=new CargoReleasingEntity();
     cargoEntity.setAwb_id(model.getAwb_id());
     cargoEntity.setPlateNo(model.getPlateNo());
@@ -197,14 +206,43 @@ public class CargoReleasingServiceImp implements CargoReleasingService {
       rRepo.delete(rEntity);
       
       if(model.isShawb()){
+        
         hawb=hRepo.findById(model.getAwb_id()).get();
         stHawb=hawb.getHawbNumber();
         stMawb=hawb.getMawbNumber();
+          mawb=mRepo.findByMawbNumber(stMawb);
+          
+          hawb_id=hawb.getId();
+          mawb_id=mawb.getId();
+        
       }else{
         mawb=mRepo.findById(model.getAwb_id()).get();
         stMawb=mawb.getMawbNumber();
+        mawb_id=mawb.getId();
       }
       
+      
+      List<CargoActivityLogsEntity> cargoLogsList=new ArrayList<>();
+      cargoLogsList=caRepo.getByMawbIdAndHawbIdAndActivityStatus(mawb_id,hawb_id,"STORED");
+      
+      for(CargoActivityLogsEntity cal:cargoLogsList){
+        LocalDateTime date = LocalDateTime.now();
+        CargoActivityLogsEntity m=new CargoActivityLogsEntity();
+        m.setActivityStatus("RELEASED");
+        m.setActualPcs(cal.getActualPcs());
+        m.setCreatedAt(cal.getCreatedAt());
+        m.setCreatedById(cal.getCreatedById());
+        m.setFlightId(cal.getFlightId());
+        m.setHandledById(cal.getHandledById());
+        m.setHawbId(cal.getHawbId());
+        m.setMawbId(cal.getMawbId());
+        m.setReceivedReleasedDate(Timestamp.valueOf(date));
+        m.setLocation("RELEASING AREA");
+        m.setUpdatedAt(Timestamp.valueOf(date));
+        m.setUpdatedById(model.getUser_id());
+        
+        caRepo.save(m);
+      }
       
       
       try {
