@@ -12,45 +12,17 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author ASCENT
+ * @author ASCENT SOLUTIONS INC
  */
 @Data
 @Entity
-@Subselect("SELECT tm.id, \n"
-        + "tm.date_of_arrival, \n"
-        + "tm.destination_code, \n"
-        + "tm.mawb_number,\n"
-        + "tm.number_of_containers,\n"
-        + "tm.number_of_packages,\n"
-        + "tm.origin_code,\n"
-        + "tm.registry_number,\n"
-        + "tm.time_of_arrival,\n"
-        + "tm.volume,\n"
-        + "tu.uld_number,\n"
-        + "tm.uld_container_type_id,\n"
-        + "tm.cargo_status,\n"
-        + "tm.length,\n"
-        + "tm.width,\n"
-        + "tm.height,\n"
-        + "tm.gross_mass,\n"
-        + "tm.actual_weight,\n"
-        + "tm.actual_volume,\n"
-        + "tm.actual_pcs,\n"
-        + "tm.cargo_category_id,\n"
-        + "tm.cargo_class_id,\n"
-        + "tm.flight_id,\n"
-        + "tm.consignee_name,\n"
-        + "ru.uld_status\n"
-        + "FROM txn_mawb tm\n"
-        + "INNER JOIN txn_ulds tu ON tu.mawb_number = tm.mawb_number \n"
-        + "INNER JOIN ref_uld ru ON ru.uld_no = tu.uld_number")
+@Table(name = "txn_mawb")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class MawbEntity {
-
+public class MawbTbEntity {
+  
   @Id
   int id;
 
@@ -67,7 +39,7 @@ public class MawbEntity {
   int numberOfContainers;
 
   @Column(name = "number_of_packages")
-  int numberOfPackages;
+  Integer numberOfPackages;
 
   @Column(name = "origin_code")
   String originCode;
@@ -79,7 +51,7 @@ public class MawbEntity {
   Time timeOfArrival;
 
   @Column(name = "volume")
-  float volume;
+  Float volume;
 
   @Column(name = "uld_number")
   String uldNumber;
@@ -91,22 +63,22 @@ public class MawbEntity {
   String cargoStatus;
 
   @Column(name = "length")
-  float length;
+  Float length;
 
   @Column(name = "width")
-  float width;
+  Float width;
 
   @Column(name = "height")
-  float height;
+  Float height;
 
   @Column(name = "actual_weight")
-  float actualWeight;
+  Float actualWeight;
 
   @Column(name = "actual_volume")
   Float actualVolume;
 
   @Column(name = "actual_pcs")
-  int actualPcs;
+  Integer actualPcs;
 
   @Column(name = "cargo_category_id")
   Long cargoCategoryId;
@@ -115,15 +87,5 @@ public class MawbEntity {
   Long cargoClassId;
 
   @Column(name = "flight_id")
-  int flightId;
-  
-  @Column(name = "consignee_name")
-  String consigneeName;
-
-  @Column(name = "uld_status")
-  int uldStatus;
-
-  @Column(name = "gross_mass")
-  int grossMass;
-
+  Integer flightId;
 }

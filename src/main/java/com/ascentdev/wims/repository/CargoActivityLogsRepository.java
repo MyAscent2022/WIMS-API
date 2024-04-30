@@ -43,6 +43,17 @@ public interface CargoActivityLogsRepository extends JpaRepository<CargoActivity
           + "AND cal.activity_status = :activity_status",
           nativeQuery = true)
   List<CargoActivityLogsEntity> getByMawbIdAndActivityStatus(@Param("mawb_id") long mawbId, @Param("activity_status") String activityStatus);
+  
+  
+      @Query(
+          value = "SELECT cal.* FROM cargo_activity_logs cal\n"
+          + "WHERE cal.hawb_id = :hawb_id\n"
+          + "AND cal.activity_status = :activity_status",
+          nativeQuery = true)
+  List<CargoActivityLogsEntity> getByHawbIdAndActivityStatus(@Param("hawb_id") long hawbId, @Param("activity_status") String activityStatus);
+  
+  
+  
 //  List<CargoActivityLogsEntity> findByMawbIdAndActivityStatus(int mawbId, String activityStatus);
 
   CargoActivityLogsEntity findByMawbIdAndLocationAndReceivedReleasedDateNull(int mawbId, String location);
@@ -57,5 +68,7 @@ public interface CargoActivityLogsRepository extends JpaRepository<CargoActivity
           + "AND cal.hawb_id = :hawb_id",
           nativeQuery = true)
   List<CargoActivityLogsEntity> getCargoImages(@Param("flight_id") long flight_id, @Param("mawb_id") int mawb_id, @Param("hawb_id") int hawb_id);
+  
+  CargoActivityLogsEntity findById(long id);
 
 }

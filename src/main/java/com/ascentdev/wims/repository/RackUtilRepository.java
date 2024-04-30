@@ -19,7 +19,7 @@ public interface RackUtilRepository extends JpaRepository<RackUtilEntity, Long> 
   RackUtilEntity findById(long id);
   List<RackUtilEntity> findByTxnMawbIdAndTxnHawbId(long txnMawbId, long txnHawbId);
   
-  RackUtilEntity findByTxnHawbId(long txtHawbId);
-  RackUtilEntity findByTxnMawbId(long txnMawbId);
+  RackUtilEntity findByTxnHawbId(int txtHawbId);
+  RackUtilEntity findByTxnMawbId(int txnMawbId);
   
 }

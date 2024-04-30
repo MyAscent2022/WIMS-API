@@ -9,8 +9,6 @@ package com.ascentdev.wims.entity;
  *
  * @author User
  */
-
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.sql.Timestamp;
 import javax.persistence.Column;
@@ -23,25 +21,22 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "txn_cargo_releasing")
+@Table(name = "txn_trucker_info")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CargoReleasingEntity {
-  
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
-  
-  @Column(name="awb_id")
+  @Column(name = "awb_id")
   long awb_id;
-  @Column(name="trucker")
+  @Column(name = "trucker")
   String trucker;
-  @Column(name="plate_no")
+  @Column(name = "plate_no")
   String plateNo;
-  @Column(name="created_by")
+  @Column(name = "created_by")
   long createdBy;
-  
-  @Column(name="is_hawb")
+  @Column(name = "is_hawb")
   boolean isHawb;
-  
+
 }

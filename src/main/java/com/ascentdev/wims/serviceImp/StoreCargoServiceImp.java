@@ -158,7 +158,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
           String rackName,
           String layerName,
           long rack_util_id,
-          long user_id) {
+          long user_id, long cargo_activity_logs_id) {
     ErrorException ex1 = null;
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
@@ -167,10 +167,10 @@ public class StoreCargoServiceImp implements StoreCargoService {
     RefRackEntity refRack = new RefRackEntity();
     RefRackEntity newRefRack = new RefRackEntity();
     CargoActivityLogsEntity logs = new CargoActivityLogsEntity();
+    CargoActivityLogsEntity histLogs = new CargoActivityLogsEntity();
     MawbEntity mawb = new MawbEntity();
     HawbEntity hawb = new HawbEntity();
     FlightsEntity flights = new FlightsEntity();
-//    List<JobAssignmentEntity> jobAssigns = new ArrayList<>();
 
     List<HawbEntity> hawbs = new ArrayList<>();
 
@@ -182,11 +182,14 @@ public class StoreCargoServiceImp implements StoreCargoService {
       flights = fRepo.findByFlightNumber(flightNumber);
       mawb = mRepo.findByMawbNumber(mawbNumber);
       hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawb_number);
-//      jobAssigns = jaRepo.findByAssignedUserIdAndFlightId(user_id, flights.getId());
-
-//      logs = cargoRepo.getByMawbIdAndHawbId(rackUtil.getTxnMawbId(), rackUtil.getTxnHawbId()).get(0);
+      histLogs = cargoRepo.findById(cargo_activity_logs_id);
+      
+      if(histLogs.getId() > 0){
+        histLogs.setStored(true);
+        cargoRepo.save(histLogs);
+      }
+      
       logs.setReceivedReleasedDate(Timestamp.valueOf(date));
-//      logs.setHandledById(jobAssigns.get(0).getId());
       logs.setFlightId(flights.getId());
       logs.setMawbId(mawb.getId());
       if (hawbs.size() != 0) {
@@ -201,6 +204,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
       logs.setCreatedById(user_id);
       logs.setLocation("STORING AREA");
       logs.setActivityStatus("STORED");
+      logs.setStored(true);
       cargoRepo.save(logs);
 
       if (rackUtil == null) {
@@ -332,7 +336,6 @@ public class StoreCargoServiceImp implements StoreCargoService {
 //    }
 //    return resp;
 //  }
-
   @Override
   public ApiResponseModel getRefRacks(boolean is_layer, String rack_name) {
     ApiResponseModel resp = new ApiResponseModel();
@@ -545,15 +548,15 @@ public class StoreCargoServiceImp implements StoreCargoService {
     try {
       images = ciRepo.findByCargoActivityLogId(cargoActivityLogId);
       if (images.size() == 0) {
-        message = "No Data to show";
-        status = false;
-        statusCode = 400;
+        resp.setMessage("No Images found!");
+        resp.setStatus(false);
+        resp.setStatusCode(404);
       } else {
         resp.setMessage("Images found!");
         resp.setStatus(true);
         resp.setStatusCode(200);
-        resp.setData(data);
         data.setImages(images);
+        resp.setData(data);
       }
     } catch (ErrorException e) {
       e.printStackTrace();
@@ -576,7 +579,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
           HawbEntity hawbDetails) {
     ApiResponseModel resp = new ApiResponseModel();
 
-    resp = saveRack(cargoLogs, mawbDetails.getMawbNumber(), flightNumber, hawbDetails.getHawbNumber(), rackName, layerName, 0, 0);
+    resp = saveRack(cargoLogs, mawbDetails.getMawbNumber(), flightNumber, hawbDetails.getHawbNumber(), rackName, layerName, 0, 0, 0);
     if (resp.isStatus()) {
       for (MultipartFile f : file) {
         ImagesEntity images = new ImagesEntity();
@@ -597,7 +600,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
 
     try {
       byte[] data = file.getBytes();
-      Path path = Paths.get(fileUploadPath + "/" + file.getOriginalFilename());
+      Path path = Paths.get(fileUploadPath + file.getOriginalFilename());
       Files.write(path, data);
     } catch (IOException ex) {
       Logger.getLogger(ReceiveCargoServiceImp.class.getName()).log(Level.SEVERE, null, ex);

@@ -68,5 +68,11 @@ public class CargoActivityLogsEntity {
   
   @Column(name = "activity_status")
   String activityStatus;
+  
+  @Column(name = "ref_shipment_status_code")
+  String statusCode;
+  
+  @Column(name = "is_stored")
+  boolean isStored;
 
 }

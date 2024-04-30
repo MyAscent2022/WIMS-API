@@ -21,33 +21,19 @@ import org.hibernate.annotations.Subselect;
  */
 @Data
 @Entity
-@Subselect("SELECT tm.id, \n"
-        + "tm.uld_number, \n"
-        + "rut.type, \n"
-        + "tm.gross_mass, \n"
-        + "rut.id AS uld_container_type_id, \n"
-        + "f.flight_number \n"
-        + "FROM public.txn_mawb tm\n"
-        + "INNER JOIN public.ref_uld_container_type rut ON rut.id = tm.uld_container_type_id\n"
-        + "INNER JOIN public.flights f ON f.id = tm.flight_id")
+@Table(name = "ref_uld")
 public class RefULDEntity {
 
   @Id
-  long id;
+  int id;
 
-  @Column(name = "uld_number")
+  @Column(name = "uld_no")
   String uldNo;
-
-  @Column(name = "uld_container_type_id")
-  long uldTypeId;
-
-  @Column(name = "type")
-  String uldType;
 
   @Column(name = "flight_number")
   String flightNumber;
-
-  @Column(name = "gross_mass")
-  int totalWeight;
+  
+  @Column(name = "uld_status")
+  int uldStatus;
 
 }

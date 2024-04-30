@@ -58,8 +58,9 @@ public class StoreCargoController {
           @RequestParam("rack_name") String rack_name, 
           @RequestParam("layer_name") String layer_name,
           @RequestParam("rack_util_id") int rack_util_id,
-          @RequestParam("user_id") int user_id) {
-    return storeCargoServiceImp.saveRack(cargoLogs.getCargoActivity(), mawb_number, flight_number, hawb_number, rack_name, layer_name, rack_util_id, user_id);
+          @RequestParam("user_id") int user_id,
+          @RequestParam("cargo_activity_logs_id") int cargo_activity_logs_id) {
+    return storeCargoServiceImp.saveRack(cargoLogs.getCargoActivity(), mawb_number, flight_number, hawb_number, rack_name, layer_name, rack_util_id, user_id, cargo_activity_logs_id);
   }
   
   @PostMapping("save_storage_image")

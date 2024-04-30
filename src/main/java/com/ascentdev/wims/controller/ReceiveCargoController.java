@@ -77,8 +77,9 @@ public class ReceiveCargoController {
           @RequestParam("flight_number") String flight_number,
           @RequestParam("uld_number") String uld_number,
           @RequestParam("remarks1") String remarks1,
-          @RequestParam("remarks2") String remarks2) {
-    return receiveCargoServiceImp.saveUldImage(file, uld_condition1, uld_condition2, flight_number, uld_number, remarks1, remarks2);
+          @RequestParam("remarks2") String remarks2,
+          @RequestParam("user_id") int user_id) {
+    return receiveCargoServiceImp.saveUldImage(file, uld_condition1, uld_condition2, flight_number, uld_number, remarks1, remarks2, user_id);
   }
 
   @PostMapping("save_hawb_image")
@@ -134,8 +135,11 @@ public class ReceiveCargoController {
           @RequestParam("hawb_number") String hawbNumber, 
           @RequestParam("user_id") int userId,
           @RequestParam("cargo_category") String cargo_category,
-          @RequestParam("cargo_class") String cargo_class) {
-    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(), mawbNumber, flightNumber, hawbNumber, userId, cargo_category, cargo_class);
+          @RequestParam("cargo_class") String cargo_class,
+          @RequestParam("uld_number") String uld_number,
+          @RequestParam("is_badOrder") boolean is_badOrder,
+          @RequestParam("shipment_status") String shipment_status) {
+    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(), mawbNumber, flightNumber, hawbNumber, userId, cargo_category, cargo_class, uld_number,is_badOrder, shipment_status);
   }
 
   @GetMapping("get_cargo_status")
@@ -164,8 +168,8 @@ public class ReceiveCargoController {
   }
   
   @PostMapping("upload_image")
-  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") int hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2, @RequestParam("remarks1") String remarks1, @RequestParam("remarks2") String remarks2) {
-    return receiveCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2, remarks1, remarks2);
+  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") int hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2, @RequestParam("cargo_condition3") String cargo_condition3, @RequestParam("remarks1") String remarks1, @RequestParam("remarks2") String remarks2, @RequestParam("quantity") int quantity, @RequestParam("is_badOrder") boolean is_badOrder) {
+    return receiveCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2,cargo_condition3, remarks1, remarks2, quantity, is_badOrder);
   }
   
   @GetMapping("get_uld_container_type")

@@ -16,50 +16,33 @@ import lombok.Data;
 
 /**
  *
- * @author ASCENT
+ * @author ASCENT SOLUTIONS INC
  */
 @Data
 @Entity
-@Table(name="txn_rack_utilization")
+@Table(name = "uld_activity_logs")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class RackUtilEntity {
+public class UldActivityLogsEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
-  
-  @Column(name="ref_rack_id")
-  long refRackId;
-  
-  @Column(name="stored_by_id")
-  int storedById;
-  
-  @Column(name="stored_dt")
-  Timestamp storedDt;
-  
-  @Column(name="volume")
-  Float volume;
-  
-  @Column(name="location")
+
+  @Column(name = "flight_id")
+  int flightId;
+
+  @Column(name = "uld_id")
+  int uldId;
+
+  @Column(name = "location")
   String location;
-  
-  @Column(name="no_of_pieces")
-  int noOfPieces;
-  
-  @Column(name="created_by_id")
-  int createdById;
-  
-  @Column(name="created_at")
-  Timestamp createdAt;
-  
-  @Column(name="modified_at")
-  Timestamp modifiedAt;
-  
-  @Column(name="modified_by_id")
-  int modifiedById;
-  
-  @Column(name="txn_mawb_id")
-  int txnMawbId;
-  
-  @Column(name="txn_hawb_id")
-  int txnHawbId;
+
+  @Column(name = "activity_status")
+  String activityStatus;
+
+  @Column(name = "received_stripped_by_id")
+  int receivedStrippedById;
+
+  @Column(name = "received_stripped_at")
+  Timestamp receivedStrippedAt;
 }

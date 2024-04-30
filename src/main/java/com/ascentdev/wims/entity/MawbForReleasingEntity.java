@@ -10,13 +10,12 @@ import java.sql.Time;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.Subselect;
 
 /**
  *
- * @author ASCENT
+ * @author ASCENT SOLUTIONS INC
  */
 @Data
 @Entity
@@ -24,6 +23,7 @@ import org.hibernate.annotations.Subselect;
         + "tm.date_of_arrival, \n"
         + "tm.destination_code, \n"
         + "tm.mawb_number,\n"
+        + "tu.mawb_number AS mawb1,\n"
         + "tm.number_of_containers,\n"
         + "tm.number_of_packages,\n"
         + "tm.origin_code,\n"
@@ -31,12 +31,12 @@ import org.hibernate.annotations.Subselect;
         + "tm.time_of_arrival,\n"
         + "tm.volume,\n"
         + "tu.uld_number,\n"
+        + "ru.uld_no,\n"
         + "tm.uld_container_type_id,\n"
         + "tm.cargo_status,\n"
         + "tm.length,\n"
         + "tm.width,\n"
         + "tm.height,\n"
-        + "tm.gross_mass,\n"
         + "tm.actual_weight,\n"
         + "tm.actual_volume,\n"
         + "tm.actual_pcs,\n"
@@ -47,9 +47,12 @@ import org.hibernate.annotations.Subselect;
         + "ru.uld_status\n"
         + "FROM txn_mawb tm\n"
         + "INNER JOIN txn_ulds tu ON tu.mawb_number = tm.mawb_number \n"
-        + "INNER JOIN ref_uld ru ON ru.uld_no = tu.uld_number")
+        + "INNER JOIN ref_uld ru ON ru.uld_no = tu.uld_number\n"
+        + "INNER JOIN txn_rack_utilization tru On tru.txn_mawb_id = tm.id\n"
+        + "INNER JOIN payment.billings bill ON bill.mawb_id = tm.id\n"
+        + "WHERE bill.status = 'paid'")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class MawbEntity {
+public class MawbForReleasingEntity {
 
   @Id
   int id;
@@ -116,14 +119,11 @@ public class MawbEntity {
 
   @Column(name = "flight_id")
   int flightId;
-  
+
   @Column(name = "consignee_name")
   String consigneeName;
 
   @Column(name = "uld_status")
   int uldStatus;
-
-  @Column(name = "gross_mass")
-  int grossMass;
 
 }

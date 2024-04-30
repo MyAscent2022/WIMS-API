@@ -66,9 +66,9 @@ public class RackUtilHistoryEntity {
   int modifiedById;
   
   @Column(name="txn_mawb_id")
-  long txnMawbId;
+  int txnMawbId;
   
   @Column(name="txn_hawb_id")
-  long txnHawbId;
+  int txnHawbId;
   
 }
