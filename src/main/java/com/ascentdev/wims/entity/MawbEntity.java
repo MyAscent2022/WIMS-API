@@ -116,7 +116,7 @@ public class MawbEntity {
 
   @Column(name = "flight_id")
   int flightId;
-
+  
   @Column(name = "consignee_name")
   String consigneeName;
 
