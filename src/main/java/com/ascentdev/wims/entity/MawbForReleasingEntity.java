@@ -10,8 +10,8 @@ import java.sql.Time;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.Subselect;
 
 /**
  *
@@ -19,10 +19,41 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name = "txn_mawb")
+@Subselect("SELECT tm.id, \n"
+        + "tm.date_of_arrival, \n"
+        + "tm.destination_code, \n"
+        + "tm.mawb_number,\n"
+        + "tu.mawb_number AS mawb1,\n"
+        + "tm.number_of_containers,\n"
+        + "tm.number_of_packages,\n"
+        + "tm.origin_code,\n"
+        + "tm.registry_number,\n"
+        + "tm.time_of_arrival,\n"
+        + "tm.volume,\n"
+        + "tu.uld_number,\n"
+        + "ru.uld_no,\n"
+        + "tm.uld_container_type_id,\n"
+        + "tm.cargo_status,\n"
+        + "tm.length,\n"
+        + "tm.width,\n"
+        + "tm.height,\n"
+        + "tm.actual_weight,\n"
+        + "tm.actual_volume,\n"
+        + "tm.actual_pcs,\n"
+        + "tm.cargo_category_id,\n"
+        + "tm.cargo_class_id,\n"
+        + "tm.flight_id,\n"
+        + "tm.consignee_name,\n"
+        + "ru.uld_status\n"
+        + "FROM txn_mawb tm\n"
+        + "INNER JOIN txn_ulds tu ON tu.mawb_number = tm.mawb_number \n"
+        + "INNER JOIN ref_uld ru ON ru.uld_no = tu.uld_number\n"
+        + "INNER JOIN txn_rack_utilization tru On tru.txn_mawb_id = tm.id\n"
+        + "INNER JOIN payment.billings bill ON bill.mawb_id = tm.id\n"
+        + "WHERE bill.status = 'paid'")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class MawbTbEntity {
-  
+public class MawbForReleasingEntity {
+
   @Id
   int id;
 
@@ -39,7 +70,7 @@ public class MawbTbEntity {
   int numberOfContainers;
 
   @Column(name = "number_of_packages")
-  Integer numberOfPackages;
+  int numberOfPackages;
 
   @Column(name = "origin_code")
   String originCode;
@@ -51,7 +82,7 @@ public class MawbTbEntity {
   Time timeOfArrival;
 
   @Column(name = "volume")
-  Float volume;
+  float volume;
 
   @Column(name = "uld_number")
   String uldNumber;
@@ -63,22 +94,22 @@ public class MawbTbEntity {
   String cargoStatus;
 
   @Column(name = "length")
-  Float length;
+  float length;
 
   @Column(name = "width")
-  Float width;
+  float width;
 
   @Column(name = "height")
-  Float height;
+  float height;
 
   @Column(name = "actual_weight")
-  Float actualWeight;
+  float actualWeight;
 
   @Column(name = "actual_volume")
   Float actualVolume;
 
   @Column(name = "actual_pcs")
-  Integer actualPcs;
+  int actualPcs;
 
   @Column(name = "cargo_category_id")
   Long cargoCategoryId;
@@ -87,5 +118,12 @@ public class MawbTbEntity {
   Long cargoClassId;
 
   @Column(name = "flight_id")
-  Integer flightId;
+  int flightId;
+
+  @Column(name = "consignee_name")
+  String consigneeName;
+
+  @Column(name = "uld_status")
+  int uldStatus;
+
 }

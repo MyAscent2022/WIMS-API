@@ -25,7 +25,7 @@ import org.hibernate.annotations.Subselect;
 public class RefULDEntity {
 
   @Id
-  long id;
+  int id;
 
   @Column(name = "uld_no")
   String uldNo;

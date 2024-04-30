@@ -26,7 +26,7 @@ public interface StoreCargoService {
           String rackName, 
           String layerName, 
           long rackUtilId, 
-          long user_id);
+          long user_id, long cargo_activity_logs_id);
   ApiResponseModel getImages(String mawbNumber, String hawbNumber, boolean isHawb);
   ApiResponseModel getRefRacks(boolean is_layer, String rackName);
 //  ApiResponseModel getAllRefRacks();

@@ -16,8 +16,7 @@ import lombok.Data;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @Data
 @Entity
@@ -46,7 +45,7 @@ public class HawbEntity {
   Long numberOfContainers;
 
   @Column(name = "number_of_packages")
-  String numberOfPackages;
+  Integer numberOfPackages;
 
   @Column(name = "origin_code")
   String originCode;
@@ -58,5 +57,29 @@ public class HawbEntity {
   Time timeOfArrival;
 
   @Column(name = "volume")
-  float volume;
+  Float volume;
+
+  @Column(name = "length")
+  Float length;
+
+  @Column(name = "width")
+  Float width;
+
+  @Column(name = "height")
+  Float height;
+
+  @Column(name = "actual_weight")
+  Float actualWeight;
+
+  @Column(name = "actual_volume")
+  Float actualVolume;
+
+  @Column(name = "actual_pcs")
+  Integer actualPcs;
+
+  @Column(name = "cargo_category_id")
+  Long cargoCategoryId;
+
+  @Column(name = "cargo_class_id")
+  Long cargoClassId;
 }

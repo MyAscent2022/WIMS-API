@@ -37,4 +37,6 @@ public class MawbListModel {
   float volume;
   float actualWeight;
   Float actualVolume;
+  int grossMass;
+  String consigneeName;
 }

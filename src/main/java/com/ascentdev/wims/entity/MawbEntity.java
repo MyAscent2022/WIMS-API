@@ -30,12 +30,13 @@ import org.hibernate.annotations.Subselect;
         + "tm.registry_number,\n"
         + "tm.time_of_arrival,\n"
         + "tm.volume,\n"
-        + "tm.uld_number,\n"
+        + "tu.uld_number,\n"
         + "tm.uld_container_type_id,\n"
         + "tm.cargo_status,\n"
         + "tm.length,\n"
         + "tm.width,\n"
         + "tm.height,\n"
+        + "tm.gross_mass,\n"
         + "tm.actual_weight,\n"
         + "tm.actual_volume,\n"
         + "tm.actual_pcs,\n"
@@ -45,7 +46,8 @@ import org.hibernate.annotations.Subselect;
         + "tm.consignee_name,\n"
         + "ru.uld_status\n"
         + "FROM txn_mawb tm\n"
-        + "INNER JOIN ref_uld ru ON ru.uld_no = tm.uld_number")
+        + "INNER JOIN txn_ulds tu ON tu.mawb_number = tm.mawb_number \n"
+        + "INNER JOIN ref_uld ru ON ru.uld_no = tu.uld_number")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MawbEntity {
 
@@ -120,5 +122,8 @@ public class MawbEntity {
 
   @Column(name = "uld_status")
   int uldStatus;
+
+  @Column(name = "gross_mass")
+  int grossMass;
 
 }

@@ -23,49 +23,52 @@ import org.hibernate.annotations.Subselect;
         + "ru.uld_no,\n"
         + "ru.flight_number,\n"
         + "tu.mawb_number,\n"
+        + "COUNT(DISTINCT tu.mawb_number) AS mawb_count,\n"
+        + "COUNT(DISTINCT th.hawb_number) AS hawb_count,\n"
         + "ru.uld_type,\n"
         + "ut.type, \n"
-        + "tu.id AS uld_id, \n"
-        + "tu.total_mawb,\n"
-        + "tu.total_count,\n"
-        + "tu.total_expected,\n"
-        + "tu.uld_status\n"
+        + "tu.id AS uld_id,\n"
+        + "rus.status AS uld_status\n"
         + "FROM ref_uld ru\n"
-        + "INNER JOIN ref_uld_container_type ut ON ut.id = ru.uld_type\n"
-        + "INNER JOIN txn_ulds tu ON tu.uld_number = ru.uld_no")
+        + "INNER JOIN ref_uld_type ut ON ut.id = ru.uld_type\n"
+        + "INNER JOIN txn_ulds tu ON tu.uld_number = ru.uld_no\n"
+        + "INNER JOIN ref_uld_status rus ON rus.id = ru.uld_status\n"
+        + "INNER JOIN txn_mawb tm ON tm.mawb_number = tu.mawb_number\n"
+        + "LEFT JOIN txn_hawb th ON th.mawb_number = tm.mawb_number\n"
+        + "WHERE ru.uld_status IN (2, 10, 11)\n"
+        + "GROUP BY ru.id, ut.type, tu.id, rus.status, tu.mawb_number")
 public class UldsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
-  
+
   @Column(name = "uld_id")
   int uldId;
 
   @Column(name = "uld_no")
   String uldNumber;
 
-  @Column(name = "total_count")
-  int totalCount;
-
   @Column(name = "flight_number")
   String flightNumber;
-  
+
   @Column(name = "mawb_number")
   String mawbNumber;
 
   @Column(name = "uld_type")
   long uldTypeId;
 
-  @Column(name = "total_expected")
-  int totalExpected;
-
+//  @Column(name = "total_expected")
+//  int totalExpected;
   @Column(name = "type")
   String type;
 
-  @Column(name = "total_mawb")
+  @Column(name = "mawb_count")
   int totalMawb;
 
+  @Column(name = "hawb_count")
+  int totalHawb;
+
   @Column(name = "uld_status")
-  int uldStatus;
+  String uldStatus;
 }
