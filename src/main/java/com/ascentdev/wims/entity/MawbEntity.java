@@ -24,7 +24,6 @@ import org.hibernate.annotations.Subselect;
         + "tm.date_of_arrival, \n"
         + "tm.destination_code, \n"
         + "tm.mawb_number,\n"
-        + "tm.number_of_containers,\n"
         + "tm.number_of_packages,\n"
         + "tm.origin_code,\n"
         + "tm.registry_number,\n"
@@ -44,10 +43,14 @@ import org.hibernate.annotations.Subselect;
         + "tm.cargo_class_id,\n"
         + "tm.flight_id,\n"
         + "tm.consignee_name,\n"
-        + "ru.uld_status\n"
+        + "tu.is_received,\n"
+        + "tu.id AS uld_id,\n"
+        + "ru.uld_status,\n"
+        + "tm.is_priority\n"
         + "FROM txn_mawb tm\n"
-        + "INNER JOIN txn_ulds tu ON tu.mawb_number = tm.mawb_number \n"
-        + "INNER JOIN ref_uld ru ON ru.uld_no = tu.uld_number")
+        + "INNER JOIN txn_ulds tu ON tu.mawb_id = tm.id \n"
+        + "INNER JOIN ref_uld ru ON ru.uld_no = tu.uld_number\n"
+        + "ORDER BY tm.is_priority DESC")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MawbEntity {
 
@@ -63,11 +66,10 @@ public class MawbEntity {
   @Column(name = "mawb_number")
   String mawbNumber;
 
-  @Column(name = "number_of_containers")
-  int numberOfContainers;
-
+//  @Column(name = "number_of_containers")
+//  Integer numberOfContainers;
   @Column(name = "number_of_packages")
-  int numberOfPackages;
+  Integer numberOfPackages;
 
   @Column(name = "origin_code")
   String originCode;
@@ -79,34 +81,34 @@ public class MawbEntity {
   Time timeOfArrival;
 
   @Column(name = "volume")
-  float volume;
+  Float volume;
 
   @Column(name = "uld_number")
   String uldNumber;
 
   @Column(name = "uld_container_type_id")
-  int uldContainerTypeId;
+  Integer uldContainerTypeId;
 
   @Column(name = "cargo_status")
   String cargoStatus;
 
   @Column(name = "length")
-  float length;
+  Float length;
 
   @Column(name = "width")
-  float width;
+  Float width;
 
   @Column(name = "height")
-  float height;
+  Float height;
 
   @Column(name = "actual_weight")
-  float actualWeight;
+  Float actualWeight;
 
   @Column(name = "actual_volume")
   Float actualVolume;
 
   @Column(name = "actual_pcs")
-  int actualPcs;
+  Integer actualPcs;
 
   @Column(name = "cargo_category_id")
   Long cargoCategoryId;
@@ -115,15 +117,23 @@ public class MawbEntity {
   Long cargoClassId;
 
   @Column(name = "flight_id")
-  int flightId;
-  
+  Integer flightId;
+
   @Column(name = "consignee_name")
   String consigneeName;
 
   @Column(name = "uld_status")
-  int uldStatus;
+  Integer uldStatus;
 
   @Column(name = "gross_mass")
-  int grossMass;
+  Integer grossMass;
 
+  @Column(name = "is_received")
+  Boolean isReceived;
+
+  @Column(name = "uld_id")
+  Integer uldId;
+  
+  @Column(name = "is_priority")
+  Boolean isPriority;
 }

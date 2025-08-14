@@ -7,18 +7,21 @@ package com.ascentdev.wims.serviceImp;
 import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import com.ascentdev.wims.entity.CargoConditionEntity;
 import com.ascentdev.wims.entity.CargoImagesEntity;
+import com.ascentdev.wims.entity.FlightStorageEntity;
 import com.ascentdev.wims.entity.FlightsEntity;
 import com.ascentdev.wims.entity.GetRacksEntity;
 import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.ImagesEntity;
-import com.ascentdev.wims.entity.JobAssignmentEntity;
 import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.entity.RackDetailsEntity;
 import com.ascentdev.wims.entity.RackUtilEntity;
 import com.ascentdev.wims.entity.RefRackEntity;
+import com.ascentdev.wims.entity.RefRackLayerEntity;
 import com.ascentdev.wims.entity.ReleasingCargoEntity;
 import com.ascentdev.wims.entity.StorageCargoEntity;
+import com.ascentdev.wims.entity.TxnCargoVideosEntity;
 import com.ascentdev.wims.error.ErrorException;
+import com.ascentdev.wims.model.AddedRackModel;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.model.CargoImagesModel;
 import com.ascentdev.wims.model.RackDetailsModel;
@@ -28,18 +31,16 @@ import com.ascentdev.wims.model.StorageCargoModel;
 import com.ascentdev.wims.repository.CargoActivityLogsRepository;
 import com.ascentdev.wims.repository.CargoConditionRepository;
 import com.ascentdev.wims.repository.CargoImagesRepository;
-import com.ascentdev.wims.repository.FlightsRepository;
+import com.ascentdev.wims.repository.FlightStorageRepository;
 import com.ascentdev.wims.repository.GetRacksRepository;
 import com.ascentdev.wims.repository.HawbRepository;
 import com.ascentdev.wims.repository.ImagesRepository;
 import com.ascentdev.wims.repository.JobAssignmentRepository;
 import com.ascentdev.wims.repository.MawbRepository;
 import com.ascentdev.wims.repository.RackDetailsRepository;
-import com.ascentdev.wims.repository.RefRackRepository;
 import com.ascentdev.wims.repository.ReleasingCargoRepository;
 import com.ascentdev.wims.repository.StorageCargoRepository;
 import com.ascentdev.wims.service.StoreCargoService;
-import com.ascentdev.wims.utils.Dates;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,15 +49,19 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.ascentdev.wims.repository.RackUtilRepository;
+import com.ascentdev.wims.repository.RefShipmentStatusRepository;
+import com.ascentdev.wims.repository.RefRackLayerRepository;
+import com.ascentdev.wims.repository.RefRackRepository;
+import com.ascentdev.wims.repository.TxnCargoVideosRepository;
+import java.io.File;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -69,7 +74,8 @@ public class StoreCargoServiceImp implements StoreCargoService {
   String message = "Success!";
   int statusCode = 200;
 
-  String fileUploadPath = "C:\\wms_paircargo\\SUPPORTING_DOCUMENTS\\images\\";
+  String fileUploadPath = "C:\\wms_paircargo\\WMS_SUPPORTING_DOCUMENTS\\images\\";
+  private static final String fileUploadPathVideo = "C:\\wms_paircargo\\WMS_SUPPORTING_DOCUMENTS\\videos\\" + ((DateTimeFormatter.ofPattern("yyyy-MM")).format(LocalDateTime.now()));
 
   @Autowired
   RackUtilRepository rRepo;
@@ -84,13 +90,19 @@ public class StoreCargoServiceImp implements StoreCargoService {
   ImagesRepository imgRepo;
 
   @Autowired
+  TxnCargoVideosRepository vidRepo;
+
+  @Autowired
   CargoImagesRepository ciRepo;
 
   @Autowired
-  RefRackRepository rrRepo;
+  RefRackLayerRepository rrRepo;
 
   @Autowired
-  FlightsRepository fRepo;
+  RefRackRepository refRackRepo;
+
+  @Autowired
+  FlightStorageRepository fRepo;
 
   @Autowired
   StorageCargoRepository scRepo;
@@ -118,6 +130,9 @@ public class StoreCargoServiceImp implements StoreCargoService {
 
   @Autowired
   JobAssignmentRepository jaRepo;
+
+  @Autowired
+  RefShipmentStatusRepository shipmentRepo;
 
   @Override
   public ApiResponseModel getStorageCargo() {
@@ -157,38 +172,38 @@ public class StoreCargoServiceImp implements StoreCargoService {
           String hawb_number,
           String rackName,
           String layerName,
-          long rack_util_id,
-          long user_id, long cargo_activity_logs_id) {
+          String rackCode,
+          long user_id,
+          long cargo_activity_logs_id,
+          int actual_pcs,
+          String registry_number,
+          int uld_id) {
     ErrorException ex1 = null;
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
 
     RackUtilEntity rackUtil = new RackUtilEntity();
+    RefRackLayerEntity rackLayer = new RefRackLayerEntity();
     RefRackEntity refRack = new RefRackEntity();
-    RefRackEntity newRefRack = new RefRackEntity();
     CargoActivityLogsEntity logs = new CargoActivityLogsEntity();
+    List<CargoActivityLogsEntity> logsList = new ArrayList<>();
     CargoActivityLogsEntity histLogs = new CargoActivityLogsEntity();
     MawbEntity mawb = new MawbEntity();
-    HawbEntity hawb = new HawbEntity();
-    FlightsEntity flights = new FlightsEntity();
+    FlightStorageEntity flights = new FlightStorageEntity();
 
     List<HawbEntity> hawbs = new ArrayList<>();
 
-    float tempV = 0;
-    float volume = 0;
-
     try {
-      rackUtil = rRepo.findById(rack_util_id);
-      flights = fRepo.findByFlightNumber(flightNumber);
-      mawb = mRepo.findByMawbNumber(mawbNumber);
+      flights = fRepo.findByFlightNumberAndRegistryNumber(flightNumber, registry_number);
+      mawb = mRepo.findByMawbNumberAndRegistryNumber(mawbNumber, registry_number);
       hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawb_number);
       histLogs = cargoRepo.findById(cargo_activity_logs_id);
-      
-      if(histLogs.getId() > 0){
+
+      if (histLogs.getId() > 0) {
         histLogs.setStored(true);
         cargoRepo.save(histLogs);
       }
-      
+
       logs.setReceivedReleasedDate(Timestamp.valueOf(date));
       logs.setFlightId(flights.getId());
       logs.setMawbId(mawb.getId());
@@ -204,50 +219,68 @@ public class StoreCargoServiceImp implements StoreCargoService {
       logs.setCreatedById(user_id);
       logs.setLocation("STORING AREA");
       logs.setActivityStatus("STORED");
+      logs.setActualPcs(actual_pcs);
       logs.setStored(true);
-      cargoRepo.save(logs);
+      logs.setUldId(uld_id);
+      logs.setStatusCode(histLogs.getStatusCode());
+      logs.setFull(true);
+      logs = cargoRepo.save(logs);
+      logsList.add(logs);
 
-      if (rackUtil == null) {
+      rackLayer = rrRepo.findByLayerNameAndRackName(layerName, rackName);
+      refRack = refRackRepo.findByRackCode(rackCode);
+
+      if (rackLayer != null) {
+
+        rackUtil.setRefRackId(refRack.getId());
+        rackUtil.setLocation(rackName + " - " + layerName);
+        rackUtil.setRefRackLayerId(rackLayer.getId());
+        rackUtil.setTxnMawbId(mawb.getId());
+        rackUtil.setStoredDt(Timestamp.valueOf(date));
+        rackUtil.setCreatedAt(Timestamp.valueOf(date));
+        rackUtil.setStoredById(user_id);
+        if (hawbs.size() > 0) {
+
+          rackLayer.setVolume(rackLayer.getVolume() + hawbs.get(0).getActualVolume());
+          rackUtil.setNoOfPieces(actual_pcs);
+          rackUtil.setVolume(hawbs.get(0).getActualVolume());
+          rackUtil.setTxnHawbId(hawbs.get(0).getId());
+
+          rRepo.save(rackUtil);
+          rrRepo.save(rackLayer);
+          status = true;
+          statusCode = 200;
+          message = "Saved Successfully";
+
+        } else {
+
+          rackLayer.setVolume(rackLayer.getVolume() + mawb.getActualVolume());
+          rackUtil.setNoOfPieces(actual_pcs);
+          rackUtil.setVolume(mawb.getActualVolume());
+          rackUtil.setTxnHawbId(0);
+
+          rackUtil = rRepo.save(rackUtil);
+          rrRepo.save(rackLayer);
+
+          status = true;
+          statusCode = 200;
+          message = "Saved Successfully";
+
+        }
+
+      } else {
         ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Data not save", System.currentTimeMillis());
         throw ex1;
       }
 
-//      Optional OptrefRack = rrRepo.findById(rackUtil.getRefRackId());
-      RefRackEntity OptrefRack = rrRepo.findById(rackUtil.getRefRackId());
-
-      if (OptrefRack != null) {
-        refRack = OptrefRack;
-      }
-
-      tempV = refRack.getVolume() - rackUtil.getVolume();
-      refRack.setVolume(tempV);
-      refRack = rrRepo.save(refRack);
-
-      if (refRack == null) {
-        ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Data not save", System.currentTimeMillis());
-        throw ex1;
-      }
-
-      newRefRack = rrRepo.findByLayerNameAndRackName(layerName, rackName);
-
-      volume = refRack.getVolume() + rackUtil.getVolume();
-      refRack.setVolume(volume);
-      refRack = rrRepo.save(refRack);
-      if (refRack == null) {
-        ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Data not save", System.currentTimeMillis());
-        throw ex1;
-      }
-      rackUtil.setRefRackId(newRefRack.getId());
-      rackUtil = rRepo.save(rackUtil);
-
-      if (rackUtil == null) {
-        ex1 = new ErrorException(HttpStatus.CONFLICT.value(), HttpStatus.CONFLICT, "Data not save", System.currentTimeMillis());
-        throw ex1;
-      }
-      resp.setData(refRack);
+      resp.setCargoActivityLogsId(logs.getId());
+      resp.setLogList(logsList);
+      resp.setData(rackLayer);
+      resp.setRackUtil(rackUtil);
       resp.setMessage(message);
       resp.setStatus(status);
       resp.setStatusCode(statusCode);
+
     } catch (ErrorException e) {
       if (ex1 == null) {
         ex1 = new ErrorException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, "Bad Request", System.currentTimeMillis());
@@ -259,7 +292,127 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel getImages(String mawbNumber, String hawbNumber, boolean isHawb) {
+  public ApiResponseModel saveAddedRack(
+          List<AddedRackModel> addedRackModel,
+          String mawbNumber,
+          String flightNumber,
+          String hawb_number,
+          long user_id,
+          long cargo_activity_logs_id,
+          String registry_number, int uld_id, int actual_pcs) {
+
+    ErrorException ex1 = null;
+    ApiResponseModel resp = new ApiResponseModel();
+    LocalDateTime date = LocalDateTime.now();
+
+    RackUtilEntity rackUtil = new RackUtilEntity();
+    RefRackLayerEntity rackLayer = new RefRackLayerEntity();
+    RefRackEntity rack = new RefRackEntity();
+    CargoActivityLogsEntity logs = new CargoActivityLogsEntity();
+    CargoActivityLogsEntity histLogs = new CargoActivityLogsEntity();
+    MawbEntity mawb = new MawbEntity();
+    HawbEntity hawb = new HawbEntity();
+    FlightStorageEntity flights = new FlightStorageEntity();
+    List<CargoActivityLogsEntity> logsList = new ArrayList<>();
+
+    List<HawbEntity> hawbs = new ArrayList<>();
+
+    float tempV = 0;
+    float volume = 0;
+
+    try {
+      flights = fRepo.findByFlightNumberAndRegistryNumber(flightNumber, registry_number);
+      mawb = mRepo.findByMawbNumberAndRegistryNumber(mawbNumber, registry_number);
+      hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawb_number);
+      histLogs = cargoRepo.findById(cargo_activity_logs_id);
+
+      if (histLogs.getId() > 0) {
+        histLogs.setStored(true);
+        cargoRepo.save(histLogs);
+      }
+
+      for (AddedRackModel a : addedRackModel) {
+        logs = new CargoActivityLogsEntity();
+
+        logs.setReceivedReleasedDate(Timestamp.valueOf(date));
+        logs.setFlightId(flights.getId());
+
+        logs.setUpdatedAt(Timestamp.valueOf(date));
+        logs.setUpdatedById(user_id);
+        logs.setCreatedAt(Timestamp.valueOf(date));
+        logs.setCreatedById(user_id);
+        logs.setLocation("STORING AREA");
+        logs.setActivityStatus("STORED");
+        logs.setActualPcs(a.getStoredPcs());
+        logs.setStored(true);
+        logs.setUldId(uld_id);
+        logs.setStatusCode(histLogs.getStatusCode());
+        logs.setMawbId(mawb.getId());
+
+        rackLayer = rrRepo.findByLayerNameAndRackName(a.getLayer_name(), a.getRack_name());
+
+        if (rackLayer != null) {
+          rackUtil = new RackUtilEntity();
+          rackUtil.setRefRackId(rackLayer.getRackId());
+          rackUtil.setLocation(a.getRack_code() + " - " + a.getLayer_name());
+          rackUtil.setRefRackLayerId(rackLayer.getId());
+          rackUtil.setTxnMawbId(mawb.getId());
+          rackUtil.setStoredDt(Timestamp.valueOf(date));
+          rackUtil.setCreatedAt(Timestamp.valueOf(date));
+
+          if (hawbs.size() > 0) {
+
+            logs.setHawbId(hawbs.get(0).getId());
+
+            rackLayer.setVolume(rackLayer.getVolume() + hawbs.get(0).getActualVolume());
+            rackUtil.setNoOfPieces(a.getStoredPcs());
+            rackUtil.setVolume(hawbs.get(0).getActualVolume());
+            rackUtil.setTxnHawbId(hawbs.get(0).getId());
+
+          } else {
+
+            logs.setHawbId(0);
+
+            rackLayer.setVolume(rackLayer.getVolume() + mawb.getActualVolume());
+            rackUtil.setNoOfPieces(a.getStoredPcs());
+            rackUtil.setVolume(mawb.getActualVolume());
+            rackUtil.setTxnHawbId(0);
+
+          }
+
+          logs = cargoRepo.save(logs);
+          logsList.add(logs);
+          rRepo.save(rackUtil);
+          rrRepo.save(rackLayer);
+
+          status = true;
+          statusCode = 200;
+          message = "Saved Successfully";
+        }
+      }
+
+      resp.setCargoActivityLogsId(logs.getId());
+      resp.setData(logs);
+      resp.setLogList(logsList);
+      resp.setAddedRackModel(addedRackModel);
+      resp.setMessage(message);
+      resp.setStatus(status);
+      resp.setStatusCode(statusCode);
+
+    } catch (ErrorException e) {
+      if (ex1 == null) {
+        ex1 = new ErrorException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, "Bad Request", System.currentTimeMillis());
+      }
+      throw ex1;
+    }
+
+    return resp;
+  }
+
+  @Override
+  public ApiResponseModel getImages(String mawbNumber, String hawbNumber,
+          boolean isHawb, String registry_number
+  ) {
     ApiResponseModel resp = new ApiResponseModel();
     CargoImagesModel data = new CargoImagesModel();
 
@@ -269,7 +422,7 @@ public class StoreCargoServiceImp implements StoreCargoService {
 
     try {
       hawb = hRepo.findByHawbNumber(hawbNumber);
-      mawb = mRepo.findByMawbNumber(mawbNumber);
+      mawb = mRepo.findByMawbNumberAndRegistryNumber(mawbNumber, registry_number);
       if (isHawb) {
         images = ciRepo.searchHawbId(hawb.getId());
         if (images.size() != 0) {
@@ -304,44 +457,13 @@ public class StoreCargoServiceImp implements StoreCargoService {
     return resp;
   }
 
-//  @Override
-//  public ApiResponseModel getAllRefRacks() {
-//    ApiResponseModel resp = new ApiResponseModel();
-//    RefRackModel data = new RefRackModel();
-//
-//    List<RefRackEntity> refRacks = new ArrayList<>();
-//
-//    try {
-//
-//      Sort sort = Sort.by(Sort.Order.asc("id"));
-//      refRacks = rrRepo.findAll(sort);
-//
-//      if (refRacks.size() > 0) {
-//        data.setRefRacks(refRacks);
-//        resp.setData(data);
-//        resp.setMessage("Data Found");
-//        resp.setStatus(true);
-//        resp.setStatusCode(200);
-//      } else {
-//        resp.setMessage("NO DATA FOUND");
-//        resp.setStatus(false);
-//        resp.setStatusCode(404);
-//      }
-//
-//    } catch (ErrorException e) {
-//      e.printStackTrace();
-//      resp.setMessage("NO DATA FOUND");
-//      resp.setStatus(false);
-//      resp.setStatusCode(404);
-//    }
-//    return resp;
-//  }
   @Override
-  public ApiResponseModel getRefRacks(boolean is_layer, String rack_name) {
+  public ApiResponseModel getRefRacks(boolean is_layer, String rack_name
+  ) {
     ApiResponseModel resp = new ApiResponseModel();
     RefRackModel data = new RefRackModel();
 
-    List<RefRackEntity> layers = new ArrayList<>();
+    List<RefRackLayerEntity> layers = new ArrayList<>();
     List<GetRacksEntity> refRacks = new ArrayList<>();
 
     try {
@@ -385,7 +507,9 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel getRackDetails(boolean isHawb, String hawbNumber, String mawbNumber) {
+  public ApiResponseModel getRackDetails(boolean isHawb, String hawbNumber,
+          String mawbNumber
+  ) {
     ApiResponseModel resp = new ApiResponseModel();
     RackDetailsModel data = new RackDetailsModel();
 
@@ -460,17 +584,16 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber, long user_id) {
+  public ApiResponseModel updateStoragerStatus(String hawbNumber, String mawbNumber,
+          long user_id, String registry_number
+  ) {
     ErrorException ex1 = null;
     ApiResponseModel resp = new ApiResponseModel();
-//    StorageLogsEntity storageLogs = new StorageLogsEntity();
-//    CargoReleaseEntity cargoRelease = new CargoReleaseEntity();
     MawbEntity mawbDetails = new MawbEntity();
     HawbEntity hawbDetails = new HawbEntity();
     CargoActivityLogsEntity logs = new CargoActivityLogsEntity();
     LocalDateTime date = LocalDateTime.now();
 
-//    List<JobAssignmentEntity> jobAssigns = new ArrayList<>();
     List<HawbEntity> hawbs = new ArrayList<>();
 
     MawbEntity mawb1 = new MawbEntity();
@@ -478,12 +601,10 @@ public class StoreCargoServiceImp implements StoreCargoService {
 
     try {
       if (hawbNumber.equals("null") || hawbNumber.equals("")) {
-        mawb1 = mRepo.findByMawbNumber(mawbNumber);
+        mawb1 = mRepo.findByMawbNumberAndRegistryNumber(mawbNumber, registry_number);
         hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawbNumber);
-//        logs = cargoRepo.findByMawbIdAndLocationAndReceivedReleasedDateNull(mawbDetails.getId(), "RELEASING AREA");
 
         logs.setReceivedReleasedDate(Timestamp.valueOf(date));
-//        logs.setHandledById(jobAssigns.get(0).getId());
         logs.setFlightId(mawb1.getFlightId());
         logs.setMawbId(mawb1.getId());
         logs.setHawbId(hawbs.get(0).getId());
@@ -539,7 +660,8 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel getCargoImages(long cargoActivityLogId) {
+  public ApiResponseModel getCargoImages(long cargoActivityLogId
+  ) {
     ApiResponseModel resp = new ApiResponseModel();
     CargoImagesModel data = new CargoImagesModel();
 
@@ -571,15 +693,17 @@ public class StoreCargoServiceImp implements StoreCargoService {
           long userId,
           String rackName,
           String layerName,
+          String rackCode,
           int storedPcs,
           String remarks,
           String flightNumber,
           CargoActivityLogsEntity cargoLogs,
           MawbEntity mawbDetails,
-          HawbEntity hawbDetails) {
+          HawbEntity hawbDetails
+  ) {
     ApiResponseModel resp = new ApiResponseModel();
 
-    resp = saveRack(cargoLogs, mawbDetails.getMawbNumber(), flightNumber, hawbDetails.getHawbNumber(), rackName, layerName, 0, 0, 0);
+    resp = saveRack(cargoLogs, mawbDetails.getMawbNumber(), flightNumber, hawbDetails.getHawbNumber(), rackName, layerName, rackCode, 0, 0, 0, "", 0);
     if (resp.isStatus()) {
       for (MultipartFile f : file) {
         ImagesEntity images = new ImagesEntity();
@@ -589,30 +713,19 @@ public class StoreCargoServiceImp implements StoreCargoService {
         images.setCargoActivityLogId(cargoConditionId);
         images.setRemarks(remarks);
         iRepo.save(images);
-        saveImage(f);
       }
     }
 
     return resp;
   }
 
-  private void saveImage(MultipartFile file) {
-
-    try {
-      byte[] data = file.getBytes();
-      Path path = Paths.get(fileUploadPath + file.getOriginalFilename());
-      Files.write(path, data);
-    } catch (IOException ex) {
-      Logger.getLogger(ReceiveCargoServiceImp.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
-
   @Override
-  public Integer uploadImage(MultipartFile[] file, int hawbId, String mawbNumber, List<ImagesEntity> imagesEntity) {
+  public Integer uploadImage(MultipartFile[] file, String hawbNumber, String mawbNumber, List<ImagesEntity> imagesEntity, int uld_id, String registry_number) {
     Integer resp = 0;
     long id = 0;
 
     MawbEntity mawb = new MawbEntity();
+    HawbEntity hawb = new HawbEntity();
     CargoActivityLogsEntity cal = new CargoActivityLogsEntity();
     List<CargoActivityLogsEntity> cargoList = new ArrayList<>();
     CargoConditionEntity condition1 = new CargoConditionEntity();
@@ -620,37 +733,56 @@ public class StoreCargoServiceImp implements StoreCargoService {
     List<ImagesEntity> imageList = new ArrayList<>();
 
     try {
-      mawb = mRepo.findByMawbNumber(mawbNumber);
-      if (hawbId == 0) {
-        cargoList = cargoActivityRepo.getByMawbIdAndActivityStatus(mawb.getId(), "STORED");
+      mawb = mRepo.findByMawbNumberAndRegistryNumber(mawbNumber, registry_number);
+      if (!hawbNumber.equals("")) {
+        hawb = hRepo.findByHawbNumber(hawbNumber);
+      }
+
+      if (hawb.getId() == 0) {
+        cargoList = cargoActivityRepo.getByMawbIdAndActivityStatusAndUldId(mawb.getId(), "STORED", false, false, uld_id);
       } else {
-        cargoList = cargoActivityRepo.getByMawbIdAndHawbIdAndActivityStatus(mawb.getId(), hawbId, "STORED");
+        cargoList = cargoActivityRepo.getByMawbIdAndHawbIdAndActivityStatusAndUldId(mawb.getId(), hawb.getId(), "STORED", uld_id);
       }
       cal = cargoList.get(cargoList.size() - 1);
       int count = 0;
 
-      for (MultipartFile f : file) {
+      if (cargoList.size() > 1) {
+        for (MultipartFile f : file) {
+          String filename = f.getOriginalFilename();
+          images.setFilePath(fileUploadPath + "\\" + filename);
+          images.setFileName(filename);
+          images.setCargoActivityLogId(cal.getId());
+          images.setCargoConditionId(imagesEntity.get(count).getCargoConditionId());
+          if (imagesEntity.get(count).getRemarks() != null && !imagesEntity.get(count).getRemarks().equals("")) {
+            images.setRemarks(imagesEntity.get(count).getRemarks());
+          } else {
+            images.setRemarks(null);
+          }
 
-        String filename = f.getOriginalFilename();
-        images.setFilePath(fileUploadPath + "\\" + filename);
-        images.setFileName(filename);
-        images.setCargoActivityLogId(cal.getId());
-        images.setCargoConditionId(imagesEntity.get(count).getCargoConditionId());
-        images.setRemarks(imagesEntity.get(count).getRemarks());
-        imgRepo.save(images);
-        saveImage(f);
-        images = new ImagesEntity();
-        count++;
+          imgRepo.save(images);
+          images = new ImagesEntity();
+          count++;
+        }
+      } else {
+        for (MultipartFile f : file) {
+
+          String filename = f.getOriginalFilename();
+          images.setFilePath(fileUploadPath + "\\" + filename);
+          images.setFileName(filename);
+          images.setCargoActivityLogId(cal.getId());
+          images.setCargoConditionId(imagesEntity.get(0).getCargoConditionId());
+          if (imagesEntity.get(0).getRemarks() != null && !imagesEntity.get(0).getRemarks().equals("")) {
+            images.setRemarks(imagesEntity.get(0).getRemarks());
+          } else {
+            images.setRemarks(null);
+          }
+
+          imgRepo.save(images);
+          images = new ImagesEntity();
+          count++;
+        }
       }
 
-//      for (int i = 0; i < imagesEntity.size(); i++) {
-//
-////        condition1 = ccRepo.findByCondition(imagesEntity.get(i).);
-//        images.setCargoConditionId(imagesEntity.get(i).getCargoConditionId());
-//        images.setRemarks(imagesEntity.get(i).getRemarks());
-//        imgRepo.save(images);
-//        images = new ImagesEntity();
-//      }
       resp = 1;
     } catch (Exception e) {
       resp = 0;
@@ -660,40 +792,140 @@ public class StoreCargoServiceImp implements StoreCargoService {
   }
 
   @Override
-  public ApiResponseModel saveReleaseCargo(String mawbNumber, String hawbNumber, String flightNumber, long userId) {
-    ApiResponseModel resp = new ApiResponseModel();
-    LocalDateTime date = LocalDateTime.now();
+  public Integer uploadVideo(MultipartFile[] file, String hawbNumber, String mawbNumber, int uld_id, String registry_number) {
+    Integer resp = 0;
+    long id = 0;
 
-//    List<JobAssignmentEntity> jobAssigns = new ArrayList<>();
-    List<HawbEntity> hawbs = new ArrayList<>();
-
-    MawbEntity mawb1 = new MawbEntity();
-    FlightsEntity flights = new FlightsEntity();
-    CargoActivityLogsEntity logs = new CargoActivityLogsEntity();
+    MawbEntity mawb = new MawbEntity();
+    HawbEntity hawb = new HawbEntity();
+    List<CargoActivityLogsEntity> cargoList = new ArrayList<>();
+    TxnCargoVideosEntity vids = new TxnCargoVideosEntity();
 
     try {
-      flights = fRepo.findByFlightNumber(flightNumber);
-      mawb1 = mRepo.findByMawbNumber(mawbNumber);
-      hawbs = hRepo.findByMawbNumberAndHawbNumber(mawbNumber, hawbNumber);
+      mawb = mRepo.findByMawbNumberAndRegistryNumber(mawbNumber, registry_number);
+      if (!hawbNumber.equals("")) {
+        hawb = hRepo.findByHawbNumber(hawbNumber);
+      }
 
-      logs.setReceivedReleasedDate(Timestamp.valueOf(date));
-//      logs.setHandledById(jobAssigns.get(0).getId());
-      logs.setFlightId(flights.getId());
-      logs.setMawbId(mawb1.getId());
-      logs.setHawbId(hawbs.get(0).getId());
-      logs.setUpdatedAt(Timestamp.valueOf(date));
-      logs.setUpdatedById(userId);
-      logs.setCreatedAt(Timestamp.valueOf(date));
-      logs.setCreatedById(userId);
-      logs.setLocation("RELEASING AREA");
-      logs.setActivityStatus("RELEASED");
-      cargoRepo.save(logs);
+      if (hawb.getId() == 0) {
+        cargoList = cargoActivityRepo.getByMawbIdAndActivityStatusAndUldId(mawb.getId(), "STORED", false, false, uld_id);
+      } else {
+        cargoList = cargoActivityRepo.getByMawbIdAndHawbIdAndActivityStatusAndUldId(mawb.getId(), hawb.getId(), "STORED", uld_id);
+      }
 
-    } catch (ErrorException e) {
-      e.printStackTrace();
+      for (MultipartFile f : file) {
+        String filename = f.getOriginalFilename();
+        vids.setFilePath(fileUploadPathVideo + "\\" + filename);
+        vids.setFileName(filename);
+        vids.setCargoActivityLogId(cargoList.get(0).getId());
+
+        vidRepo.save(vids);
+        vids = new TxnCargoVideosEntity();
+      }
+
+      resp = 1;
+    } catch (Exception e) {
+      resp = 0;
     }
-
     return resp;
+
   }
 
+  @Override
+  public Integer uploadAddedImage(MultipartFile[] file, String hawbNumber, String mawbNumber, List<ImagesEntity> imagesEntity, int uld_id, String registry_number) {
+    Integer resp = 0;
+    long id = 0;
+
+    MawbEntity mawb = new MawbEntity();
+    HawbEntity hawb = new HawbEntity();
+    CargoActivityLogsEntity cal = new CargoActivityLogsEntity();
+    List<CargoActivityLogsEntity> cargoList = new ArrayList<>();
+    CargoConditionEntity condition1 = new CargoConditionEntity();
+    ImagesEntity images = new ImagesEntity();
+    List<ImagesEntity> imageList = new ArrayList<>();
+
+    imageList = imagesEntity;
+
+    try {
+      mawb = mRepo.findByMawbNumberAndRegistryNumber(mawbNumber, registry_number);
+      if (!hawbNumber.equals("")) {
+        hawb = hRepo.findByHawbNumber(hawbNumber);
+      }
+
+      if (hawb.getId() == 0) {
+        cargoList = cargoActivityRepo.getByMawbIdAndActivityStatusAndUldId(mawb.getId(), "STORED", false, false, uld_id);
+      } else {
+        cargoList = cargoActivityRepo.getByMawbIdAndHawbIdAndActivityStatusAndUldId(mawb.getId(), hawb.getId(), "STORED", uld_id);
+      }
+      int count = 0;
+
+      for (MultipartFile f : file) {
+
+        String filename = f.getOriginalFilename();
+        images.setFilePath(fileUploadPath + "\\" + filename);
+        images.setFileName(filename);
+        images.setCargoActivityLogId(cargoList.get(count).getId());
+        images.setCargoConditionId(imageList.get(count).getCargoConditionId());
+
+        if (imageList.get(count).getRemarks() != null && !"".equals(imageList.get(count).getRemarks())) {
+          images.setRemarks(imageList.get(count).getRemarks());
+
+        } else {
+          images.setRemarks(null);
+        }
+
+        imgRepo.save(images);
+        images = new ImagesEntity();
+        count++;
+      }
+
+      resp = 1;
+    } catch (Exception e) {
+      resp = 0;
+    }
+    return resp;
+
+  }
+
+  @Override
+  public Integer uploadAddedVideo(MultipartFile[] file, String hawbNumber, String mawbNumber, int uld_id, String registry_number) {
+    Integer resp = 0;
+    long id = 0;
+
+    MawbEntity mawb = new MawbEntity();
+    HawbEntity hawb = new HawbEntity();
+    List<CargoActivityLogsEntity> cargoList = new ArrayList<>();
+    TxnCargoVideosEntity vids = new TxnCargoVideosEntity();
+
+    try {
+      mawb = mRepo.findByMawbNumberAndRegistryNumber(mawbNumber, registry_number);
+      if (!hawbNumber.equals("")) {
+        hawb = hRepo.findByHawbNumber(hawbNumber);
+      }
+
+      if (hawb.getId() == 0) {
+        cargoList = cargoActivityRepo.getByMawbIdAndActivityStatusAndUldId(mawb.getId(), "STORED", false, false, uld_id);
+      } else {
+        cargoList = cargoActivityRepo.getByMawbIdAndHawbIdAndActivityStatusAndUldId(mawb.getId(), hawb.getId(), "STORED", uld_id);
+      }
+
+      int count = 0;
+      for (MultipartFile f : file) {
+        String filename = f.getOriginalFilename();
+        vids.setFilePath(fileUploadPathVideo + "\\" + filename);
+        vids.setFileName(filename);
+        vids.setCargoActivityLogId(cargoList.get(count).getId());
+
+        vidRepo.save(vids);
+        vids = new TxnCargoVideosEntity();
+        count++;
+      }
+
+      resp = 1;
+    } catch (Exception e) {
+      resp = 0;
+    }
+    return resp;
+
+  }
 }

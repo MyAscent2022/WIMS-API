@@ -13,7 +13,7 @@ import lombok.Data;
 
 /**
  *
- * @author ASCENT
+ * @author ASCENT SOLUTIONS INC
  */
 @Data
 @Entity
@@ -23,30 +23,33 @@ public class RefRackEntity {
   @Id
   long id;
   
-  @Column(name="layer_id")
-  long layerId;
+  @Column(name="ref_airline_id")
+  Long refAirlineId;
   
-  @Column(name="max_volume")
-  float maxVolume;
+  @Column(name="ref_category_id")
+  int refCategoryId;
   
-  @Column(name="layer_name")
-  String layerName;
-  
-  @Column(name="volume")
-  Float volume;
+  @Column(name="rack_name")
+  String rackName;
   
   @Column(name="dimension")
   String dimension;
   
-  @Column(name="layout_column")
-  Long layoutColumn;
+  @Column(name="coordinate")
+  String coordinate;
   
-  @Column(name="layout_row")
-  Long layoutRow;
+  @Column(name="max_volume")
+  Float maxVolume;
   
-  @Column(name="rack_id")
-  int rackId;
+  @Column(name="rack_code")
+  String rackCode;
   
-  @Column(name="rack_name")
-  String rackName;
+  @Column(name="ref_classification_id")
+  int refClassificationId;
+  
+  @Column(name="capacity")
+  Float capacity;
+  
+  @Column(name="height")
+  Float height;
 }

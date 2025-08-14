@@ -7,8 +7,11 @@ package com.ascentdev.wims.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
@@ -22,8 +25,9 @@ import lombok.Data;
 @Table(name = "txn_mawb")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MawbTbEntity {
-  
+
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   int id;
 
   @Column(name = "date_of_arrival")
@@ -35,9 +39,8 @@ public class MawbTbEntity {
   @Column(name = "mawb_number")
   String mawbNumber;
 
-  @Column(name = "number_of_containers")
-  int numberOfContainers;
-
+//  @Column(name = "number_of_containers")
+//  int numberOfContainers;
   @Column(name = "number_of_packages")
   Integer numberOfPackages;
 
@@ -83,9 +86,27 @@ public class MawbTbEntity {
   @Column(name = "cargo_category_id")
   Long cargoCategoryId;
 
+  @Column(name = "gate_releasing_id")
+  Long gateReleasingId;
+
   @Column(name = "cargo_class_id")
   Long cargoClassId;
 
   @Column(name = "flight_id")
   Integer flightId;
+
+  @Column(name = "created_by_id")
+  Integer createdById;
+
+  @Column(name = "created_at")
+  Timestamp createdAt;
+
+  @Column(name = "status_id")
+  Integer statusId;
+
+  @Column(name = "gross_mass")
+  Integer grossMass;
+
+  @Column(name = "received_registry_no")
+  String receivedRegistryNo;
 }

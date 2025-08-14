@@ -39,7 +39,7 @@ public class RackUtilHistoryEntity {
   long refRackId;
   
   @Column(name="stored_by_id")
-  int storedById;
+  Long storedById;
   
   @Column(name="stored_dt")
   Timestamp storedDt;

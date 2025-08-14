@@ -18,37 +18,42 @@ import org.hibernate.annotations.Subselect;
  */
 @Data
 @Entity
-//@Subselect("SELECT f.id,\n"
-//        + "ja.assigned_user_id AS user_id,\n"
-//        + "ra.id AS airline_id,\n"
-//        + "ra.description AS airline,\n"
-//        + "f.flight_number,\n"
-//        + "f.registry_number,\n"
-//        + "f.travel_status,\n"
-//        + "f.flight_status,\n"
-//        + "f.estimated_arrival_dt::DATE AS date_of_arrival\n"
-//        + "FROM flights f\n"
-//        + "INNER JOIN job_assignments ja ON ja.flight_id = f.id\n"
-//        + "INNER JOIN ref_airline ra ON ra.code = f.ref_airline_code\n"
-//        + "WHERE f.travel_status = 'Done' AND f.estimated_arrival_dt::DATE = CURRENT_DATE")
-@Subselect("SELECT f.id,\n"
-        + "ra.id AS airline_id,\n"
-        + "ra.description AS airline,\n"
-        + "f.flight_number,\n"
-        + "f.registry_number,\n"
-        + "f.travel_status,\n"
-        + "f.flight_status,\n"
-        + "f.estimated_arrival_dt::DATE AS date_of_arrival\n"
-        + "FROM flights f\n"
-        + "INNER JOIN ref_airline ra ON ra.code = f.ref_airline_code\n"
-        + "WHERE f.travel_status = 'Done' AND f.estimated_arrival_dt::DATE = CURRENT_DATE")
+@Subselect("WITH RankedFlights AS (\n"
+        + "    SELECT \n"
+        + "        f.id,\n"
+        + "        ra.id AS airline_id,\n"
+        + "        ra.description AS airline,\n"
+        + "        f.flight_number,\n"
+        + "        f.travel_status,\n"
+        + "        f.flight_status,\n"
+        + "        f.estimated_arrival_dt::DATE AS date_of_arrival,\n"
+        + "        f.destination_code,\n"
+        + "        f.origin_code,\n"
+        + "        fs.registry_number,\n"
+        + "        ROW_NUMBER() OVER (PARTITION BY f.flight_number ORDER BY f.estimated_arrival_dt DESC) AS rn\n"
+        + "    FROM \n"
+        + "        flights f\n"
+        + "    INNER JOIN \n"
+        + "        ref_airline ra ON ra.code = f.ref_airline_code\n"
+        + "    INNER JOIN \n"
+        + "        flight_schedules fs ON fs.id = f.flight_schedule_id\n"
+        + "    INNER JOIN \n"
+        + "        ref_uld ru ON ru.flight_number = f.flight_number\n"
+        + "    WHERE \n"
+        + "        f.estimated_arrival_dt::DATE IN (CURRENT_DATE, CURRENT_DATE + INTERVAL '1 day')\n"
+        + "        AND ru.uld_status IN (2, 11)\n"
+        + ")\n"
+        + "SELECT \n"
+        + "    id, airline_id, airline, flight_number, travel_status, flight_status, date_of_arrival, destination_code, origin_code, registry_number\n"
+        + "FROM \n"
+        + "    RankedFlights\n"
+        + "WHERE \n"
+        + "    rn = 1")
 public class FlightsEntity {
 
   @Id
   int id;
 
-//  @Column(name = "user_id")
-//  long userId;
   @Column(name = "airline_id")
   Long airlineId;
 
@@ -69,4 +74,10 @@ public class FlightsEntity {
 
   @Column(name = "date_of_arrival")
   Date arrivalDate;
+
+  @Column(name = "destination_code")
+  String destinationCode;
+
+  @Column(name = "origin_code")
+  String originCode;
 }

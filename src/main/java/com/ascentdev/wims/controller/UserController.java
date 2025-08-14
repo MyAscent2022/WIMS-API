@@ -24,8 +24,8 @@ public class UserController {
   UserServiceImp userServiceImp;
   
   @GetMapping("user_login")
-  public ApiResponseModel getUser(@RequestParam("username") String username, @RequestParam("passkey") String passkey) {
-    return userServiceImp.userLogin(username, passkey);
+  public ApiResponseModel getUser(@RequestParam("username") String username, @RequestParam("passkey") String passkey, @RequestParam("token") String token) {
+    return userServiceImp.userLogin(username, passkey, token);
   }
   
   @GetMapping("user_logout")

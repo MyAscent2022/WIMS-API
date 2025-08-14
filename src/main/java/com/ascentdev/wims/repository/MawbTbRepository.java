@@ -13,5 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author ASCENT SOLUTIONS INC
  */
 public interface MawbTbRepository extends JpaRepository<MawbTbEntity, Integer> {
-    MawbTbEntity findByMawbNumber(String mawbNumber);
+    MawbTbEntity findByMawbNumberAndRegistryNumber(String mawbNumber, String registryNumber);
 }

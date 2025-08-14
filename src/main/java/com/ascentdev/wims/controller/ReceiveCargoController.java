@@ -9,11 +9,15 @@ import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.MawbEntity;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.model.ConfirmCargoModel;
+import com.ascentdev.wims.model.HawbModel;
 import com.ascentdev.wims.model.SaveUldModel;
 import com.ascentdev.wims.model.UldsModel;
+import com.ascentdev.wims.model.UnmanifestedMawbModel;
 import com.ascentdev.wims.serviceImp.ReceiveCargoServiceImp;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import okhttp3.MultipartBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
- * @author
- * ASCENT
+ * @author ASCENT
  */
 @RestController
 @RequestMapping("/wims_api/")
@@ -41,13 +44,13 @@ public class ReceiveCargoController {
   }
 
   @GetMapping("ulds_per_flight")
-  public ApiResponseModel getUlds(@RequestParam("flight_number") String flight_number) {
-    return receiveCargoServiceImp.getUlds(flight_number);
+  public ApiResponseModel getUlds(@RequestParam("flight_number") String flight_number, @RequestParam("registry_number") String registry_number) {
+    return receiveCargoServiceImp.getUlds(flight_number, registry_number);
   }
 
   @GetMapping("mawbs_per_uld")
-  public ApiResponseModel getMawbs(@RequestParam("is_uld") boolean is_uld, @RequestParam("uld_number") String uld_number, @RequestParam("flight_number") String flight_number) {
-    return receiveCargoServiceImp.getMawbs(is_uld, uld_number, flight_number);
+  public ApiResponseModel getMawbs(@RequestParam("is_uld") boolean is_uld, @RequestParam("uld_number") String uld_number, @RequestParam("flight_number") String flight_number, @RequestParam("registry_number") String registry_number) {
+    return receiveCargoServiceImp.getMawbs(is_uld, uld_number, flight_number, registry_number);
   }
 
   @GetMapping("hawbs_per_mawb")
@@ -72,14 +75,12 @@ public class ReceiveCargoController {
 
   @PostMapping("save_uld_image")
   public ApiResponseModel saveUldImage(@RequestParam("file[]") MultipartFile[] file,
-          @RequestParam("uld_condition1") String uld_condition1,
-          @RequestParam("uld_condition2") String uld_condition2,
           @RequestParam("flight_number") String flight_number,
           @RequestParam("uld_number") String uld_number,
-          @RequestParam("remarks1") String remarks1,
-          @RequestParam("remarks2") String remarks2,
+          @RequestParam("remarks") String remarks[],
+          @RequestParam("uld_condition") String uldCondition[],
           @RequestParam("user_id") int user_id) {
-    return receiveCargoServiceImp.saveUldImage(file, uld_condition1, uld_condition2, flight_number, uld_number, remarks1, remarks2, user_id);
+    return receiveCargoServiceImp.saveUldImage(file, flight_number, uld_number, remarks, uldCondition, user_id);
   }
 
   @PostMapping("save_hawb_image")
@@ -108,7 +109,7 @@ public class ReceiveCargoController {
     cargoLogs.setActualPcs(actual_pcs);
     cargoLogs.setReceivedReleasedDate(Timestamp.valueOf(date));
     cargoLogs.setUpdatedAt(Timestamp.valueOf(date));
-    cargoLogs.setUpdatedById((long)user_id);
+    cargoLogs.setUpdatedById((long) user_id);
     cargoLogs.setCreatedAt(Timestamp.valueOf(date));
     cargoLogs.setCreatedById(user_id);
 
@@ -116,9 +117,9 @@ public class ReceiveCargoController {
     mawbDetails.setCargoStatus(cargo_status);
     mawbDetails.setCargoCategoryId(cargo_category_id);
     mawbDetails.setCargoClassId(cargo_class_id);
-    mawbDetails.setLength(length);
-    mawbDetails.setWidth(width);
-    mawbDetails.setHeight(height);
+    mawbDetails.setLength(Float.valueOf(length));
+    mawbDetails.setWidth(Float.valueOf(width));
+    mawbDetails.setHeight(Float.valueOf(height));
     mawbDetails.setActualVolume(actual_volume);
     mawbDetails.setActualWeight(actual_weight);
     mawbDetails.setActualPcs(actual_pcs);
@@ -129,17 +130,25 @@ public class ReceiveCargoController {
   }
 
   @PostMapping("confirm_cargo")
-  public ApiResponseModel confirmCargo(@RequestBody ConfirmCargoModel confirmCargo, 
-          @RequestParam("mawb_number") String mawbNumber, 
-          @RequestParam("flight_number") String flightNumber, 
-          @RequestParam("hawb_number") String hawbNumber, 
+  public ApiResponseModel confirmCargo(@RequestBody ConfirmCargoModel confirmCargo,
+          @RequestParam("mawb_number") String mawbNumber,
+          @RequestParam("flight_number") String flightNumber,
+          @RequestParam("hawb_number") String hawbNumber,
           @RequestParam("user_id") int userId,
           @RequestParam("cargo_category") String cargo_category,
           @RequestParam("cargo_class") String cargo_class,
           @RequestParam("uld_number") String uld_number,
           @RequestParam("is_badOrder") boolean is_badOrder,
-          @RequestParam("shipment_status") String shipment_status) {
-    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(), mawbNumber, flightNumber, hawbNumber, userId, cargo_category, cargo_class, uld_number,is_badOrder, shipment_status);
+          @RequestParam("shipment_status") String shipment_status,
+          @RequestParam("is_partial") boolean is_partial,
+          @RequestParam("uld_id") int uld_id,
+          @RequestParam("registry_number") String registry_number,
+          @RequestParam("is_offload") boolean is_offload,
+          @RequestParam("received_registry_no") String received_registry_no,
+          @RequestParam("gate_releasing") String gate_releasing) {
+    return receiveCargoServiceImp.confirmCargo(confirmCargo.getCargoLogs(), confirmCargo.getMawbDetails(), confirmCargo.getHawbDetails(),
+            mawbNumber, flightNumber, hawbNumber, userId, cargo_category, cargo_class, uld_number, is_badOrder, shipment_status,
+            is_partial, uld_id, registry_number, is_offload, received_registry_no, gate_releasing);
   }
 
   @GetMapping("get_cargo_status")
@@ -147,39 +156,71 @@ public class ReceiveCargoController {
     return receiveCargoServiceImp.getCargoStatus();
   }
 
+  @GetMapping("check_hawb")
+  public ApiResponseModel checkHawb(@RequestParam("uld_id") int uld_id, @RequestParam("hawb_id") int hawb_id, @RequestParam("mawb_id") long mawb_id) {
+    return receiveCargoServiceImp.checkHawb(uld_id, hawb_id, mawb_id);
+  }
+
   @GetMapping("get_uld_type")
   public ApiResponseModel getUldType() {
     return receiveCargoServiceImp.getUldType();
   }
 
-  @PostMapping("save_uld_number")
-  public ApiResponseModel saveUldNumber(@RequestBody SaveUldModel saveUld) {
-    return receiveCargoServiceImp.saveUldNumber(saveUld.getUlds(), saveUld.getMawbs(), saveUld.getUldNumber(), saveUld.getFlightNumber(), saveUld.getUldType());
-  }
-
+//  @PostMapping("save_uld_number")
+//  public ApiResponseModel saveUldNumber(@RequestBody SaveUldModel saveUld) {
+//    return receiveCargoServiceImp.saveUldNumber(saveUld.getUlds(), saveUld.getMawbs(), saveUld.getUldNumber(), saveUld.getFlightNumber(), saveUld.getUldType());
+//  }
   @PostMapping("update_receiver_status")
   public ApiResponseModel updateReceivingStatus(@RequestParam("registry_number") String registry_number, @RequestParam("is_confirmed") boolean is_confirmed) {
     return receiveCargoServiceImp.updateReceivingStatus(registry_number, is_confirmed);
   }
 
-  @PostMapping("update_uld_number")
-  public ApiResponseModel updateUldNumber(@RequestBody UldsModel updateUld, @RequestParam("uld_number") String uldNumber) {
-    return receiveCargoServiceImp.updateUldNumber(updateUld.getUlds(), uldNumber);
+  @PostMapping("save_image_details")
+  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("cargoConditionId") int cargoConditionId[],
+          @RequestParam("cargoCondition") String cargoCondition[], @RequestParam("remarks") String remarks[],
+          @RequestParam("is_badOrder") boolean is_badOrder[], @RequestParam("hawbId") int hawb_id[],
+          @RequestParam("mawbNumber") String mawb_number[], @RequestParam("quantity") int quantity[], @RequestParam("uld_id") int uld_id, @RequestParam("registry_number") String registry_number) {
+    return receiveCargoServiceImp.uploadImage(file, cargoConditionId, cargoCondition, remarks, is_badOrder, hawb_id, mawb_number, quantity, uld_id, registry_number);
   }
-  
-  @PostMapping("upload_image")
-  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") int hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("cargo_condition1") String cargo_condition1, @RequestParam("cargo_condition2") String cargo_condition2, @RequestParam("cargo_condition3") String cargo_condition3, @RequestParam("remarks1") String remarks1, @RequestParam("remarks2") String remarks2, @RequestParam("quantity") int quantity, @RequestParam("is_badOrder") boolean is_badOrder) {
-    return receiveCargoServiceImp.uploadImage(file, hawb_id, mawb_number, cargo_condition1, cargo_condition2,cargo_condition3, remarks1, remarks2, quantity, is_badOrder);
+
+  @PostMapping("save_video_details")
+  public Integer uploadVideo(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawbId") int hawb_id, @RequestParam("mawbNumber") String mawb_number,
+          @RequestParam("is_badOrder") boolean is_badOrder, @RequestParam("uld_id") int uld_id, @RequestParam("registry_number") String registry_number) {
+    return receiveCargoServiceImp.uploadVideo(file, is_badOrder, hawb_id, mawb_number, uld_id, registry_number);
   }
-  
+
   @GetMapping("get_uld_container_type")
   public ApiResponseModel getContainerType() {
     return receiveCargoServiceImp.getContainerType();
   }
-  
+
   @GetMapping("get_uld_images")
   public ApiResponseModel getUldImages(@RequestParam("flight_number") String flight_number, @RequestParam("uld_number") String uld_number) {
     return receiveCargoServiceImp.getUldImages(flight_number, uld_number);
+  }
+
+  @PostMapping("tag_as_unmanifested")
+  public ApiResponseModel saveMawbHawb(@RequestBody List<HawbModel> hawbModel, String mawb_number, String flight_number, String uld_number, String registry_number, int quantity, int userId) {
+    return receiveCargoServiceImp.saveMawbHawb(hawbModel, mawb_number, flight_number, uld_number, registry_number, quantity, userId);
+  }
+
+  @GetMapping("get_partial_hawbs")
+  public ApiResponseModel getPartialHawbs(@RequestParam("hawb_id") int hawb_id, @RequestParam("mawb_id") int mawb_id, @RequestParam("flight_number") String flight_number) {
+    return receiveCargoServiceImp.getPartialHawbs(hawb_id, mawb_id, flight_number);
+  }
+
+  @GetMapping("search_mawb")
+  public ApiResponseModel searchMawb(@RequestParam("mawb_number") String mawb_number) {
+    return receiveCargoServiceImp.searchMawb(mawb_number);
+  }
+
+  @PostMapping("save_edit_container")
+  public ApiResponseModel saveEditedContainer(@RequestParam("container_number") String container_number,
+          @RequestParam("mawb_number") String mawb_number,
+          @RequestParam("flight_number") String flight_number,
+          @RequestParam("mawb_id") int mawb_id,
+          @RequestParam("current_cont_number") String current_cont_number) {
+    return receiveCargoServiceImp.saveEditedContainer(container_number, mawb_number, flight_number, mawb_id, current_cont_number);
   }
 
 }

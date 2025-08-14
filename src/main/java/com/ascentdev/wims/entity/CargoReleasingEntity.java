@@ -38,5 +38,7 @@ public class CargoReleasingEntity {
   long createdBy;
   @Column(name = "is_hawb")
   boolean isHawb;
+  @Column(name = "created_dt")
+  Timestamp createdDt;
 
 }

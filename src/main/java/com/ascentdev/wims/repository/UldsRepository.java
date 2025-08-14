@@ -26,7 +26,7 @@ public interface UldsRepository extends JpaRepository<UldsEntity, Long> {
 
   UldsEntity findByUldNumber(String uldNumber);
 
-  List<UldsEntity> findByFlightNumber(String flightNumber);
+  List<UldsEntity> findByFlightNumberAndRegistryNumber(String flightNumber, String registry_number);
 
 //  @Modifying
 //  @Transactional

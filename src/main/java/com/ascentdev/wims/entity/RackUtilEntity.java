@@ -31,7 +31,7 @@ public class RackUtilEntity {
   long refRackId;
   
   @Column(name="stored_by_id")
-  int storedById;
+  Long storedById;
   
   @Column(name="stored_dt")
   Timestamp storedDt;
@@ -62,4 +62,7 @@ public class RackUtilEntity {
   
   @Column(name="txn_hawb_id")
   int txnHawbId;
+  
+  @Column(name="ref_rack_layer_id")
+  Long refRackLayerId;
 }

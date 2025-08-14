@@ -10,27 +10,57 @@ package com.ascentdev.wims.model;
  * @author User
  */
 public class ForCargoReleasingModel {
-  int id;
-  String awb;
+  int hawbId;
+  int mawbId;
+  Integer uldId;
+  String mawbNumber;
+  String hawbNumber;
   int qty;
   String uom;
   String consignee;
+  String cargoClass;
   boolean shawb;
+  String location;
+  boolean is_offload;
 
-  public int getId() {
-    return id;
+  public int getHawbId() {
+    return hawbId;
   }
 
-  public void setId(int id) {
-    this.id = id;
+  public void setHawbId(int hawbId) {
+    this.hawbId = hawbId;
   }
 
-  public String getAwb() {
-    return awb;
+  public int getMawbId() {
+    return mawbId;
   }
 
-  public void setAwb(String awb) {
-    this.awb = awb;
+  public void setMawbId(int mawbId) {
+    this.mawbId = mawbId;
+  }
+
+  public String getMawbNumber() {
+    return mawbNumber;
+  }
+
+  public void setMawbNumber(String mawbNumber) {
+    this.mawbNumber = mawbNumber;
+  }
+
+  public String getHawbNumber() {
+    return hawbNumber;
+  }
+
+  public void setHawbNumber(String hawbNumber) {
+    this.hawbNumber = hawbNumber;
+  }
+
+  public boolean isIs_offload() {
+    return is_offload;
+  }
+
+  public void setIs_offload(boolean is_offload) {
+    this.is_offload = is_offload;
   }
 
   public int getQty() {
@@ -65,6 +95,31 @@ public class ForCargoReleasingModel {
     this.shawb = shawb;
   }
 
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
+  }
+
+  public Integer getUldId() {
+    return uldId;
+  }
+
+  public void setUldId(Integer uldId) {
+    this.uldId = uldId;
+  }
+
+  public String getCargoClass() {
+    return cargoClass;
+  }
+
+  public void setCargoClass(String cargoClass) {
+    this.cargoClass = cargoClass;
+  }
+
+  
   
   
   

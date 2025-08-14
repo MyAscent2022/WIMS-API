@@ -25,7 +25,7 @@ import lombok.Data;
 public class TxnUldsEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  long id;
+  int id;
   
   @Column(name="uld_number")
   String uldNumber;
@@ -34,13 +34,13 @@ public class TxnUldsEntity {
   Long uldType;
   
   @Column(name="total_count")
-  int totalCount;
+  Integer totalCount;
   
   @Column(name="short_landed")
-  int shortLanded;
+  Integer shortLanded;
   
   @Column(name="total_expected")
-  int totalExpected;
+  Integer totalExpected;
   
   @Column(name="flight_number")
   String flightNumber;
@@ -55,23 +55,29 @@ public class TxnUldsEntity {
   String mawbNumber;
   
   @Column(name="max_capacity")
-  int maxCapacity;
+  Integer maxCapacity;
   
   @Column(name="tare_weight")
   Float tareWeight;
   
   @Column(name="total_mawb")
-  int totalMawb;
+  Integer totalMawb;
   
   @Column(name="uld_status")
   Long uldStatus;
   
   @Column(name="total_pieces")
-  int totalPieces;
+  Integer totalPieces;
   
   @Column(name="total_weight")
-  int totalWeight;
+  Integer totalWeight;
   
   @Column(name="uld_activity_log_id")
   Long uldActivityLogId;
+  
+  @Column(name="is_received")
+  Boolean isReceived;
+  
+  @Column(name="mawb_id")
+  Integer mawbId;
 }
