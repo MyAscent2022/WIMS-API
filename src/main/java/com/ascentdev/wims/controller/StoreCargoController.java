@@ -8,6 +8,7 @@ import com.ascentdev.wims.entity.CargoActivityLogsEntity;
 import com.ascentdev.wims.entity.HawbEntity;
 import com.ascentdev.wims.entity.ImagesEntity;
 import com.ascentdev.wims.entity.MawbEntity;
+import com.ascentdev.wims.model.AddedRackModel;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.model.CargoActivityModel;
 import com.ascentdev.wims.model.CargoImageRequestModel;
@@ -41,41 +42,61 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/wims_api/")
 public class StoreCargoController {
-  
+
   @Autowired
   StoreCargoServiceImp storeCargoServiceImp;
-  
+
   @GetMapping("store_cargo_mawbs")
   public ApiResponseModel getStoreCargo() {
     return storeCargoServiceImp.getStorageCargo();
   }
-  
+
   @PostMapping("assign_rack")
   public ApiResponseModel saveRack(@RequestBody CargoActivityModel cargoLogs,
           @RequestParam("mawb_number") String mawb_number,
           @RequestParam("flight_number") String flight_number,
           @RequestParam("hawb_number") String hawb_number,
-          @RequestParam("rack_name") String rack_name, 
+          @RequestParam("rack_name") String rack_name,
           @RequestParam("layer_name") String layer_name,
-          @RequestParam("rack_util_id") int rack_util_id,
+          @RequestParam("rack_code") String rack_code,
+          //          @RequestParam("rack_util_id") int rack_util_id,
           @RequestParam("user_id") int user_id,
-          @RequestParam("cargo_activity_logs_id") int cargo_activity_logs_id) {
-    return storeCargoServiceImp.saveRack(cargoLogs.getCargoActivity(), mawb_number, flight_number, hawb_number, rack_name, layer_name, rack_util_id, user_id, cargo_activity_logs_id);
+          @RequestParam("cargo_activity_logs_id") int cargo_activity_logs_id,
+          @RequestParam("actual_pcs") int actual_pcs,
+          @RequestParam("registry_number") String registry_number,
+          @RequestParam("uld_id") int uld_id) {
+    return storeCargoServiceImp.saveRack(cargoLogs.getCargoActivity(), mawb_number, flight_number, hawb_number, rack_name, layer_name, rack_code, user_id, cargo_activity_logs_id, actual_pcs, registry_number, uld_id);
   }
-  
+
+  @PostMapping("assign_added_rack")
+  public ApiResponseModel saveAddedRack(
+          @RequestParam("mawb_number") String mawb_number,
+          @RequestParam("flight_number") String flight_number,
+          @RequestParam("hawb_number") String hawb_number,
+          //          @RequestParam("rack_util_id") int rack_util_id,
+          @RequestParam("user_id") int user_id,
+          @RequestParam("cargo_activity_logs_id") int cargo_activity_logs_id,
+          @RequestBody List<AddedRackModel> addedRackModel,
+          @RequestParam("registry_number") String registry_number,
+          @RequestParam("uld_id") int uld_id,
+          @RequestParam("actual_pcs") int actual_pcs) {
+    return storeCargoServiceImp.saveAddedRack(addedRackModel, mawb_number, flight_number, hawb_number, user_id, cargo_activity_logs_id, registry_number, uld_id, actual_pcs);
+  }
+
   @PostMapping("save_storage_image")
   public ApiResponseModel saveStorageImage(@RequestParam("file[]") MultipartFile[] file,
           @RequestParam("cargo_condition_id") int cargo_conditon_id,
           @RequestParam("user_id") long user_id,
           @RequestParam("rack_name") String rack_name,
           @RequestParam("layer_name") String layer_name,
+          @RequestParam("rack_code") String rack_code,
           @RequestParam("stored_pcs") int stored_pcs,
           @RequestParam("remarks") String remarks,
           @RequestParam("hawb_number") String hawb_number,
           @RequestParam("mawb_number") String mawb_number) {
-    
+
     LocalDateTime date = LocalDateTime.now();
-    
+
     CargoActivityLogsEntity cargoLogs = new CargoActivityLogsEntity();
     cargoLogs.setHandledById(user_id);
     cargoLogs.setActualPcs(stored_pcs);
@@ -84,77 +105,80 @@ public class StoreCargoController {
     cargoLogs.setUpdatedById(user_id);
     cargoLogs.setCreatedAt(Timestamp.valueOf(date));
     cargoLogs.setCreatedById(user_id);
-    
+
     MawbEntity mawbDetails = new MawbEntity();
-    
+
     HawbEntity hawbDetails = new HawbEntity();
-    
-    return storeCargoServiceImp.saveStorageImages(file, cargo_conditon_id, user_id, rack_name, layer_name, stored_pcs, remarks, mawb_number, cargoLogs, mawbDetails, hawbDetails);
+
+    return storeCargoServiceImp.saveStorageImages(file, cargo_conditon_id, user_id, rack_name, layer_name, rack_code, stored_pcs, remarks, mawb_number, cargoLogs, mawbDetails, hawbDetails);
   }
-  
+
   @GetMapping("get_images")
-  public ApiResponseModel getImages(@RequestParam("is_hawb") boolean is_hawb, @RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number) {
-    return storeCargoServiceImp.getImages(mawb_number, hawb_number, is_hawb);
+  public ApiResponseModel getImages(@RequestParam("is_hawb") boolean is_hawb, @RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number, @RequestParam("registry_number") String registry_number) {
+    return storeCargoServiceImp.getImages(mawb_number, hawb_number, is_hawb, registry_number);
   }
-  
+
   @GetMapping("get_ref_rack")
   public ApiResponseModel getRackRacks(boolean is_layer, String rack_name) {
-    return storeCargoServiceImp.getRefRacks(is_layer,rack_name);
+    return storeCargoServiceImp.getRefRacks(is_layer, rack_name);
 //    public ApiResponseModel getRackRacks() {
 //    return storeCargoServiceImp.getAllRefRacks();
   }
-  
+
   @GetMapping("get_rack_details")
   public ApiResponseModel getRackDetails(@RequestParam("is_hawb") boolean is_hawb, @RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number) {
     return storeCargoServiceImp.getRackDetails(is_hawb, hawb_number, mawb_number);
   }
-  
+
   @GetMapping("releasing_cargo")
-  public ApiResponseModel getReleasingCargo(){
+  public ApiResponseModel getReleasingCargo() {
     return storeCargoServiceImp.getReleaseCargo();
   }
-  
+
   @PostMapping("update_storager_status")
-  public ApiResponseModel updateStoragerStatus(@RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number, @RequestParam("user_id") long user_id) {
-    return storeCargoServiceImp.updateStoragerStatus(hawb_number, mawb_number, user_id);
+  public ApiResponseModel updateStoragerStatus(@RequestParam("hawb_number") String hawb_number, @RequestParam("mawb_number") String mawb_number, @RequestParam("user_id") long user_id, @RequestParam("registry_number") String registry_number) {
+    return storeCargoServiceImp.updateStoragerStatus(hawb_number, mawb_number, user_id, registry_number);
   }
-  
-  @GetMapping("get_cargo_images")
-  public ApiResponseModel getCargoImages(@RequestParam("cargo_activity_log_id") long cargo_activity_log_id){
+
+  @GetMapping("get_cargo_images_details")
+  public ApiResponseModel getCargoImages(@RequestParam("cargo_activity_log_id") long cargo_activity_log_id) {
     return storeCargoServiceImp.getCargoImages(cargo_activity_log_id);
   }
-  
-  @PostMapping("upload_storage_image")
-  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_id") int hawb_id, @RequestParam("mawb_number") String mawb_number, @RequestParam("list_image_details") String list_image_details) {
+
+  @PostMapping("upload_storage_image_details")
+  public Integer uploadImage(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_number") String hawb_number, 
+          @RequestParam("mawb_number") String mawb_number, @RequestParam("list_image_details") String list_image_details, @RequestParam("uld_id") int uld_id, @RequestParam("registry_number") String registry_number) {
     Gson gson = new Gson();
     List<ImagesEntity> imagesEntity = new ArrayList<>();
-    
+
     CargoImageRequestModel req = new CargoImageRequestModel();
     req.setImagesEntity(imagesEntity);
-    req = gson.fromJson(list_image_details,CargoImageRequestModel.class);
-    
-    
-    return storeCargoServiceImp.uploadImage(file, hawb_id, mawb_number, req.getImagesEntity());
+    req = gson.fromJson(list_image_details, CargoImageRequestModel.class);
+
+    return storeCargoServiceImp.uploadImage(file, hawb_number, mawb_number, req.getImagesEntity(), uld_id, registry_number);
+  }
+
+  @PostMapping("upload_storage_video_details")
+  public Integer uploadVideo(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawbNumber") String hawb_number, @RequestParam("mawbNumber") String mawb_number, @RequestParam("uld_id") int uld_id, @RequestParam("registry_number") String registry_number) {
+    return storeCargoServiceImp.uploadVideo(file, hawb_number, mawb_number,uld_id, registry_number);
+  }
+
+  @PostMapping("upload_added_image_details")
+  public Integer uploadAddedLocation(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawb_number") String hawb_number, 
+          @RequestParam("mawb_number") String mawb_number, @RequestParam("list_image_details") String list_image_details, @RequestParam("uld_id") int uld_id, @RequestParam("registry_number") String registry_number) {
+    Gson gson = new Gson();
+    List<ImagesEntity> addedLocation = new ArrayList<>();
+
+    CargoImageRequestModel req = new CargoImageRequestModel();
+    req.setAddedLocation(addedLocation);
+    req = gson.fromJson(list_image_details, CargoImageRequestModel.class);
+
+    return storeCargoServiceImp.uploadAddedImage(file, hawb_number, mawb_number, req.getAddedLocation(), uld_id, registry_number);
   }
   
-  @PostMapping("save_releasing_cargo")
-  public ApiResponseModel saveReleaseCargo(@RequestParam("mawb_number") String mawb_number, @RequestParam("hawb_number") String hawb_number, @RequestParam("flight_number") String flight_number, @RequestParam("user_id") long user_id) {
-    return storeCargoServiceImp.saveReleaseCargo(mawb_number, hawb_number, flight_number, user_id);
+   @PostMapping("upload_added_storage_video_details")
+  public Integer uploadAdddedVideo(@RequestParam("file[]") MultipartFile[] file, @RequestParam("hawbNumber") String hawb_number, @RequestParam("mawbNumber") String mawb_number, @RequestParam("uld_id") int uld_id, @RequestParam("registry_number") String registry_number) {
+    return storeCargoServiceImp.uploadVideo(file, hawb_number, mawb_number,uld_id,registry_number);
   }
-  
-  @RequestMapping(value = "view_checklist_image")
-  public @ResponseBody
-  void viewCheckListImage(@RequestParam("file_path") String file_path, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-    try {
-      File file = null;
-
-      file = new File(file_path);
-
-      Files.copy(file.toPath(), response.getOutputStream());
-      response.getOutputStream().close();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
 }

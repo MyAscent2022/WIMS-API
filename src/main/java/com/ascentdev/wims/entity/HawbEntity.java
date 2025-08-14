@@ -82,4 +82,13 @@ public class HawbEntity {
 
   @Column(name = "cargo_class_id")
   Long cargoClassId;
+  
+  @Column(name = "created_by_id")
+  Integer createdById;
+  
+  @Column(name = "created_at")
+  Timestamp createdAt;
+  
+  @Column(name = "received_registry_no")
+  String receivedRegistryNo;
 }

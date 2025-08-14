@@ -32,7 +32,7 @@ public class CargoActivityLogsEntity {
 
   @Column(name = "flight_id")
   int flightId;
-
+  
   @Column(name = "mawb_id")
   int mawbId;
 
@@ -74,5 +74,23 @@ public class CargoActivityLogsEntity {
   
   @Column(name = "is_stored")
   boolean isStored;
+  
+  @Column(name = "is_released")
+  boolean isReleased;
+  
+  @Column(name = "uld_id")
+  Integer uldId;
+  
+  @Column(name = "is_partial")
+  boolean isPartial;
+  
+  @Column(name = "is_full")
+  boolean isFull;
+  
+  @Column(name = "is_offload")
+  boolean isOffload;
+  
+  @Column(name = "is_pull_out")
+  boolean isPullOut;
 
 }

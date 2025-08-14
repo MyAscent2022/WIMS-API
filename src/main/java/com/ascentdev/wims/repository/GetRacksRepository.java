@@ -5,6 +5,7 @@
 package com.ascentdev.wims.repository;
 
 import com.ascentdev.wims.entity.GetRacksEntity;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,5 +13,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author ASCENT SOLUTIONS INC
  */
 public interface GetRacksRepository extends JpaRepository<GetRacksEntity, Integer> {
-  
 }

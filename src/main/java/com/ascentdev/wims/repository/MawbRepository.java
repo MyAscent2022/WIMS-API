@@ -19,8 +19,8 @@ public interface MawbRepository extends JpaRepository<MawbEntity, Integer> {
 
   List<MawbEntity> findByFlightId(int flightId);
 
-  List<MawbEntity> findByUldNumberAndUldStatusNot(String uldNumber, int uldStatus);
+  List<MawbEntity> findByUldNumberAndUldStatusNotAndIsReceivedAndRegistryNumber(String uldNumber, int uldStatus, boolean isReceived, String registry_number);
 
-  MawbEntity findByMawbNumber(String mawbNumber);
-  List<MawbEntity> findByUldNumber(String uldNumber);
+  MawbEntity findByMawbNumberAndRegistryNumber(String mawbNumber, String registryNumber);
+  List<MawbEntity> findByUldNumberAndIsReceived(String uldNumber, boolean isReceived);
 }

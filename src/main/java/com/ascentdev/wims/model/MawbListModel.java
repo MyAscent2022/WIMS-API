@@ -39,4 +39,6 @@ public class MawbListModel {
   Float actualVolume;
   int grossMass;
   String consigneeName;
+  int uldId;
+  boolean isPriority;
 }

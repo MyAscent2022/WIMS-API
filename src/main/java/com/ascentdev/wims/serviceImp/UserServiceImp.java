@@ -6,20 +6,23 @@ package com.ascentdev.wims.serviceImp;
 
 import com.ascentdev.wims.entity.SearchUserEntity;
 import com.ascentdev.wims.entity.UserEntity;
+import com.ascentdev.wims.entity.UserPerWarehouseEntity;
 import com.ascentdev.wims.entity.UserLogsEntity;
 import com.ascentdev.wims.error.ErrorException;
 import com.ascentdev.wims.model.ApiResponseModel;
 import com.ascentdev.wims.repository.SearchUserRepository;
 import com.ascentdev.wims.repository.UserLogsRepository;
 import com.ascentdev.wims.repository.UserProfileRepository;
-import com.ascentdev.wims.repository.UserRepository;
 import com.ascentdev.wims.service.UserService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.ascentdev.wims.repository.UserPerWarehouseRepository;
+import com.ascentdev.wims.repository.UserRepository;
 
 /**
  *
@@ -33,25 +36,31 @@ public class UserServiceImp implements UserService {
   int statusCode = 200;
 
   @Autowired
-  UserRepository uRepo;
+  UserPerWarehouseRepository uRepo;
+
+  @Autowired
+  UserRepository userRepo;
 
   @Autowired
   UserLogsRepository ulRepo;
 
   @Autowired
   SearchUserRepository suRepo;
+  public final String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz0123456789";
 
   @Override
-  public ApiResponseModel userLogin(String username, String passkey) {
+  public ApiResponseModel userLogin(String username, String passkey, String token) {
     ApiResponseModel resp = new ApiResponseModel();
     LocalDateTime date = LocalDateTime.now();
 
     SearchUserEntity searchUser = new SearchUserEntity();
-    UserEntity user = new UserEntity();
+    UserPerWarehouseEntity user = new UserPerWarehouseEntity();
+    UserEntity u = new UserEntity();
 
     try {
       searchUser = suRepo.findByUsername(username);
       user = uRepo.findByUsername(username);
+      u = userRepo.findByUsername(username);
       if (user == null) {
         resp.setMessage("User not found");
         resp.setStatusCode(404);
@@ -59,7 +68,9 @@ public class UserServiceImp implements UserService {
       } else {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (passwordEncoder.matches(passkey, user.getPasskey())) {
-          user = uRepo.save(user);
+          u.setToken(RandomStringUtils.random(100, AlphaNumericString));
+          u.setNotificationToken(token);
+          u = userRepo.save(u);
           resp.setData(user);
 
           List<UserLogsEntity> activeSessions = ulRepo.findByUserIdAndLogOutAtAndIsMobile(searchUser.getUserId(), null, true);
@@ -82,6 +93,7 @@ public class UserServiceImp implements UserService {
             resp.setMessage(message);
             resp.setStatus(status);
             resp.setStatusCode(statusCode);
+            resp.setToken(u.getToken());
           } else {
             resp.setMessage("Wrong username");
             resp.setStatusCode(404);

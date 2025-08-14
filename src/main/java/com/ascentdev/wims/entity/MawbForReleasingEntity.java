@@ -23,15 +23,14 @@ import org.hibernate.annotations.Subselect;
         + "tm.date_of_arrival, \n"
         + "tm.destination_code, \n"
         + "tm.mawb_number,\n"
-        + "tu.mawb_number AS mawb1,\n"
-        + "tm.number_of_containers,\n"
+        + "string_agg(tu.mawb_number, ', ') AS mawb1,\n"
         + "tm.number_of_packages,\n"
         + "tm.origin_code,\n"
         + "tm.registry_number,\n"
         + "tm.time_of_arrival,\n"
         + "tm.volume,\n"
-        + "tu.uld_number,\n"
-        + "ru.uld_no,\n"
+        + "string_agg(tu.uld_number, ', ') AS uld_number,\n"
+        + "string_agg(ru.uld_no, ', ') AS uld_no,\n"
         + "tm.uld_container_type_id,\n"
         + "tm.cargo_status,\n"
         + "tm.length,\n"
@@ -44,13 +43,39 @@ import org.hibernate.annotations.Subselect;
         + "tm.cargo_class_id,\n"
         + "tm.flight_id,\n"
         + "tm.consignee_name,\n"
-        + "ru.uld_status\n"
+        + "string_agg(CAST(ru.uld_status AS text), ', ') AS uld_status,\n"
+        + "rcc.classdesc AS cargo_class, \n"
+        + "tm.yellow_receipt_no\n"
         + "FROM txn_mawb tm\n"
+        + "INNER JOIN ref_cargo_class rcc ON rcc.id = tm.cargo_class_id\n"
         + "INNER JOIN txn_ulds tu ON tu.mawb_number = tm.mawb_number \n"
         + "INNER JOIN ref_uld ru ON ru.uld_no = tu.uld_number\n"
-        + "INNER JOIN txn_rack_utilization tru On tru.txn_mawb_id = tm.id\n"
         + "INNER JOIN payment.billings bill ON bill.mawb_id = tm.id\n"
-        + "WHERE bill.status = 'paid'")
+        + "WHERE bill.status = 'paid'\n"
+        + "GROUP BY\n"
+        + "tm.id, \n"
+        + "tm.date_of_arrival, \n"
+        + "tm.destination_code, \n"
+        + "tm.mawb_number,\n"
+        + "tm.number_of_containers,\n"
+        + "tm.number_of_packages,\n"
+        + "tm.origin_code,\n"
+        + "tm.registry_number,\n"
+        + "tm.time_of_arrival,\n"
+        + "tm.volume,tm.uld_container_type_id,\n"
+        + "tm.cargo_status,\n"
+        + "tm.length,\n"
+        + "tm.width,\n"
+        + "tm.height,\n"
+        + "tm.actual_weight,\n"
+        + "tm.actual_volume,\n"
+        + "tm.actual_pcs,\n"
+        + "tm.cargo_category_id,\n"
+        + "tm.cargo_class_id,\n"
+        + "tm.flight_id,\n"
+        + "tm.consignee_name,\n"
+        + "rcc.classdesc, \n"
+        + "tm.yellow_receipt_no")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MawbForReleasingEntity {
 
@@ -66,9 +91,8 @@ public class MawbForReleasingEntity {
   @Column(name = "mawb_number")
   String mawbNumber;
 
-  @Column(name = "number_of_containers")
-  int numberOfContainers;
-
+//  @Column(name = "number_of_containers")
+//  int numberOfContainers;
   @Column(name = "number_of_packages")
   int numberOfPackages;
 
@@ -124,6 +148,11 @@ public class MawbForReleasingEntity {
   String consigneeName;
 
   @Column(name = "uld_status")
-  int uldStatus;
+  String uldStatus;
 
+  @Column(name = "cargo_class")
+  String cargoClass;
+
+  @Column(name = "yellow_receipt_no")
+  String yellowReceipt;
 }

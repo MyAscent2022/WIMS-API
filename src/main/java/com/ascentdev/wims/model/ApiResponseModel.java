@@ -17,7 +17,17 @@ public class ApiResponseModel {
   boolean status;
   int statusCode;
   Object data;
+  Object searchMawb;
+  Object cargoEntity;
   List<?> condition; 
   List<?> layers;
+  List<?> partialHawbs;
+  List<?> logList;
+  List<?> truckList;
+  List<?> addedRackModel;
+  Object rackUtil;
   String[] mawbs;
+  long cargoActivityLogsId;
+  boolean lastHawbToReceive;
+  String token;
 }

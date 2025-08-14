@@ -15,7 +15,17 @@ import java.util.List;
 public class CargoImageRequestModel {
   
    List<ImagesEntity> imagesEntity;
+   List<ImagesEntity> addedLocation;
 
+  public List<ImagesEntity> getAddedLocation() {
+    return addedLocation;
+  }
+
+  public void setAddedLocation(List<ImagesEntity> addedLocation) {
+    this.addedLocation = addedLocation;
+  }
+
+      
   public List<ImagesEntity> getImagesEntity() {
     return imagesEntity;
   }

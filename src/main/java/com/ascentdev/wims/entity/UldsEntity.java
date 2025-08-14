@@ -19,32 +19,74 @@ import org.hibernate.annotations.Subselect;
  */
 @Data
 @Entity
-@Subselect("SELECT ru.id, \n"
+@Subselect("SELECT ru.id,\n"
         + "ru.uld_no,\n"
         + "ru.flight_number,\n"
-        + "tu.mawb_number,\n"
-        + "COUNT(DISTINCT tu.mawb_number) AS mawb_count,\n"
-        + "COUNT(DISTINCT th.hawb_number) AS hawb_count,\n"
+        + "tm.registry_number,\n"
         + "ru.uld_type,\n"
-        + "ut.type, \n"
-        + "tu.id AS uld_id,\n"
-        + "rus.status AS uld_status\n"
+        + "rcut.description AS unit_type,\n"
+        + "rut.type,\n"
+        + "rus.status AS uld_status,\n"
+        + "ru.is_uld,\n"
+        + "COUNT(DISTINCT tm.id) AS mawb_count,\n"
+        + "COUNT(DISTINCT th.id) AS hawb_count\n"
         + "FROM ref_uld ru\n"
-        + "INNER JOIN ref_uld_type ut ON ut.id = ru.uld_type\n"
-        + "INNER JOIN txn_ulds tu ON tu.uld_number = ru.uld_no\n"
+        + "INNER JOIN flights f ON f.flight_number = ru.flight_number\n"
+        + "LEFT JOIN ref_uld_type rut ON rut.id = ru.uld_type\n"
+        + "LEFT JOIN ref_cargo_unit_type rcut ON rcut.id = ru.unit_type_id\n"
         + "INNER JOIN ref_uld_status rus ON rus.id = ru.uld_status\n"
-        + "INNER JOIN txn_mawb tm ON tm.mawb_number = tu.mawb_number\n"
-        + "LEFT JOIN txn_hawb th ON th.mawb_number = tm.mawb_number\n"
-        + "WHERE ru.uld_status IN (2, 10, 11)\n"
-        + "GROUP BY ru.id, ut.type, tu.id, rus.status, tu.mawb_number")
+        + "INNER JOIN txn_ulds tu ON tu.uld_number = ru.uld_no\n"
+        + "LEFT JOIN txn_mawb tm ON tm.id = tu.mawb_id\n"
+        + "LEFT JOIN txn_hawb th ON th.txn_mawb_id = tm.id\n"
+        + "WHERE ru.uld_status IN (2,11)\n"
+        + "AND tu.is_received = false\n"
+        + "GROUP BY ru.id,\n"
+        + "    ru.uld_no, \n"
+        + "    ru.flight_number, \n"
+        + "    ru.uld_type, \n"
+        + "    rut.type, \n"
+        + "    rus.status,\n"
+        + "		tm.registry_number,\n"
+        + "		rcut.description,\n"
+        + "   ru.is_uld")
+
+//@Subselect("		SELECT \n"
+//        + "    ru.id, \n"
+//        + "    tm.id AS mawb_id, \n"
+//        + "    th.id AS hawb_id,\n"
+//        + "    ru.uld_no,\n"
+//        + "    ru.flight_number,\n"
+//        + "    ru.uld_type,\n"
+//        + "    rut.type,\n"
+//        + "    rus.status AS uld_status,\n"
+//        + "    COUNT(DISTINCT tm.id) AS mawb_count,\n"
+//        + "    COUNT(DISTINCT th.id) AS hawb_count,\n"
+//        + "    CASE \n"
+//        + "        WHEN COUNT(*) OVER (PARTITION BY tm.id, th.id) > 1 THEN 'partial'\n"
+//        + "        ELSE 'full'\n"
+//        + "    END AS tag\n"
+//        + "FROM ref_uld ru\n"
+//        + "INNER JOIN ref_uld_type rut ON rut.id = ru.uld_type\n"
+//        + "INNER JOIN ref_uld_status rus ON rus.id = ru.uld_status\n"
+//        + "INNER JOIN txn_ulds tu ON tu.uld_number = ru.uld_no\n"
+//        + "LEFT JOIN txn_mawb tm ON tm.mawb_number = tu.mawb_number\n"
+//        + "LEFT JOIN txn_hawb th ON th.txn_mawb_id = tm.id\n"
+//        + "WHERE ru.uld_status IN (2,11)\n"
+//        + "AND tu.is_received = false\n"
+//        + "GROUP BY \n"
+//        + "    ru.id,\n"
+//        + "    ru.uld_no, \n"
+//        + "    ru.flight_number, \n"
+//        + "    ru.uld_type, \n"
+//        + "    rut.type, \n"
+//        + "    rus.status,\n"
+//        + "    tm.id, \n"
+//        + "    th.id")
 public class UldsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
-
-  @Column(name = "uld_id")
-  int uldId;
 
   @Column(name = "uld_no")
   String uldNumber;
@@ -52,14 +94,9 @@ public class UldsEntity {
   @Column(name = "flight_number")
   String flightNumber;
 
-  @Column(name = "mawb_number")
-  String mawbNumber;
-
   @Column(name = "uld_type")
-  long uldTypeId;
+  Long uldTypeId;
 
-//  @Column(name = "total_expected")
-//  int totalExpected;
   @Column(name = "type")
   String type;
 
@@ -71,4 +108,14 @@ public class UldsEntity {
 
   @Column(name = "uld_status")
   String uldStatus;
+
+  @Column(name = "registry_number")
+  String registryNumber;
+
+  @Column(name = "unit_type")
+  String unitType;
+  
+  @Column(name = "is_uld")
+  boolean isUld;
+
 }

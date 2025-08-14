@@ -7,8 +7,6 @@ package com.ascentdev.wims.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
@@ -20,26 +18,32 @@ import org.hibernate.annotations.Subselect;
  */
 @Data
 @Entity
-@Table(name = "txn_cargo_images")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class ImagesEntity {
+@Subselect("SELECT u.id,\n"
+        + "u.email,\n"
+        + "u.passkey,\n"
+        + "u.username,\n"
+        + "u.role_id,\n"
+        + "u.user_type_id,\n"
+        + "rw.description\n"
+        + "FROM users u\n"
+        + "INNER JOIN ref_warehouses rw ON rw.id = u.warehouse_id")
+public class UserPerWarehouseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   long id;
 
-  @Column(name = "cargo_activity_log_id")
-  long cargoActivityLogId;
+  String email;
 
-  @Column(name = "cargo_condition_id")
-  long cargoConditionId;
+  String passkey;
 
-  @Column(name = "file_name")
-  String fileName;
+  String username;
 
-  @Column(name = "file_path")
-  String filePath;
+  @Column(name = "role_id")
+  Long roleId;
 
-  @Column(name = "remarks")
-  String remarks;
+  @Column(name = "user_type_id")
+  Long userTypeId;
+
+  @Column(name = "description")
+  String warehouse;
 }

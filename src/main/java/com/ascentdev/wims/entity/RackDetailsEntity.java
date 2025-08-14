@@ -21,17 +21,19 @@ import org.hibernate.annotations.Subselect;
         + "tm.mawb_number, \n"
         + "th.hawb_number, \n"
         + "f.flight_number, \n"
-        + "cc.classdesc,\n"
-        + "tm.actual_weight,\n"
-        + "rr.rack_name, \n"
-        + "rr.layer_name\n"
+        + "cc.ref_cargo_class AS classdesc,\n"
+        + "tm.gross_mass AS actual_weight,\n"
+        + "rr.rack_code,\n"
+        + "rrl.rack_name, \n"
+        + "rrl.layer_name\n"
         + "FROM public.cargo_activity_logs cal\n"
         + "INNER JOIN public.txn_mawb tm ON tm.id = cal.mawb_id\n"
         + "LEFT JOIN public.txn_hawb th ON th.id = cal.hawb_id\n"
         + "INNER JOIN public.flights f ON f.id = cal.flight_id\n"
         + "INNER JOIN public.ref_cargo_class cc ON cc.id = tm.cargo_class_id\n"
         + "INNER JOIN public.txn_rack_utilization tru ON tru.txn_mawb_id = cal.mawb_id\n"
-        + "INNER JOIN public.ref_rack rr ON rr.id = tru.ref_rack_id")
+        + "LEFT JOIN public.ref_rack_layer rrl ON rrl.id = tru.ref_rack_layer_id\n"
+        + "INNER JOIN ref_rack rr ON rr.id = rrl.rack_id")
 public class RackDetailsEntity {
 
   @Id
@@ -59,6 +61,9 @@ public class RackDetailsEntity {
 //  String storagePersonnel;
   @Column(name = "rack_name")
   String rackName;
+
+  @Column(name = "rack_code")
+  String rackCode;
 
   @Column(name = "layer_name")
   String layerName;

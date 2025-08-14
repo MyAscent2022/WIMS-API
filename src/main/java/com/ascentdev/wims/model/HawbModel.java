@@ -16,4 +16,7 @@ import lombok.Data;
 public class HawbModel {
   List<HawbEntity> hawbs;
   HawbEntity hawb;
+  
+  String hawb_number;
+  
 }

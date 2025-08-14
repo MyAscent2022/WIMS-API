@@ -11,6 +11,6 @@ import com.ascentdev.wims.model.ApiResponseModel;
  * @author ASCENT
  */
 public interface UserService {
-  ApiResponseModel userLogin (String username, String passkey);
+  ApiResponseModel userLogin (String username, String passkey, String token);
   ApiResponseModel userLogout (long userId);
 }

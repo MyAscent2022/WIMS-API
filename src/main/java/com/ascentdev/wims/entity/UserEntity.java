@@ -13,25 +13,27 @@ import lombok.Data;
 
 /**
  *
- * @author ASCENT
+ * @author ASCENT SOLUTIONS INC
  */
 @Data
 @Entity
-@Table(name="users")
+@Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UserEntity {
+
   @Id
   long id;
-  
+
   String email;
-  
+
   String passkey;
-  
+
   String username;
   
-  @Column(name="role_id")
-  Long roleId;
+  String token;
   
-  @Column(name="user_type_id")
-  Long userTypeId;
+  @Column(name = "notification_token")
+  String notificationToken;
+
+
 }
